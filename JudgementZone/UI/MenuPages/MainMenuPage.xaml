@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:JudgementZone.UI"
+             x:Class="JudgementZone.UI.MainMenuPage"
+             Title="Main Menu"
+             BackgroundColor="{StaticResource Dark_Background}">
+    <ContentPage.Content>
+        <StackLayout Spacing="15" Padding="20">
+            <local:JZLogo x:Name="MenuLogo"/>
+            <Button x:Name="CreateGameButton"
+                    VerticalOptions="EndAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="LightSkyBlue"
+                    Text="Create Game"
+                    TextColor="Black"
+                    Clicked="CreateGameButtonClicked"/>
+            <Button x:Name="JoinGameButton"
+                    VerticalOptions="End" HorizontalOptions="Fill"
+                    BackgroundColor="LightSkyBlue"
+                    Text="Join Game"
+                    TextColor="Black"
+                    Clicked="JoinGameButtonClicked"/>
+            <Button x:Name="AchievementsButton"
+                    VerticalOptions="End" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Gray}"
+                    Text="Achievements"
+                    TextColor="Black"
+                    Clicked="AchievementsButtonClicked"/>
+            <Button x:Name="SettingsButton"
+                    VerticalOptions="End" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Gray}"
+                    Text="Settings"
+                    TextColor="Black"
+                    Clicked="SettingsButtonClicked"/>
+            <Button x:Name="AboutButton"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Gray}"
+                    Text="About"
+                    TextColor="Black"
+                    Clicked="AboutButtonClicked"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

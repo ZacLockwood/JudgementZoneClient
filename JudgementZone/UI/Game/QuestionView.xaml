@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JudgementZone.UI.QuestionView"
+             xmlns:local="clr-namespace:JudgementZone.UI">
+	<ContentView.Content>
+        <StackLayout x:Name="MainStackLayout"
+                         Spacing="5" Padding="15">
+                <Frame VerticalOptions="Start" HorizontalOptions="Center"
+                       Padding="7,2.5"
+                       OutlineColor="#77FFFFFF"
+                       BackgroundColor="Transparent"
+                       HasShadow="false">
+                    <Label x:Name="FocusedPlayerLabel"
+                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            Text="Judgement Zone"
+                            FontSize="Large"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource JZ_White}"/>
+                </Frame>
+                <AbsoluteLayout x:Name="QuestionAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Label x:Name="QuestionLabel"
+                            AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" AbsoluteLayout.LayoutBounds="0.5,0,1,-1"
+                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            FontSize="Large"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource JZ_White}"
+                            Text="{Binding QuestionText}"/>
+                    <AbsoluteLayout x:Name="AnswerButtonsAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.8">
+                        <local:AnswerButtonFrame x:Name="RedAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.0,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Red}"
+                                                 BindingContext="{Binding .RedAnswer}">
+                            <x:Arguments>
+                                <x:Int16>1</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerButtonFrame>
+                        <local:AnswerButtonFrame x:Name="YellowAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Yellow}"
+                                                 BindingContext="{Binding .YellowAnswer}">
+                            <x:Arguments>
+                                <x:Int16>2</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerButtonFrame>
+                        <local:AnswerButtonFrame x:Name="GreenAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Green}"
+                                                 BindingContext="{Binding .GreenAnswer}">
+                            <x:Arguments>
+                                <x:Int16>3</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerButtonFrame>
+                        <local:AnswerButtonFrame x:Name="BlueAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Blue}"
+                                                 BindingContext="{Binding .BlueAnswer}">
+                            <x:Arguments>
+                                <x:Int16>4</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerButtonFrame>
+                    </AbsoluteLayout>
+                </AbsoluteLayout>
+            </StackLayout>
+    </ContentView.Content>
+</ContentView>

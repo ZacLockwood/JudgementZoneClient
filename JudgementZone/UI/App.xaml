@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             x:Class="JudgementZone.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Dark_Background">#1C191D</Color>
+            <Color x:Key="JZ_Red">#FF0000</Color>
+            <Color x:Key="JZ_Yellow">#F6E202</Color>
+            <Color x:Key="JZ_Green">#00D23E</Color>
+            <Color x:Key="JZ_Blue">#137AF9</Color>
+            <Color x:Key="JZ_Magenta">#FF00FF</Color>
+            <Color x:Key="JZ_White">#FFFFFF</Color>
+            <Color x:Key="JZ_Gray">#808080</Color>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

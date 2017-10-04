@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JudgementZone.UI.QuestionStatsView"
+             BackgroundColor="{StaticResource Dark_Background}">
+	<ContentView.Content>
+        <!-->
+            THINGS NEEDED:
+            Large check or 'x' for correct vs. incorrect answer
+            Four colored bars
+                Each bar shows visual percentage of guesses made in that color / total guesses
+                    Note: Total guesses does NOT include Focused Player's answer
+                "Correct Answer" Bar should be highlighted, brighter/more saturated, or otherwise emphasized
+            Next Question Button [For Focused Player ONLY]
+        <!-->
+        <StackLayout Padding="20" Spacing="15">
+            <Label x:Name="InfoLabel"
+                    VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"
+                    VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
+                    Margin="0,30"
+                    Text="Correct"
+                    TextColor="{StaticResource JZ_Magenta}"
+                    FontAttributes="Bold"
+                    FontSize="40"/>
+            <Label x:Name="RedStatsLabel"
+                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
+                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
+                    Text="Guessed Red"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    FontSize="30"
+                    BackgroundColor="{StaticResource JZ_Red}"/>
+            <Label x:Name="YellowStatsLabel"
+                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
+                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
+                    Text="Guessed Yellow"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    FontSize="30"
+                    BackgroundColor="{StaticResource JZ_Yellow}"/>
+            <Label x:Name="GreenStatsLabel"
+                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
+                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
+                    Text="Guessed Green"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    FontSize="30"
+                    BackgroundColor="{StaticResource JZ_Green}"/>
+            <Label x:Name="BlueStatsLabel"
+                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
+                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
+                    Text="Guessed Blue"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    FontSize="30"
+                    BackgroundColor="{StaticResource JZ_Blue}"/>
+            <Button x:Name="NextButton"
+                    VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"
+                    Text="Next"
+                    FontAttributes="Bold"
+                    FontSize="20"
+                    TextColor="Black"
+                    BackgroundColor="{StaticResource JZ_Magenta}"
+                    Clicked="NextButtonClicked"/>
+        </StackLayout>
+	</ContentView.Content>
+</ContentView>

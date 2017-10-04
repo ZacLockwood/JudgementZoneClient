@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JudgementZone.UI.JoinGamePage"
+             Title="Join Game"
+             BackgroundColor="{StaticResource Dark_Background}">
+    <ContentPage.Content>
+        <StackLayout
+            Spacing="6" Padding="20" Orientation="Vertical">
+            <Label Text="Enter your friend's game key:"
+                    TextColor="{StaticResource JZ_White}"/>
+            <Entry x:Name="GameKeyEntryField"
+                    VerticalOptions="Fill" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_White}"
+                    Placeholder="Game Key"
+                    Margin="0,0,0,12"/>
+            <Label Text="Enter your desired username:"
+                    TextColor="{StaticResource JZ_White}"/>
+            <Entry x:Name="UsernameEntryField"
+                    VerticalOptions="Start" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_White}"
+                    Placeholder="Username"
+                    Margin="0,0,0,18"/>
+            <Button x:Name="JoinGameButton"
+                    Text="Join Game"
+                    BackgroundColor="LightSkyBlue"
+                    TextColor="{StaticResource Dark_Background}"
+                    Clicked="JoinGameButtonClicked"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

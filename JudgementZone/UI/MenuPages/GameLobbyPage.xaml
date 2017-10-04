@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JudgementZone.UI.GameLobbyPage"
+             Title="Game Lobby"
+             BackgroundColor="{StaticResource Dark_Background}">
+	<ContentPage.Content>
+        <StackLayout x:Name="MainStackLayout"
+                     Padding="20">
+            <Label x:Name="GameCodeLabel"
+                   VerticalOptions="Start"
+                   HorizontalOptions="FillAndExpand"
+                   FontSize="Large"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center"
+                   Text="!@#$%"
+                   TextColor="{StaticResource JZ_White}"/>
+            <StackLayout x:Name="PlayerStackLayout"
+                         VerticalOptions="CenterAndExpand"
+                         HorizontalOptions="FillAndExpand">
+            </StackLayout>
+            <Button x:Name="StartGameButton"
+                    Text="Start Game!"
+                    BackgroundColor="LightSkyBlue"
+                    TextColor="{StaticResource Dark_Background}"
+                    Clicked="StartGameButtonClicked"/>
+        </StackLayout>
+	</ContentPage.Content>
+</ContentPage>

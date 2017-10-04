@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:JudgementZone.UI"
+    x:Class="JudgementZone.UI.LoaderView">
+	<ContentView.Content>
+        <StackLayout x:Name="LoaderStackLayout"
+                         Spacing="0" Padding="0">
+                <local:JZLogo x:Name="LoaderLogo"
+                        VerticalOptions="EndAndExpand"
+                        HorizontalOptions="FillAndExpand"/>
+                <Label x:Name="LoaderLabel"
+                        Text="Loading..."
+                        Margin="0,15,0,0"
+                        Opacity="0.0"
+                        VerticalOptions="StartAndExpand"
+                        HorizontalOptions="FillAndExpand"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        Font="Large"
+                        FontAttributes="None"
+                        TextColor="{StaticResource JZ_White}"/>
+            </StackLayout>
+	</ContentView.Content>
+</ContentView>
