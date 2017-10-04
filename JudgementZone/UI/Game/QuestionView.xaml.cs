@@ -2,12 +2,15 @@
 using System.Linq;
 using JudgementZone.Models;
 using JudgementZone.Services;
+using ScnViewGestures.Plugin.Forms;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-    public partial class QuestionView : ContentView
+    public partial class QuestionView : ViewGestures
     {
+        private double _touchTrackingX;
+        private double _touchTrackingY;
 
         private bool _controlsEnabled = false;
         public bool ControlsEnabled
@@ -26,8 +29,14 @@ namespace JudgementZone.UI
 
         public QuestionView()
         {
+			TouchBegan += OnTouchDown;
+			Drag += OnTouchMoved;
+			TouchEnded += OnTouchUp;
+
             InitializeComponent();
-            SetupTapResponder();
+
+
+            //SetupTapResponder();
 
             BindingContextChanged += (sender, e) =>
             {
@@ -75,7 +84,26 @@ namespace JudgementZone.UI
             };
         }
 
-        #endregion
+		#endregion
+
+		private void OnTouchDown(object sender, PositionEventArgs args)
+		{
+            _touchTrackingX = args.PositionX;
+            _touchTrackingY = args.PositionY;
+            //base.OnDrag(0,0);
+			Console.WriteLine($"{args.PositionX}, {args.PositionY}");
+		}
+
+        private void OnTouchMoved(object sender, DragEventArgs args)
+		{
+            Console.WriteLine($"{_touchTrackingX += args.DistanceX}, {_touchTrackingY += args.DistanceY}");
+		}
+
+		private void OnTouchUp(object sender, EventArgs args)
+		{
+            Console.WriteLine($"{this.Content.Width}, {this.Content.Height}");
+            Console.WriteLine($"DONE");
+        }
 
         #region Public View Management
 

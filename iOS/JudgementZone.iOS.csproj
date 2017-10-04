@@ -128,6 +128,12 @@
     <Reference Include="Realm.Sync">
       <HintPath>..\packages\Realm.1.6.0\lib\netstandard1.4\Realm.Sync.dll</HintPath>
     </Reference>
+    <Reference Include="ScnViewGestures">
+      <HintPath>..\packages\ScnViewGestures.Forms.1.3.6.1\lib\Xamarin.iOS10\ScnViewGestures.dll</HintPath>
+    </Reference>
+    <Reference Include="ScnViewGestures.iOS">
+      <HintPath>..\packages\ScnViewGestures.Forms.1.3.6.1\lib\Xamarin.iOS10\ScnViewGestures.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
