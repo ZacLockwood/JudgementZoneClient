@@ -93,8 +93,10 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                Console.WriteLine($"{this.Width}, {this.Height}");
                 _isTouching = true;
                 _rejectTouch = !ControlsEnabled;
+                Console.WriteLine($"{args.PositionX}, {args.PositionY}");
             });
         }
 
@@ -102,6 +104,7 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                Console.WriteLine($"{args.PositionX}, {args.PositionY}");
                 _isTouching = true;
 
                 if (ControlsEnabled && !_rejectTouch)
@@ -129,6 +132,10 @@ namespace JudgementZone.UI
 					{
 						SetAnswerSelection(4);
 					}
+                    else
+                    {
+                        SetAnswerSelection(0);
+                    }
                 }
             });
         }
@@ -137,16 +144,20 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
+                Console.WriteLine($"{args.PositionX}, {args.PositionY}");
                 if (ControlsEnabled && !_rejectTouch && SelectedAnswerId >= 1 && SelectedAnswerId <= 4)
                 {
+                    // Disable controls and animate
                     DisableAnswerControls();
 
+                    // Generate answer submission
                     var myAnswer = new M_PlayerAnswer();
                     myAnswer.PlayerId = S_LocalGameData.Instance.MyPlayer.PlayerId;
                     myAnswer.PlayerAnswer = SelectedAnswerId;
                     var gameKey = S_LocalGameData.Instance.GameKey;
                     myAnswer.GameId = gameKey;
 
+                    // Submit answer
                     S_GameConnector.Connector.SendAnswerSubmission(myAnswer, gameKey);
 
                     // Not using setter because no animation logic required
@@ -247,27 +258,6 @@ namespace JudgementZone.UI
 				}
 			});
 		}
-
-        #endregion
-
-        #region Helper Methods
-
-        private AnswerButtonFrame GetAnswerButtonFrameById(int answerId)
-        {
-            switch (answerId)
-            {
-                case 1:
-                    return RedAnswerButtonFrame;
-                case 2:
-                    return YellowAnswerButtonFrame;
-                case 3:
-                    return GreenAnswerButtonFrame;
-                case 4:
-                    return BlueAnswerButtonFrame;
-                default:
-                    return null;
-            }
-        }
 
         #endregion
 
