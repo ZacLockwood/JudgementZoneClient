@@ -93,10 +93,10 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Console.WriteLine($"{this.Width}, {this.Height}");
+                Console.WriteLine($"VIEW {this.Width}, {this.Height}");
                 _isTouching = true;
                 _rejectTouch = !ControlsEnabled;
-                Console.WriteLine($"{args.PositionX}, {args.PositionY}");
+                Console.WriteLine($"POS {args.PositionX}, {args.PositionY}");
             });
         }
 
@@ -104,7 +104,7 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Console.WriteLine($"{args.PositionX}, {args.PositionY}");
+                Console.WriteLine($"POS {args.PositionX}, {args.PositionY}");
                 _isTouching = true;
 
                 if (ControlsEnabled && !_rejectTouch)
@@ -144,7 +144,7 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Console.WriteLine($"{args.PositionX}, {args.PositionY}");
+                Console.WriteLine($"POS {args.PositionX}, {args.PositionY}");
                 if (ControlsEnabled && !_rejectTouch && SelectedAnswerId >= 1 && SelectedAnswerId <= 4)
                 {
                     // Disable controls and animate
