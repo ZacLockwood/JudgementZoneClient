@@ -146,6 +146,15 @@
     <AndroidResource Include="Resources\drawable-xhdpi\LogoGradRed.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\LogoGradYellow.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\LogoScriptMask.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptBlue.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptGreen.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptRed.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptYellow.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptGray.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptLightBlue.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptLightGreen.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptLightRed.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\LogoRawScriptLightYellow.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CustomRenderers\" />

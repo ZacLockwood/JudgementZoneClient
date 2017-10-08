@@ -167,6 +167,15 @@
     <BundleResource Include="Resources\LogoGradRed.png" />
     <BundleResource Include="Resources\LogoGradYellow.png" />
     <BundleResource Include="Resources\LogoScriptMask.png" />
+    <BundleResource Include="Resources\LogoRawScriptBlue.png" />
+    <BundleResource Include="Resources\LogoRawScriptGreen.png" />
+    <BundleResource Include="Resources\LogoRawScriptRed.png" />
+    <BundleResource Include="Resources\LogoRawScriptYellow.png" />
+    <BundleResource Include="Resources\LogoRawScriptGray.png" />
+    <BundleResource Include="Resources\LogoRawScriptLightBlue.png" />
+    <BundleResource Include="Resources\LogoRawScriptLightGreen.png" />
+    <BundleResource Include="Resources\LogoRawScriptLightRed.png" />
+    <BundleResource Include="Resources\LogoRawScriptLightYellow.png" />
   </ItemGroup>
   <Import Project="..\JudgementZone\JudgementZone.projitems" Label="Shared" Condition="Exists('..\JudgementZone\JudgementZone.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

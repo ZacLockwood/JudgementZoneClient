@@ -1,25 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-    public enum E_LogoColor
-    {
-        Red = 1,
-        Yellow,
-		Green,
-        Blue,
-        Random,
-        Current
-    }
+  //  public enum E_LogoColor
+  //  {
+  //      Red = 1,
+  //      Yellow,
+		//Green,
+    //    Blue,
+    //    Random,
+    //    Current
+    //}
 
-    public partial class JZLogo : ContentView
+    public partial class JZLoaderLogoView : ContentView
     {
 
         public bool IsAnimating;
+        public String Light = "Light";
 
         private E_LogoColor _lastColor;
         private E_LogoColor _currentColor;
@@ -48,7 +48,7 @@ namespace JudgementZone.UI
 					_currentColor = value;
                 }
 
-                LogoColorGradient.Source = GetImageSourceForColor(_currentColor);
+                ColoredLogo.Source = GetImageSourceForColor(_currentColor);
             }
         }
 
@@ -56,13 +56,13 @@ namespace JudgementZone.UI
 
         #region Constructors
 
-        public JZLogo()
+        public JZLoaderLogoView()
         {
             InitializeComponent();
             CurrentColor = E_LogoColor.Random;
         }
 
-        public JZLogo(E_LogoColor startupColor = E_LogoColor.Random)
+        public JZLoaderLogoView(E_LogoColor startupColor = E_LogoColor.Random)
         {
 			InitializeComponent();
 
@@ -75,7 +75,7 @@ namespace JudgementZone.UI
 
         protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
         {
-            return LogoScriptOverlay.Measure(widthConstraint, heightConstraint);
+            return LogoBackground.Measure(widthConstraint, heightConstraint);
         }
 
 		#endregion
@@ -144,7 +144,7 @@ namespace JudgementZone.UI
             ResetAnimationPropertiesToDefaults();
 
 			// Animation
-            var unloadTask = LogoColorGradient.TranslateTo(0, LogoColorGradient.Height, duration, easing);
+            var unloadTask = ColoredLogo.TranslateTo(0, ColoredLogo.Height, duration, easing);
 			if (Math.Abs(scaleTo - 1.0) > 0.005)
 			{
                 var shrinkTask = LogoAbsoluteLayout.ScaleTo(scaleTo, duration, easing);
@@ -172,7 +172,7 @@ namespace JudgementZone.UI
             }
 
             // Animation
-			var loadTask = LogoColorGradient.TranslateTo(0, 0, duration, easing);
+			var loadTask = ColoredLogo.TranslateTo(0, 0, duration, easing);
 			if (Math.Abs(scaleFrom - 1.0) > 0.005)
 			{
 				var growTask = LogoAbsoluteLayout.ScaleTo(1.0, duration, easing);
@@ -194,7 +194,7 @@ namespace JudgementZone.UI
 			uint eachAnimDuration = (uint)Math.Floor(duration * 0.5);
 
 			// Animation Part 1
-			var unloadTask = LogoColorGradient.TranslateTo(0, LogoColorGradient.Height, eachAnimDuration, easing);
+			var unloadTask = ColoredLogo.TranslateTo(0, ColoredLogo.Height, eachAnimDuration, easing);
             if (Math.Abs(pulseScale - 1.0) > 0.005)
             {
 				var shrinkTask = LogoAbsoluteLayout.ScaleTo(pulseScale, eachAnimDuration, easing);
@@ -209,7 +209,7 @@ namespace JudgementZone.UI
 			CurrentColor = NextLogoColor(pickRandomColor);
 
 			// Animation Part 2
-			var reloadTask = LogoColorGradient.TranslateTo(0, 0, eachAnimDuration, easing);
+			var reloadTask = ColoredLogo.TranslateTo(0, 0, eachAnimDuration, easing);
             if (Math.Abs(pulseScale - 1.0) > 0.005)
             {
 				var growTask = LogoAbsoluteLayout.ScaleTo(1.0, eachAnimDuration, easing);
@@ -233,7 +233,7 @@ namespace JudgementZone.UI
 			if (!crossFade)
 			{
 				// Animation Part 1
-				var fadeOutTask = LogoColorGradient.FadeTo(0.0, eachAnimDuration, easing);
+				var fadeOutTask = ColoredLogo.FadeTo(0.0, eachAnimDuration, easing);
                 if (Math.Abs(pulseScale - 1.0) > 0.005)
                 {
 					var shrinkTask = LogoAbsoluteLayout.ScaleTo(pulseScale, eachAnimDuration, easing);
@@ -248,7 +248,7 @@ namespace JudgementZone.UI
 				CurrentColor = NextLogoColor(pickRandomColor);
 				
 				// Animation Part 2
-				var fadeInTask = LogoColorGradient.FadeTo(1.0, eachAnimDuration, easing);
+				var fadeInTask = ColoredLogo.FadeTo(1.0, eachAnimDuration, easing);
                 if (Math.Abs(pulseScale - 1.0) > 0.005)
                 {
                     var growTask = LogoAbsoluteLayout.ScaleTo(1.0, eachAnimDuration, easing);
@@ -263,8 +263,8 @@ namespace JudgementZone.UI
 			{
 				// Animation Prep
 				E_LogoColor nextColor = NextLogoColor(pickRandomColor);
-                LogoColorGradientStandIn.Source = GetImageSourceForColor(nextColor);
-				LogoColorGradientStandIn.IsVisible = true;
+                ColoredLogoStandIn.Source = GetImageSourceForColor(nextColor);
+				ColoredLogoStandIn.IsVisible = true;
 
                 if (Math.Abs(pulseScale - 1.0) > 0.005)
                 {
@@ -273,8 +273,8 @@ namespace JudgementZone.UI
 
 					// Create Animation Tasks for Cross-Fade
 					await Task.Delay((int)Math.Floor(eachAnimDuration * 0.85));
-					var crossFadeTask1 = LogoColorGradient.FadeTo(0.0, (uint)Math.Floor(eachAnimDuration * 1.05), easing);
-					var crossFadeTask2 = LogoColorGradientStandIn.FadeTo(1.0, (uint)Math.Floor(eachAnimDuration * 1.15), easing);
+					var crossFadeTask1 = ColoredLogo.FadeTo(0.0, (uint)Math.Floor(eachAnimDuration * 1.05), easing);
+					var crossFadeTask2 = ColoredLogoStandIn.FadeTo(1.0, (uint)Math.Floor(eachAnimDuration * 1.15), easing);
 					
 					// Create Animation Task for Logo Pulse Part 2
 					await pulseTask1;
@@ -288,8 +288,8 @@ namespace JudgementZone.UI
                 else
                 {
 					// Create Animation Tasks for Cross-Fade
-                    var crossFadeTask1 = LogoColorGradient.FadeTo(0.0, (uint)Math.Floor(duration * 0.9), easing);
-                    var crossFadeTask2 = LogoColorGradientStandIn.FadeTo(1.0, duration, easing);
+                    var crossFadeTask1 = ColoredLogo.FadeTo(0.0, (uint)Math.Floor(duration * 0.9), easing);
+                    var crossFadeTask2 = ColoredLogoStandIn.FadeTo(1.0, duration, easing);
 
 					// Await All Anim Tasks Completion
 					await crossFadeTask1;
@@ -299,12 +299,12 @@ namespace JudgementZone.UI
 
                 // Animation Callback
                 // Switch ColorGradient references
-                var reference = LogoColorGradient;
-                LogoColorGradient = LogoColorGradientStandIn;
-                LogoColorGradientStandIn = reference;
+                var reference = ColoredLogo;
+                ColoredLogo = ColoredLogoStandIn;
+                ColoredLogoStandIn = reference;
 
                 // Make new StandIn invisible
-                LogoColorGradientStandIn.IsVisible = false;
+                ColoredLogoStandIn.IsVisible = false;
             }
 		}
 
@@ -315,12 +315,12 @@ namespace JudgementZone.UI
 		private void ResetAnimationPropertiesToDefaults()
 		{
 			LogoAbsoluteLayout.Scale = 1.0;
-			LogoColorGradient.TranslationY = 0.0;
-            LogoColorGradient.Opacity = 1.0;
-            LogoColorGradient.IsVisible = true;
-			LogoColorGradientStandIn.IsVisible = false;
-            LogoColorGradientStandIn.Opacity = 0.0;
-            LogoColorGradientStandIn.TranslationY = 0.0;
+			ColoredLogo.TranslationY = 0.0;
+            ColoredLogo.Opacity = 1.0;
+            ColoredLogo.IsVisible = true;
+			ColoredLogoStandIn.IsVisible = false;
+            ColoredLogoStandIn.Opacity = 0.0;
+            ColoredLogoStandIn.TranslationY = 0.0;
 		}
 
         private string GetImageSourceForColor(E_LogoColor logoColor)
@@ -329,13 +329,13 @@ namespace JudgementZone.UI
 			switch (logoColor)
 			{
 				case E_LogoColor.Red:
-					return "LogoGradRed.png";
+                    return $"LogoRawScript{Light}Red.png";
 				case E_LogoColor.Yellow:
-					return "LogoGradYellow.png";
+                    return $"LogoRawScript{Light}Yellow.png";
 				case E_LogoColor.Green:
-					return "LogoGradGreen.png";
+                    return $"LogoRawScript{Light}Green.png";
 				case E_LogoColor.Blue:
-					return "LogoGradBlue.png";
+                    return $"LogoRawScript{Light}Blue.png";
                 default:
                     return "";
 			}

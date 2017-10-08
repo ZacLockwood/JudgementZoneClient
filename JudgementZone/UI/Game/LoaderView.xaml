@@ -6,7 +6,7 @@
 	<ContentView.Content>
         <StackLayout x:Name="LoaderStackLayout"
                          Spacing="0" Padding="0">
-                <local:JZLogo x:Name="LoaderLogo"
+                <local:JZLoaderLogoView x:Name="LoaderLogo"
                         VerticalOptions="EndAndExpand"
                         HorizontalOptions="FillAndExpand"/>
                 <Label x:Name="LoaderLabel"

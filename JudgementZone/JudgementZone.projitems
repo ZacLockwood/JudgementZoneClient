@@ -19,9 +19,6 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\MenuPages\StartGamePage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Logo\JZLogo.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\MenuPages\GameLobbyPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
@@ -40,6 +37,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\AnswerButtonFrame.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\MenuPages\JZMenuLogoView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\JZLoaderLogoView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
@@ -55,9 +58,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\StartGamePage.xaml.cs">
       <DependentUpon>StartGamePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)UI\Logo\JZLogo.xaml.cs">
-      <DependentUpon>JZLogo.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\M_Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\M_QuestionCard.cs" />
@@ -87,6 +87,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Services\ServerConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\ViewGestures\ViewGestures.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\JZMenuLogoView.xaml.cs">
+      <DependentUpon>JZMenuLogoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Game\JZLoaderLogoView.xaml.cs">
+      <DependentUpon>JZLoaderLogoView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
@@ -94,7 +100,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)UI\" />
     <Folder Include="$(MSBuildThisFileDirectory)Interfaces\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\MenuPages\" />
-    <Folder Include="$(MSBuildThisFileDirectory)UI\Logo\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\Game\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\ViewGestures\" />
   </ItemGroup>
