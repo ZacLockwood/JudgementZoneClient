@@ -41,34 +41,34 @@ namespace JudgementZone.UI
 
             BindingContextChanged += (sender, e) =>
             {
-                var focusedPlayer = S_LocalGameData.Instance.FocusedPlayer;
-                var myPlayer = S_LocalGameData.Instance.MyPlayer;
-
-                if (myPlayer == null)
-                {
-                    //HACK
-                    return;
-                }
-
-                if (focusedPlayer.PlayerId == myPlayer.PlayerId)
-                {
-                    FocusedPlayerLabel.Text = "Your Turn!";
-                }
-                else
-                {
-                    var name = focusedPlayer.PlayerName;
-                    if (name.ToCharArray().First().ToString().ToUpper() == name.ToCharArray().First().ToString())
-                    {
-                        FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s Turn";
-                    }
-                    else
-                    {
-                        FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s turn";
-                    }
-                }
-
                 Device.BeginInvokeOnMainThread(() =>
                 {
+					var focusedPlayer = S_LocalGameData.Instance.FocusedPlayer;
+					var myPlayer = S_LocalGameData.Instance.MyPlayer;
+					
+					if (myPlayer == null)
+					{
+						//HACK
+						return;
+					}
+					
+					if (focusedPlayer.PlayerId == myPlayer.PlayerId)
+					{
+						FocusedPlayerLabel.Text = "My Turn!";
+					}
+					else
+					{
+						var name = focusedPlayer.PlayerName;
+						if (name.ToCharArray().First().ToString().ToUpper() == name.ToCharArray().First().ToString())
+						{
+							FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s Turn";
+						}
+						else
+						{
+							FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s turn";
+						}
+					}
+
                     if (QuestionLabel.Height > QuestionAbsoluteLayout.Height * 0.1875)
                     {
                         var leftOverSpace = 1.0 - (QuestionLabel.Height / QuestionAbsoluteLayout.Height);

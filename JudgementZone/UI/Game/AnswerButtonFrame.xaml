@@ -2,7 +2,7 @@
 <Frame xmlns="http://xamarin.com/schemas/2014/forms"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        x:Class="JudgementZone.UI.AnswerButtonFrame"
-       Padding="0"
+       Padding="5"
        IsClippedToBounds="true"
        HasShadow="false">
 	<Frame.Content>

@@ -5,8 +5,17 @@
              xmlns:local="clr-namespace:JudgementZone.UI"
              xmlns:VG="clr-namespace:ScnViewGestures.Plugin.Forms;assembly=ScnViewGestures">
 	<VG:ViewGestures.Content>
-        <StackLayout x:Name="MainStackLayout"
-                         Spacing="5" Padding="15">
+        <StackLayout x:Name="MainStackLayout" Spacing="5">
+                <StackLayout.Padding>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <OnPlatform.iOS>
+                            15, 35, 15, 15
+                        </OnPlatform.iOS>
+                        <OnPlatform.Android>
+                            15, 15, 15, 15
+                        </OnPlatform.Android>
+                    </OnPlatform>
+                </StackLayout.Padding>
                 <Frame VerticalOptions="Start" HorizontalOptions="Center"
                        Padding="7,2.5"
                        OutlineColor="#77FFFFFF"
@@ -24,6 +33,7 @@
                             AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" AbsoluteLayout.LayoutBounds="0.5,0,1,-1"
                             HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                             FontSize="Large"
+                            FontAttributes="Bold"
                             BackgroundColor="Transparent"
                             TextColor="{StaticResource JZ_White}"
                             Text="{Binding QuestionText}"/>
