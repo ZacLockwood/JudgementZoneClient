@@ -17,6 +17,7 @@ namespace ScnViewGestures.Plugin.Forms.Droid.Renderers
         private ViewGestures _viewGesturesElement;
         private int rendererWidth = -1;
         private int rendererHeight = -1;
+        private int rendererStatusBarHeight = 0;
 
         // Used for registration with dependency service
         public async static void Init()
@@ -29,6 +30,12 @@ namespace ScnViewGestures.Plugin.Forms.Droid.Renderers
             DisplayMetrics displaymetrics = Resources.DisplayMetrics;
             rendererWidth = displaymetrics.WidthPixels;
 			rendererHeight = displaymetrics.HeightPixels;
+
+            int resourceId = Resources.GetIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0)
+            {
+                rendererStatusBarHeight = Resources.GetDimensionPixelSize(resourceId);
+            }
         }
 
         protected override void OnElementChanged(ElementChangedEventArgs<Xamarin.Forms.View> e)
@@ -52,7 +59,7 @@ namespace ScnViewGestures.Plugin.Forms.Droid.Renderers
         void HandleTouch(object sender, TouchEventArgs e)
         {
             double x = e.Event.RawX / rendererWidth * _viewGesturesElement.Width;
-            double y = e.Event.RawY / rendererHeight * _viewGesturesElement.Height - 23;
+            double y = (e.Event.RawY - rendererStatusBarHeight) / rendererHeight * _viewGesturesElement.Height;
 
             switch (e.Event.Action)
             {
