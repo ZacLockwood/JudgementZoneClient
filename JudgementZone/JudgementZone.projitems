@@ -49,7 +49,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\M_ChatMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\I_SignalRConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
