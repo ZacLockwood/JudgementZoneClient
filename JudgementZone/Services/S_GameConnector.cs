@@ -11,6 +11,9 @@ namespace JudgementZone.Services
 {
     public sealed class S_GameConnector : I_GameConnector
     {
+        // Debug Properties
+        private const bool DEBUG_SERVER = true;
+
 		// Singleton Instance Properties
         private static volatile S_GameConnector instance;
 		private static object syncRoot = new Object();
@@ -93,28 +96,37 @@ namespace JudgementZone.Services
 
         public async Task SendNewGameRequest(M_Player myPlayer)
         {
+            if (DEBUG_SERVER)
+                Console.WriteLine("GameServer: Requesting New Game...");
             await gameHubProxy.Invoke("RequestNewGame", myPlayer);
         }
 
         public async Task SendJoinGameRequest(M_Player myPlayer, string gameKey)
         {
+			if (DEBUG_SERVER)
+				Console.WriteLine("GameServer: Requesting Game Join...");
             await gameHubProxy.Invoke("RequestJoinGame", myPlayer, gameKey);
         }
 
         public async Task SendGameStartRequest(M_Player myPlayer, string gameKey)
         {
+			if (DEBUG_SERVER)
+				Console.WriteLine("GameServer: Requesting Game Start...");
             await gameHubProxy.Invoke("RequestStartGame", myPlayer, gameKey);
         }
 
         public async Task SendAnswerSubmission(M_PlayerAnswer myAnswer, string gameKey)
         {
-            Console.WriteLine("SENDING SUBMISSION");
+			if (DEBUG_SERVER)
+				Console.WriteLine("GameServer: Sending Submission...");
 			MessagingCenter.Send(this, "answerSubmitted", myAnswer.PlayerAnswer);
             await gameHubProxy.Invoke("SubmitAnswer", myAnswer, gameKey);
         }
 
 		public async Task SendContinueRequest(string gameKey)
         {
+			if (DEBUG_SERVER)
+				Console.WriteLine("GameServer: Sending Request to Continue...");
             await gameHubProxy.Invoke("RequestContinueToNextQuestion", gameKey);
         }
 
@@ -126,12 +138,17 @@ namespace JudgementZone.Services
         {
 			gameHubProxy.On<string>("DisplayGameKey", (gameKey) =>
 			{
+				if (DEBUG_SERVER)
+                    Console.WriteLine("GameServer: Game Key Received");
                 S_LocalGameData.Instance.GameKey = gameKey;
                 MessagingCenter.Send(this, "gameKeyReceived");
             });
 
             gameHubProxy.On<List<M_Player>>("DisplayPlayerList", (remotePlayerList) =>
 			{
+				if (DEBUG_SERVER)
+					Console.WriteLine("GameServer: Player List Received");
+
                 // Add/Update/Remove PlayersInGame List
                 var localGamePlayerList = S_LocalGameData.Instance.PlayersInGame;
                 for (var i = localGamePlayerList.Count() - 1; i >= 0; i--)
@@ -172,7 +189,8 @@ namespace JudgementZone.Services
 
             gameHubProxy.On<string, M_QuestionCard>("DisplayQuestion", (focusedPlayerId, focusedQuestion) =>
 			{
-				Console.WriteLine($"FPID: {focusedPlayerId}\nFQ: {focusedQuestion.QuestionText}");
+				if (DEBUG_SERVER)
+                    Console.WriteLine("GameServer: Qusetion Received");
                 var fp = S_LocalGameData.Instance.PlayersInGame.Where(p => p.PlayerId == focusedPlayerId).FirstOrDefault();
                 S_LocalGameData.Instance.FocusedPlayer = fp;
                 S_LocalGameData.Instance.FocusedQuestion = focusedQuestion;
@@ -181,18 +199,21 @@ namespace JudgementZone.Services
 
 			gameHubProxy.On("EnableAnswerSubmission", () =>
 			{
+				if (DEBUG_SERVER)
+					Console.WriteLine("GameServer: Enable Submission Received");
                 MessagingCenter.Send(this, "enableAnswerSubmission");
 			});
 
             gameHubProxy.On<M_AnswerStats>("DisplayQuestionStats", (questionStats) =>
 			{
-                Console.WriteLine("STATS RECEIVED");
+				if (DEBUG_SERVER)
+                    Console.WriteLine("GameServer: Stats Received");
                 MessagingCenter.Send(this, "questionStatsReceived", questionStats);
 			});
 
             gameHubProxy.On<string, Exception>("DisplayError", (silly, error) =>
             {
-                Console.WriteLine($"ERRROR: {silly}\nMESSAGE:{error.Message}");
+                Console.WriteLine($"GAMESERVER ERRROR: {silly}\nMESSAGE:{error.Message}");
 
                 Console.WriteLine("Continue...");
             });

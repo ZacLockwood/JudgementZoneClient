@@ -31,6 +31,7 @@ namespace JudgementZone.UI
 
         public QuestionView()
         {
+            // Setup for ViewGestures
             TouchBegan += OnTouchBegan;
             TouchBegan += OnTouchMoved;
             Drag += OnTouchMoved;
@@ -93,10 +94,8 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Console.WriteLine($"VIEW {this.Width}, {this.Height}");
                 _isTouching = true;
                 _rejectTouch = !ControlsEnabled;
-                Console.WriteLine($"POS {args.PositionX}, {args.PositionY}");
             });
         }
 
@@ -104,7 +103,6 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Console.WriteLine($"POS {args.PositionX}, {args.PositionY}");
                 _isTouching = true;
 
                 if (ControlsEnabled && !_rejectTouch)
@@ -144,7 +142,6 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                Console.WriteLine($"POS {args.PositionX}, {args.PositionY}");
                 if (ControlsEnabled && !_rejectTouch && SelectedAnswerId >= 1 && SelectedAnswerId <= 4)
                 {
                     // Disable controls and animate

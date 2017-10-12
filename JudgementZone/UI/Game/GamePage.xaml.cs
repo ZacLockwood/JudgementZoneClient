@@ -55,8 +55,6 @@ namespace JudgementZone.UI
             if (newPageState == PageState)
                 return;
 
-            Console.WriteLine($"TRANSITION FROM {PageState} to {newPageState}");
-
             PageState = newPageState;
 
             // Lock UI
@@ -64,19 +62,16 @@ namespace JudgementZone.UI
 
             if (GameLoaderView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.LoaderPresented)
             {
-                Console.WriteLine("ABORTING FADE IN LOAD");
                 GameLoaderView.AbortAnimation("FadeIn");
             }
 
             if (GameQuestionView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.QuestionPresented)
             {
-                Console.WriteLine("ABORTING FADE IN GQ");
                 GameQuestionView.AbortAnimation("FadeIn");
             }
 
             if (GameQuestionStatsView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.QuestionStatsPresented)
             {
-                Console.WriteLine("ABORTING FADE IN QSV");
                 GameQuestionStatsView.AbortAnimation("FadeIn");
             }
 
