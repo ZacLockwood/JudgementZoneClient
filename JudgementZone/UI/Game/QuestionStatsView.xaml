@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="JudgementZone.UI.QuestionStatsView"
-             BackgroundColor="{StaticResource Dark_Background}">
+             x:Class="JudgementZone.UI.QuestionStatsView">
 	<ContentView.Content>
-        <!-->
-            THINGS NEEDED:
-            Large check or 'x' for correct vs. incorrect answer
-            Four colored bars
-                Each bar shows visual percentage of guesses made in that color / total guesses
-                    Note: Total guesses does NOT include Focused Player's answer
-                "Correct Answer" Bar should be highlighted, brighter/more saturated, or otherwise emphasized
-            Next Question Button [For Focused Player ONLY]
-        <!-->
         <StackLayout Padding="20" Spacing="15">
             <Label x:Name="InfoLabel"
                     VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"

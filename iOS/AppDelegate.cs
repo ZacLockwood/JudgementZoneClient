@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Foundation;
+using ScnViewGestures.Plugin.Forms.iOS.Renderers;
 using UIKit;
 
 namespace JudgementZone.iOS
@@ -13,6 +14,7 @@ namespace JudgementZone.iOS
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
             global::Xamarin.Forms.Forms.Init();
+            ViewGesturesRenderer.Init();
 
             LoadApplication(new App());
 

@@ -1,11 +1,5 @@
-﻿using System;
-
-using Android.App;
-using Android.Content;
+﻿using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
 
 namespace JudgementZone.Droid
@@ -24,5 +18,22 @@ namespace JudgementZone.Droid
 
             LoadApplication(new App());
         }
+
+        //public int GetStatusBarHeight()
+        //{
+        //    int height;
+
+        //    int idStatusBarHeight = Resources.GetIdentifier("status_bar_height", "dimen", "android");
+        //    if (idStatusBarHeight > 0)
+        //    {
+        //        height = Resources.GetDimensionPixelSize(idStatusBarHeight);
+        //    }
+        //    else
+        //    {
+        //        height = 0;
+        //    }
+
+        //    return height;
+        //}
     }
 }

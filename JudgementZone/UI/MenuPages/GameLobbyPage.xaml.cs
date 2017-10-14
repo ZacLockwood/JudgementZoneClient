@@ -73,7 +73,7 @@ namespace JudgementZone.UI
 
         #endregion
 
-        #region Button Handlers
+        #region Button Handler
 
         private void StartGameButtonClicked(object sender, EventArgs e)
         {
@@ -108,7 +108,6 @@ namespace JudgementZone.UI
 
                     _uiLock = false;
                 }
-
             });
         }
 

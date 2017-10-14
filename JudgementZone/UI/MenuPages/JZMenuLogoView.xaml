@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="JudgementZone.UI.JZLogo">
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="JudgementZone.UI.JZMenuLogoView">
 	<ContentView.Content>
-            <AbsoluteLayout x:Name="LogoAbsoluteLayout" BackgroundColor="{StaticResource JZ_Gray}" IsClippedToBounds="true" VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
+            <AbsoluteLayout x:Name="LogoAbsoluteLayout"
+                            BackgroundColor="#808080"
+                            IsClippedToBounds="true"
+                            VerticalOptions="CenterAndExpand"
+                            HorizontalOptions="Center">
+            <!--<AbsoluteLayout.Children>
+                <OnPlatform.Android>
+                    <BoxView BackgroundColor="#808080"
+                             AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
+                             AbsoluteLayout.LayoutBounds=".5,.5,1,1"/>
+                </OnPlatform.Android>
+            </AbsoluteLayout.Children>-->
                 <Image  x:Name="LogoColorGradient"
                         Source="LogoGradRed.png"
                         AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"

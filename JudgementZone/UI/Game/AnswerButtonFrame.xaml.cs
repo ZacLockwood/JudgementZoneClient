@@ -5,16 +5,18 @@ namespace JudgementZone.UI
 {
     public partial class AnswerButtonFrame : Frame
     {
-        private const double SATURATION_MIN = 0.4;
+		private const uint HIGHLIGHT_ANIM_LENGTH = 215;
+        private const uint UNHIGHLIGHT_ANIM_LENGTH = 215;
+        private const double SATURATION_MIN = 0.5;
         private const double SATURATION_MAX = 1.0;
-        private const double OPACITY_MIN = 0.35;
+        private const double OPACITY_MIN = 0.475;
         private const double OPACITY_MAX = 1.0;
-		private const double SCALE_MIN = 0.985;
+        private const double SCALE_MIN = 0.985;
         private const double SCALE_STD = 1.0;
-		private const double SCALE_MAX = 1.05;
+        private const double SCALE_MAX = 1.03;
 
         public int AnswerFrameId { get; set; }
-        public bool IsHighlighted { get; set; } = false;
+        public bool IsHighlighted { get; set; }
 
         #region Constructor
 
@@ -22,116 +24,13 @@ namespace JudgementZone.UI
         {
             InitializeComponent();
             AnswerFrameId = answerFrameId;
-            SetupGestureRecognizer();
         }
 
         #endregion
 
         #region Public Animation Methods
 
-        public void FadeToDisabled(bool animated = true)
-        {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                // Cancel opposing animation
-                if (this.AnimationIsRunning("FadeInControls"))
-                {
-                    this.AbortAnimation("FadeInControls");
-                }
-
-                // Don't animate if already animating
-                if (this.AnimationIsRunning("FadeOutControls") && animated)
-                {
-                    return;
-                }
-
-                if (animated)
-                {
-                    var startingOpacity = Opacity;
-                    var startingSaturation = BackgroundColor.Saturation;
-                    this.Animate("FadeOutControls",
-                        (percent) =>
-                        {
-                            var opacityVal = ConvertScale(OPACITY_MIN, startingOpacity, percent, reverse: true);
-                            var satVal = ConvertScale(SATURATION_MIN, startingSaturation, percent, reverse: true);
-                            Opacity = opacityVal;
-                            BackgroundColor = BackgroundColor.WithSaturation(satVal);
-                        },
-                        16, 250, Easing.CubicInOut,
-                        (double percent, bool canceled) =>
-                        {
-                            if (canceled)
-                                Console.WriteLine("FADE OUT CONTROLS CANCELED");
-                            else
-                                Console.WriteLine("FADE OUT CONTROLS COMPLETED");
-                        });
-                }
-                else
-                {
-                    // Instantly set opacity and saturation
-                    // Will override and abort gradual fade if animation is running
-                    if (this.AnimationIsRunning("FadeOutControls"))
-                    {
-                        this.AbortAnimation("FadeOutControls");
-                    }
-                    Opacity = OPACITY_MIN;
-                    BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MIN);
-                }
-            });
-        }
-
-        public void FadeToEnabled(bool animated = true)
-        {
-			Device.BeginInvokeOnMainThread(() =>
-			{
-				// Cancel opposing animation
-				if (this.AnimationIsRunning("FadeOutControls"))
-				{
-					this.AbortAnimation("FadeOutControls");
-				}
-
-				// Don't animate if already animating
-				if (this.AnimationIsRunning("FadeInControls") && animated)
-				{
-					return;
-				}
-
-				if (animated)
-				{
-					var startingOpacity = Opacity;
-					var startingSaturation = BackgroundColor.Saturation;
-					this.Animate("FadeInControls",
-						(percent) =>
-						{
-                            var opacityVal = ConvertScale(startingOpacity, OPACITY_MAX, percent);
-                            var satVal = ConvertScale(startingSaturation, SATURATION_MAX, percent);
-							Opacity = opacityVal;
-							BackgroundColor = BackgroundColor.WithSaturation(satVal);
-						},
-						16, 250, Easing.CubicInOut,
-						(double percent, bool canceled) =>
-						{
-							if (canceled)
-								Console.WriteLine("FADE IN CONTROLS CANCELED");
-							else
-								Console.WriteLine("FADE IN CONTROLS COMPLETED");
-						});
-				}
-				else
-				{
-					// Instantly set opacity and saturation
-					// Will override and abort gradual fade if animation is running
-					if (this.AnimationIsRunning("FadeInControls"))
-					{
-						this.AbortAnimation("FadeInControls");
-					}
-                    Opacity = OPACITY_MAX;
-                    BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MAX);
-				}
-			});
-        }
-
-        public void Highlight(bool animated = true, bool setHighlighted = true)
+        public void Highlight(bool animated = true)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
@@ -142,10 +41,7 @@ namespace JudgementZone.UI
                 }
 
                 // Immediately set to highlighted
-                if (setHighlighted)
-                {
-                    IsHighlighted = true;
-                }
+                IsHighlighted = true;
 
                 // Don't animate if already animating
                 if (this.AnimationIsRunning("HighlightControl") && animated)
@@ -155,27 +51,47 @@ namespace JudgementZone.UI
 
                 if (animated)
                 {
-                    FadeToEnabled();
                     double startingScale = this.Scale;
+					double startingOpacity = Opacity;
+					double startingSaturation = BackgroundColor.Saturation;
+                    bool reachedMiddle = false;
                     this.Animate("HighlightControl",
                         (percent) => {
-                            if (percent < 0.5)
+
+                            if (percent <= 0.4)
                             {
-                                this.Scale = ConvertScale(startingScale, SCALE_MAX, percent, 0.0, 0.5);
+    							double opacityVal = ConvertScale(startingOpacity, OPACITY_MAX, percent, 0.0, 0.4);
+    							double satVal = ConvertScale(startingSaturation, SATURATION_MAX, percent, 0.0, 0.4);
+    							Opacity = opacityVal;
+    							BackgroundColor = BackgroundColor.WithSaturation(satVal);
+                            }
+                            else if (!reachedMiddle)
+                            {
+                                reachedMiddle = true;
+                                Opacity = OPACITY_MAX;
+                                BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MAX);
+                            }
+    
+                            if (percent < 0.68)
+                            {
+                                this.Scale = ConvertScale(startingScale, SCALE_MAX, percent, 0.0, 0.68);
                             }
                             else
                             {
-                                this.Scale = ConvertScale(SCALE_STD, SCALE_MAX, percent, 0.5, 1.0, true);
+                                this.Scale = ConvertScale(SCALE_STD, SCALE_MAX, percent, 0.68, 1.0, true);
                             }
 						},
-                        16, 500, Easing.CubicInOut,
+                        16, HIGHLIGHT_ANIM_LENGTH, Easing.SinInOut,
 						(double percent, bool canceled) =>
 						{
-                            if (!canceled && setHighlighted)
+                            if (!canceled)
                             {
+                                this.Scale = SCALE_STD;
+								Opacity = OPACITY_MAX;
+								BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MAX);
     							IsHighlighted = true;
                             }
-                            if (canceled && setHighlighted)
+                            if (canceled)
                             {
                                 IsHighlighted = false;
                             }
@@ -183,24 +99,22 @@ namespace JudgementZone.UI
                 }
                 else
                 {
-                    // Instantly set to enabled
+                    // Instantly set to highlighted
                     // Will override and abort gradual scale if animation is running
                     if (this.AnimationIsRunning("HighlightControl") && animated)
                     {
                         this.AbortAnimation("HightlightControl");
 					}
 
-                    FadeToEnabled(false);
+					IsHighlighted = true;
 
-                    if (setHighlighted)
-                    {
-						IsHighlighted = true;
-                    }
+                    Opacity = OPACITY_MAX;
+                    BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MAX);
 				}
             });
         }
 
-        public void UnHighlight(bool animated = true, bool setHighlighted = true)
+        public void UnHighlight(bool animated = true)
         {
 			Device.BeginInvokeOnMainThread(() =>
 			{
@@ -211,10 +125,8 @@ namespace JudgementZone.UI
 				}
 
                 // Immediately set to unhighlighted
-                if (setHighlighted)
-                {
-					IsHighlighted = false;
-                }
+				IsHighlighted = false;
+                
 
 				// Don't animate if already animating
 				if (this.AnimationIsRunning("UnhighlightControl") && animated)
@@ -224,21 +136,41 @@ namespace JudgementZone.UI
 
 				if (animated)
 				{
-                    FadeToDisabled();
+					double startingOpacity = Opacity;
+					double startingSaturation = BackgroundColor.Saturation;
 					double startingScale = this.Scale;
+                    bool reachedMiddle = false;
 					this.Animate("UnhighlightControl",
 						(percent) =>
                         {
-                            this.Scale = ConvertScale(SCALE_MIN, startingScale, percent, reverse: true);
+                            //HACK REPLACE WITH MATHEMATICAL EASINGS
+                            if (percent <= 0.4)
+                            {
+    							double opacityVal = ConvertScale(OPACITY_MIN, startingOpacity, percent, 0.0, 0.4, true);
+    							double satVal = ConvertScale(SATURATION_MIN, startingSaturation, percent, 0.0, 0.4, true);
+    							Opacity = opacityVal;
+    							BackgroundColor = BackgroundColor.WithSaturation(satVal);
+                            }
+                            else if (!reachedMiddle)
+                            {
+                                reachedMiddle = true;
+								Opacity = OPACITY_MIN;
+								BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MIN);
+                            }
+                            
+    						this.Scale = ConvertScale(SCALE_MIN, startingScale, percent, reverse: true);
 						},
-                        16, 500, Easing.CubicInOut,
+                        16, UNHIGHLIGHT_ANIM_LENGTH, Easing.SinInOut,
 						(double percent, bool canceled) =>
 						{
-							if (!canceled && setHighlighted)
+							if (!canceled)
 							{
+								this.Scale = SCALE_MIN;
+								Opacity = OPACITY_MIN;
+								BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MIN);
                                 IsHighlighted = false;
 							}
-							if (canceled && setHighlighted)
+							if (canceled)
 							{
 								IsHighlighted = true;
 							}
@@ -246,35 +178,19 @@ namespace JudgementZone.UI
 				}
 				else
 				{
-					// Instantly set to disabled
+					// Instantly set to unhighighted
 					// Will override and abort gradual scale if animation is running
 					if (this.AnimationIsRunning("UnhighlightControl") && animated)
 					{
 						this.AbortAnimation("UnhightlightControl");
 					}
 
-                    FadeToDisabled(false);
+					IsHighlighted = false;
 
-                    if (setHighlighted)
-                    {
-						IsHighlighted = false;
-                    }
+                    Opacity = OPACITY_MIN;
+                    BackgroundColor = BackgroundColor.WithSaturation(SATURATION_MIN);
 				}
 			});
-        }
-
-        #endregion
-
-        #region Private Setup Methods
-
-        private void SetupGestureRecognizer()
-        {
-            var tap = new TapGestureRecognizer();
-            tap.Command = new Command(() =>
-            {
-                MessagingCenter.Send(this, "AnswerButtonFrameTapped");
-            }, () => { return true; });
-            GestureRecognizers.Add(tap);
         }
 
         #endregion

@@ -6,15 +6,21 @@
              BackgroundColor="{StaticResource Dark_Background}">
 	<ContentPage.Content>
         <AbsoluteLayout x:Name="MainAbsoluteLayout">
-            <AbsoluteLayout.Margin>
-            <OnPlatform x:TypeArguments="Thickness">
-                <OnPlatform.iOS>
-                    0, 20, 0, 0
-                </OnPlatform.iOS>
-            </OnPlatform>
-            </AbsoluteLayout.Margin>
+            <BoxView x:Name="GameTurnIndicatorBackground"
+                     AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
+                     BackgroundColor="{StaticResource JZ_Magenta}"
+                     Opacity="1"/>
             <local:LoaderView x:Name="GameLoaderView"
-                              AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"/>
+                              AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
+                              Opacity="1">
+                <local:LoaderView.Padding>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <OnPlatform.iOS>
+                            0, 20, 0, 0
+                        </OnPlatform.iOS>
+                    </OnPlatform>
+                </local:LoaderView.Padding>
+            </local:LoaderView>
             <local:QuestionView x:Name="GameQuestionView"
                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
                                 Opacity="0"/>

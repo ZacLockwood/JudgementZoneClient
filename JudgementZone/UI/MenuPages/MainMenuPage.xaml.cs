@@ -37,7 +37,6 @@ namespace JudgementZone.UI
                 {
                     if (animationEnabled)
                     {
-                        Console.WriteLine("ANIMATE SWAP");
                         await MenuLogo.AnimateColorSwapAsync();
                         MenuLogo.IsAnimating = false;
                     }
@@ -55,12 +54,10 @@ namespace JudgementZone.UI
 							await DisplayAlert("Connection Error", "Could not connect to server. Press ok to try again.", "OK");
                         }
 
-                        Console.WriteLine("Attempting to Connect...");
                         var connectionTask = S_GameConnector.Connector.StartConnectionAsync();
 
                         if (animationEnabled && !firstAnimComplete)
                         {
-                            Console.WriteLine("ANIMATE UNLOAD");
                             var animTask = MenuLogo.AnimateColorLoadToZeroAsync(0.975, 300);
                             await animTask;
                             firstAnimComplete = true;
@@ -73,8 +70,6 @@ namespace JudgementZone.UI
 
                         if (S_GameConnector.Connector.IsConnected())
                         {
-                            Console.WriteLine("CONNECTED");
-                            Console.WriteLine("ANIMATE RELOAD");
                             await MenuLogo.AnimateColorLoadFromZeroAsync(E_LogoColor.Random, 0.975, 300);
                             MenuLogo.IsAnimating = false;
                         }

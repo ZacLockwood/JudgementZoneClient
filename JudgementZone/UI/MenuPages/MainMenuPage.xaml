@@ -7,7 +7,7 @@
              BackgroundColor="{StaticResource Dark_Background}">
     <ContentPage.Content>
         <StackLayout Spacing="15" Padding="20">
-            <local:JZLogo x:Name="MenuLogo"/>
+            <local:JZMenuLogoView x:Name="MenuLogo"/>
             <Button x:Name="CreateGameButton"
                     VerticalOptions="EndAndExpand" HorizontalOptions="Fill"
                     BackgroundColor="LightSkyBlue"
