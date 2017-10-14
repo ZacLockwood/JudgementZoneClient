@@ -70,6 +70,7 @@ namespace JudgementZone.Services
             // Start connection
             try
             {
+                hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
                 await hubConnection.Start();
                 return true;
             }
