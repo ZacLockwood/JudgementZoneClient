@@ -17,15 +17,8 @@ namespace JudgementZone.Models
         [BsonElement("FocusedPlayerAnswer")]
         public M_PlayerAnswer FocusedPlayerAnswer { get; set; }
 
-#if __ANDROID__
         [BsonElement("OtherPlayerAnswers")]
         public IList<M_PlayerAnswer> OtherPlayerAnswers { get; set; }
-#endif
-
-#if __IOS__
-		[BsonElement("OtherPlayerAnswers")]
-        public IList<M_PlayerAnswer> OtherPlayerAnswers { get; set; }
-#endif
 
         [BsonElement("GameId")]
 		public string GameId { get; set; }

@@ -24,7 +24,6 @@ namespace JudgementZone.Models
 		[BsonElement("FocusedQuestionId")]
 		public int FocusedQuestionId { get; set; }
 
-#if __ANDROID__
         [BsonElement("GamePlayers")]
         public IList<M_Player> GamePlayers { get; set; }
 
@@ -33,18 +32,6 @@ namespace JudgementZone.Models
 
         [BsonElement("GameAnswerStats")]
         public IList<M_AnswerStats> GameAnswerStats { get; set; }
-#endif
-
-#if __IOS__
-		[BsonElement("GamePlayers")]
-		public IList<M_Player> GamePlayers { get; }
-
-		[BsonElement("GameQuestions")]
-		public IList<M_QuestionCard> GameQuestions { get; }
-
-		[BsonElement("GameAnswerStats")]
-		public IList<M_AnswerStats> GameAnswerStats { get; }
-#endif
 
         public M_GameState()
         {
