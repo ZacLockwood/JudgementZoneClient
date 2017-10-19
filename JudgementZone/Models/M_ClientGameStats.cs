@@ -10,11 +10,9 @@ namespace JudgementZone.Models
 
         // KEY
 		[PrimaryKey]
-        [BsonElement("GameKey")]
         public string GameKey { get; set; }
 
         // LIST OF GAME STATS OBJECTS FOR EACH PLAYER
-        [BsonElement("PlayerGameStatsList")]
         public IList<M_ClientPlayerGameStats> ClientPlayerGameStats { get; set; }
 
         public M_ClientGameStats()
