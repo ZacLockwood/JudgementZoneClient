@@ -1,7 +1,5 @@
 ﻿using System;
 using Realms;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
 using System.Collections.Generic;
 
 namespace JudgementZone.Models

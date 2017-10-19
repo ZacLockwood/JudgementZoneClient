@@ -1,7 +1,4 @@
 ﻿using Realms;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
-using System.Collections.Generic;
 
 namespace JudgementZone.Models
 {
@@ -19,13 +16,13 @@ namespace JudgementZone.Models
 
 		public int CorrectAnswerId { get; set; }
 
-		public float PercentRedGuesses { get; set; }
+		public int NumRedGuesses { get; set; }
 
-		public float PercentYellowGuesses { get; set; }
+		public int NumYellowGuesses { get; set; }
 
-		public float PercentGreenGuesses { get; set; }
+		public int NumGreenGuesses { get; set; }
 
-		public float PercentBlueGuesses { get; set; }
+		public int NumBlueGuesses { get; set; }
 
         public M_ClientQuestionStats()
         {

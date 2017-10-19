@@ -1,7 +1,4 @@
-﻿using System;
-using Realms;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+﻿using Realms;
 
 namespace JudgementZone.Models
 {
@@ -15,21 +12,21 @@ namespace JudgementZone.Models
         public string GameKey { get; set; }
 
 		// CONTEXT
-		public float PercentRedSelections { get; set; }
+		public int NumRedSelections { get; set; }
 
-		public float PercentYellowSelections { get; set; }
+		public int NumYellowSelections { get; set; }
 
-		public float PercentGreenSelections { get; set; }
+		public int NumGreenSelections { get; set; }
 
-		public float PercentBlueSelections { get; set; }
+		public int NumBlueSelections { get; set; }
 
-		public float PercentRedGuesses { get; set; }
+		public int NumRedGuesses { get; set; }
 
-		public float PercentYellowGuesses { get; set; }
+		public int NumYellowGuesses { get; set; }
 
-		public float PercentGreenGuesses { get; set; }
+		public int NumGreenGuesses { get; set; }
 
-		public float PercentBlueGuesses { get; set; }
+		public int NumBlueGuesses { get; set; }
 
         public M_ClientPlayerGameStats()
         {
