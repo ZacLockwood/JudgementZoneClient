@@ -13,8 +13,8 @@ namespace JudgementZone.Interfaces
         // Request Methods
         Task SendNewGameRequest(M_Player myPlayer);
         Task SendJoinGameRequest(M_Player myPlayer, string gameKey);
-        Task SendGameStartRequest(M_Player myPlayer, string gameKey);
-        Task SendAnswerSubmission(M_PlayerAnswer myAnswer, string gameKey);
+        Task SendGameStartRequest(string gameKey);
+        Task SendAnswerSubmission(int myAnswer, string gameKey);
         Task SendContinueRequest(string gameKey);
 
 		// Display Methods - Invoked by Server - Implemented in the SetupProxyEventHandlers

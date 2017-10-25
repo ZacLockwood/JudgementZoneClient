@@ -1,30 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using Realms;
 using JudgementZone.Models;
 using JudgementZone.Services;
 using Xamarin.Forms;
+using System.Linq;
 
 namespace JudgementZone.UI
 {
     public partial class GameLobbyPage : ContentPage
     {
 
+        public IDisposable RealmGameStateListenerToken { get; private set; }
+
         private bool _uiLock;
 
         #region Constructor
 
-        public GameLobbyPage()
+        public GameLobbyPage(M_ClientGameState gameState)
         {
             InitializeComponent();
 
-            var gameKey = S_LocalGameData.Instance.GameKey;
-            if (!String.IsNullOrWhiteSpace(gameKey))
+            if (gameState != null)
             {
-                GameCodeLabel.Text = "Game Key\n" + gameKey;
+                if (!String.IsNullOrWhiteSpace(gameState.GameKey))
+				{
+                    GameCodeLabel.Text = "Game Key\n" + gameState.GameKey;
+				}
+                DisplayPlayerList(gameState.PlayerList);
             }
-
-            var allPlayers = S_LocalGameData.Instance.PlayersInGame;
-            DisplayPlayerList(allPlayers);
         }
 
 		#endregion
@@ -45,7 +49,7 @@ namespace JudgementZone.UI
 
 		#region UI Helper Methods
 
-		private void DisplayPlayerList(List<M_Player> playerList)
+		private void DisplayPlayerList(IList<M_Player> playerList)
 		{
             PlayerStackLayout.Children.Clear();
             foreach (M_Player player in playerList)
@@ -82,17 +86,30 @@ namespace JudgementZone.UI
                 {
                     _uiLock = true;
 
-					var gameKey = S_LocalGameData.Instance.GameKey;
+                    var gameStateRealm = Realm.GetInstance("GameState.Realm");
+                    var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
+
+                    if (gameState == null)
+                    {
+                        _uiLock = false;
+                        return;
+                    }
+
+                    var gameKey = gameState.GameKey;
+
 					if (String.IsNullOrWhiteSpace(gameKey))
 					{
 						Console.WriteLine("ERROR WITH GAMEKEY");
+                        _uiLock = false;
 						return;
 					}
-					
-					var myPlayer = S_LocalGameData.Instance.MyPlayer;
+
+                    var myPlayerDataRealm = Realm.GetInstance("MyPlayerData.Realm");
+                    var myPlayer = myPlayerDataRealm.All<M_Player>().FirstOrDefault();
 					if (myPlayer == null || String.IsNullOrWhiteSpace(myPlayer.PlayerName))
 					{
 						Console.WriteLine("ERROR WITH PLAYER");
+                        _uiLock = false;
 						return;
 					}
 
@@ -102,7 +119,7 @@ namespace JudgementZone.UI
                         await DisplayAlert("Connection Error", "You have disconnected from the server.", "OK");
                     }
 
-                    await S_GameConnector.Connector.SendGameStartRequest(myPlayer, gameKey);
+                    await S_GameConnector.Connector.SendGameStartRequest(gameKey);
 
 					await Navigation.PushModalAsync(new GamePage());
 
@@ -117,23 +134,24 @@ namespace JudgementZone.UI
 
 		private void SetupSignalRSubscriptions()
 		{
-            MessagingCenter.Subscribe(this, "playerListReceived", (S_GameConnector sender) =>
-			{
-				Device.BeginInvokeOnMainThread(() => {
-                    var playerList = S_LocalGameData.Instance.PlayersInGame;
-                    DisplayPlayerList(playerList);
-				});
-			});
-			Device.BeginInvokeOnMainThread(() => {
-				var playerList = S_LocalGameData.Instance.PlayersInGame;
-                if (playerList != null)
-    				DisplayPlayerList(playerList);
-			});
+            var gameStateRealm = Realm.GetInstance("GameState.Realm");
+            var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
+            gameState.PlayerList.SubscribeForNotifications((sender, changes, errors) =>
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+					DisplayPlayerList(sender.ToList());
+                });
+            });
 		}
 
         private void ReleaseSignalRSubscriptions()
 		{
-			MessagingCenter.Unsubscribe<S_GameConnector>(this, "playerListReceived");
+            if (RealmGameStateListenerToken != null)
+            {
+				RealmGameStateListenerToken.Dispose();
+                RealmGameStateListenerToken = null;
+            }
 		}
 
 		#endregion

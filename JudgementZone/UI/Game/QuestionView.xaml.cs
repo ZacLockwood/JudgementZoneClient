@@ -2,6 +2,7 @@
 using System.Linq;
 using JudgementZone.Models;
 using JudgementZone.Services;
+using Realms;
 using ScnViewGestures.Plugin.Forms;
 using Xamarin.Forms;
 
@@ -44,8 +45,12 @@ namespace JudgementZone.UI
             {
                 Device.BeginInvokeOnMainThread(() =>
                 {
-					var focusedPlayer = S_LocalGameData.Instance.FocusedPlayer;
-					var myPlayer = S_LocalGameData.Instance.MyPlayer;
+                    var gameStateRealm = Realm.GetInstance("GameState.Realm");
+                    var myPlayerRealm = Realm.GetInstance("MyPlayerData.Realm");
+                    var gameState = gameStateRealm.All<M_ClientGameState>().First();
+                    var focusedPlayerId = gameState.FocusedPlayerId;
+                    var focusedPlayerName = gameState.PlayerList.First(p => p.PlayerId == focusedPlayerId).PlayerName;
+                    var myPlayer = myPlayerRealm.All<M_Player>().FirstOrDefault();
 					
 					if (myPlayer == null)
 					{
@@ -53,20 +58,20 @@ namespace JudgementZone.UI
 						return;
 					}
 					
-					if (focusedPlayer.PlayerId == myPlayer.PlayerId)
+					if (focusedPlayerId == myPlayer.PlayerId)
 					{
 						FocusedPlayerLabel.Text = "My Turn!";
 					}
 					else
 					{
-						var name = focusedPlayer.PlayerName;
+						var name = focusedPlayerName;
 						if (name.ToCharArray().First().ToString().ToUpper() == name.ToCharArray().First().ToString())
 						{
-							FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s Turn";
+							FocusedPlayerLabel.Text = focusedPlayerName + "\'s Turn";
 						}
 						else
 						{
-							FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s turn";
+							FocusedPlayerLabel.Text = focusedPlayerName + "\'s turn";
 						}
 					}
 
@@ -140,22 +145,28 @@ namespace JudgementZone.UI
 
         private void OnTouchUp(object sender, PositionEventArgs args)
         {
-            Device.BeginInvokeOnMainThread(() =>
+            Device.BeginInvokeOnMainThread(async () =>
             {
                 if (ControlsEnabled && !_rejectTouch && SelectedAnswerId >= 1 && SelectedAnswerId <= 4)
                 {
                     // Disable controls and animate
                     DisableAnswerControls();
 
-                    // Generate answer submission
-                    var myAnswer = new M_PlayerAnswer();
-                    myAnswer.PlayerId = S_LocalGameData.Instance.MyPlayer.PlayerId;
-                    myAnswer.PlayerAnswer = SelectedAnswerId;
-                    var gameKey = S_LocalGameData.Instance.GameKey;
-                    myAnswer.GameId = gameKey;
+					// Generate answer submission - HACK JACK
+					//var myAnswer = new M_PlayerAnswer();
+					//myAnswer.PlayerId = S_LocalGameData.Instance.MyPlayer.PlayerId;
+					//myAnswer.PlayerAnswer = SelectedAnswerId;
+					//var gameKey = S_LocalGameData.Instance.GameKey;
+					//myAnswer.GameId = gameKey;
 
-                    // Submit answer
-                    S_GameConnector.Connector.SendAnswerSubmission(myAnswer, gameKey);
+                    // Get gamestate from realm
+					var gameStateRealm = Realm.GetInstance("GameState.Realm");
+					var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
+                    if (gameState != null)
+                    {
+						// Submit answer
+						await S_GameConnector.Connector.SendAnswerSubmission(SelectedAnswerId, gameState.GameKey);
+                    }
 
                     // Not using setter because no animation logic required
                     SelectedAnswerId = 0;

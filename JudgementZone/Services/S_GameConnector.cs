@@ -3,10 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using JudgementZone.Interfaces;
 using JudgementZone.Models;
-using System.Collections.Generic;
-using Xamarin.Forms;
-using System.Linq;
 using Realms;
+using System.Linq;
 
 namespace JudgementZone.Services
 {
@@ -110,19 +108,22 @@ namespace JudgementZone.Services
             await gameHubProxy.Invoke("RequestJoinGame", myPlayer, gameKey);
         }
 
-        public async Task SendGameStartRequest(M_Player myPlayer, string gameKey)
+        public async Task SendGameStartRequest(string gameKey)
         {
 			if (DEBUG_SERVER)
 				Console.WriteLine("GameServer: Requesting Game Start...");
-            await gameHubProxy.Invoke("RequestStartGame", myPlayer, gameKey);
+            await gameHubProxy.Invoke("RequestStartGame", gameKey);
         }
 
-        public async Task SendAnswerSubmission(M_PlayerAnswer myAnswer, string gameKey)
+        public async Task SendAnswerSubmission(int myAnswer, string gameKey)
         {
 			if (DEBUG_SERVER)
 				Console.WriteLine("GameServer: Sending Submission...");
-			MessagingCenter.Send(this, "answerSubmitted", myAnswer.PlayerAnswer);
-            await gameHubProxy.Invoke("SubmitAnswer", myAnswer, gameKey);
+			
+            var myPlayerDataRealm = Realm.GetInstance("MyPlayerData.Realm");
+			var myPlayer = myPlayerDataRealm.All<M_Player>().FirstOrDefault();
+
+            await gameHubProxy.Invoke("SubmitAnswer", myPlayer.PlayerId, myAnswer, gameKey);
         }
 
 		public async Task SendContinueRequest(string gameKey)
@@ -138,6 +139,18 @@ namespace JudgementZone.Services
 
         private void SetupProxyEventHandlers()
         {
+
+            gameHubProxy.On<M_ClientGameState>("ServerUpdate", (gameState) => {
+				if (DEBUG_SERVER)
+					Console.WriteLine("GameServer: Game State Received");
+                var gameStateRealm = Realm.GetInstance("GameState.Realm");
+                gameStateRealm.Write(() =>
+                {
+                    gameStateRealm.Add(gameState, true);
+                });
+            });
+
+            /*
 			gameHubProxy.On<string>("DisplayGameKey", (gameKey) =>
 			{
 				if (DEBUG_SERVER)
@@ -221,6 +234,7 @@ namespace JudgementZone.Services
 					}
 				});
 			});
+            */
 
             gameHubProxy.On<string, Exception>("DisplayError", (silly, error) =>
             {

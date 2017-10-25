@@ -3,6 +3,7 @@ using System.Linq;
 using JudgementZone.Models;
 using Xamarin.Forms;
 using JudgementZone.Services;
+using Realms;
 
 namespace JudgementZone.UI
 {
@@ -13,40 +14,22 @@ namespace JudgementZone.UI
             InitializeComponent();
         }
 
-        public void DisplayStats(M_AnswerStats stats)
+        public void DisplayStats(M_ClientGameState state)
         {
-            NextButton.IsEnabled = false;
+			NextButton.IsEnabled = false;
+
+			var stats = state.ClientFocusedQuestionStats;
 
             if (stats == null)
             {
-                Console.WriteLine("Stats were null");
-                //NextButton.IsEnabled = true;
+                Console.WriteLine("QuestionStatsView: ERROR WITH STATS");
                 return;
             }
 
-            if (stats.FocusedPlayerAnswer == null)
-            {
-                Console.WriteLine("FPA was null");
-                //NextButton.IsEnabled = true;
-                return;
-            }
-
-            if (stats.OtherPlayerAnswers == null)
-            {
-                Console.WriteLine("OPA were null");
-                //NextButton.IsEnabled = true;
-                return;
-            }
-
-            int RedAnswerCount = stats.OtherPlayerAnswers.Where(pa => pa.PlayerAnswer == 1).Count();
-            int YellowAnswerCount = stats.OtherPlayerAnswers.Where(pa => pa.PlayerAnswer == 2).Count();
-            int GreenAnswerCount = stats.OtherPlayerAnswers.Where(pa => pa.PlayerAnswer == 3).Count();
-            int BlueAnswerCount = stats.OtherPlayerAnswers.Where(pa => pa.PlayerAnswer == 4).Count();
-
-            RedStatsLabel.Text = RedAnswerCount + " Guessed Red";
-            YellowStatsLabel.Text = YellowAnswerCount + " Guessed Yellow";
-            GreenStatsLabel.Text = GreenAnswerCount + " Guessed Green";
-            BlueStatsLabel.Text = BlueAnswerCount + " Guessed Blue";
+            RedStatsLabel.Text = stats.NumRedGuesses + " Guessed Red";
+            YellowStatsLabel.Text = stats.NumYellowGuesses + " Guessed Yellow";
+            GreenStatsLabel.Text = stats.NumGreenGuesses + " Guessed Green";
+            BlueStatsLabel.Text = stats.NumBlueGuesses + " Guessed Blue";
 
             RedStatsLabel.Opacity = 0.45;
             YellowStatsLabel.Opacity = 0.45;
@@ -58,7 +41,7 @@ namespace JudgementZone.UI
 			GreenStatsLabel.FontAttributes = FontAttributes.None;
             BlueStatsLabel.FontAttributes = FontAttributes.None;
 
-            switch (stats.FocusedPlayerAnswer.PlayerAnswer)
+            switch (stats.CorrectAnswerId)
             {
 				case 1:
                     RedStatsLabel.Opacity = 1.0;
@@ -78,19 +61,20 @@ namespace JudgementZone.UI
 					break;
             }
 
-            var myPlayer = S_LocalGameData.Instance.MyPlayer;
-			var correctAnswer = stats.FocusedPlayerAnswer.PlayerAnswer;
-            if (myPlayer.PlayerId == stats.FocusedPlayerAnswer.PlayerId)
+            // HACK
+            var myPlayerId = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().First().PlayerId;
+            if (state.FocusedPlayerId == myPlayerId)
             {
                 // Settings for focused player
-                var countCorrectGuesses = stats.OtherPlayerAnswers.Where(pa => pa.PlayerAnswer == correctAnswer).Count();
+                var countCorrectGuesses = 0;
+
 
                 if (countCorrectGuesses == 0)
                 {
                     var closedStrings = new String[] { "Are You a Spy?", "You've Got a Nice Poker Face", "You're Hard to Read", "Are You Hiding Something?" };
                     InfoLabel.Text = closedStrings[new Random().Next(0, closedStrings.Count())];
                 }
-                else if (countCorrectGuesses == stats.OtherPlayerAnswers.Count())
+                else if (countCorrectGuesses == state.PlayerList.Count())
                 {
 					var openStrings = new String[] { "You are Incredibly Transparent", "People Just Seem to \'Get You\'", "You're an Open Book!", "Was It That Obvious?" };
 					InfoLabel.Text = openStrings[new Random().Next(0, openStrings.Count())];
@@ -103,7 +87,7 @@ namespace JudgementZone.UI
                 else
                 {
                     var someStrings = new String[] { $"{countCorrectGuesses} People Guessed Correctly", $"You Have {countCorrectGuesses} New Friends", $"Guess These {countCorrectGuesses} Are Your Favorite" };
-                    InfoLabel.Text = countCorrectGuesses + someStrings[new Random().Next(0, someStrings.Count())];
+                    InfoLabel.Text = someStrings[new Random().Next(0, someStrings.Count())];
                 }
 
                 NextButton.Text = "End Turn";
@@ -112,13 +96,7 @@ namespace JudgementZone.UI
             else
             {
                 // Settings for other players
-                var myAnswer = stats.OtherPlayerAnswers.Where(pa => pa.PlayerId == myPlayer.PlayerId).FirstOrDefault();
-                if (myAnswer == null)
-                {
-                    throw new Exception("Could not find client player's answer in stats!");
-                }
-
-                if (myAnswer.PlayerAnswer == correctAnswer)
+                if (stats.IsPlayerCorrect)
                 {
                     var winStrings = new String[] { "Correct!", "Nice Job!", "Woohoo!", "Perceptive!", "Killing the Game!" };
                     InfoLabel.Text = winStrings[new Random().Next(0, winStrings.Count())];
@@ -135,7 +113,9 @@ namespace JudgementZone.UI
 
         void NextButtonClicked(object sender, EventArgs e)
         {
-            S_GameConnector.Connector.SendContinueRequest(S_LocalGameData.Instance.GameKey);
+            // HACK
+            var gameKey = Realm.GetInstance("GameState.Realm").All<M_ClientGameState>().First().GameKey;
+            S_GameConnector.Connector.SendContinueRequest(gameKey);
             NextButton.IsEnabled = false;
         }
     }

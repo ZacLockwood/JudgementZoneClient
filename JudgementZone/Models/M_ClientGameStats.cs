@@ -11,7 +11,7 @@ namespace JudgementZone.Models
         public string GameKey { get; set; }
 
         // LIST OF GAME STATS OBJECTS FOR EACH PLAYER
-        public IList<M_ClientPlayerGameStats> ClientPlayerGameStats { get; set; }
+        public IList<M_ClientPlayerGameStats> ClientPlayerGameStats { get; }
 
         public M_ClientGameStats()
         {

@@ -12,10 +12,10 @@ namespace JudgementZone.Models
         public string GameKey { get; set; }
 
         // CLIENT STATE IDENTIFIER
-        public string ClientGameStateId { get; set; }
+        public int ClientGameStateId { get; set; }
 
         // STATE-INDEPENDENT DATA
-        public IList<M_Player> PlayerList { get; set; }
+        public IList<M_Player> PlayerList { get; }
 
         // GAME CYCLE METRICS
         public int CurrentQuestionNum { get; set; }
@@ -32,8 +32,10 @@ namespace JudgementZone.Models
 		public string FocusedPlayerId { get; set; }
 		
 		public int FocusedQuestionId { get; set; }
+		
+		public bool CanSubmitAnswer { get; set; }
 
-        public M_ClientQuestionStats FocusedClientQuestionStats { get; set; }
+        public M_ClientQuestionStats ClientFocusedQuestionStats { get; set; }
 
         public M_ClientGameStats ClientGameStats { get; set; }
 
@@ -68,5 +70,6 @@ namespace JudgementZone.Models
         }
 
         #endregion
+
     }
 }

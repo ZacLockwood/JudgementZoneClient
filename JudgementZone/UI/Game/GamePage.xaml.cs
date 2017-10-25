@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using JudgementZone.Models;
 using JudgementZone.Services;
+using Realms;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
@@ -18,6 +20,8 @@ namespace JudgementZone.UI
     {
 
         public E_GamePageState PageState { get; private set; } = E_GamePageState.LoaderPresented;
+
+        public IDisposable RealmGameStateListenerToken { get; private set; }
 
         #region Constructor
 
@@ -260,42 +264,62 @@ namespace JudgementZone.UI
 
         private void SetupSignalRSubscriptions()
         {
-            QuestionReceived(null);
-            MessagingCenter.Subscribe<S_GameConnector>(this, "questionReceived", QuestionReceived);
+            //QuestionReceived(null);
+
+            var gameStateRealm = Realm.GetInstance("GameState.Realm");
+            RealmGameStateListenerToken = gameStateRealm.All<M_ClientGameState>().SubscribeForNotifications((sender, changes, errors) =>
+            {
+                var gameState = sender.FirstOrDefault();
+                if (gameState == null)
+                {
+                    return;
+                }
+
+                switch(gameState.ClientGameStateId)
+                {
+                    case 1:
+                        // WAITING FOR GAME START
+                        break;
+                    case 2:
+						// DISPLAY QUESTION
+						Device.BeginInvokeOnMainThread(async () =>
+						{
+							GameQuestionView.Opacity = 0.0;
+							GameQuestionView.IsVisible = true;
+
+                            var focusedQuestion = Realm.GetInstance("QuestionDeck.Realm").Find<M_QuestionCard>(gameState.FocusedQuestionId);
+                            var focusedPlayer = gameState.PlayerList.First(p => p.PlayerId == gameState.FocusedPlayerId);
+                            var myPlayer = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().First();
+
+                            QV_SetFocusedQuestionAndFocusedPlayer(focusedQuestion, focusedPlayer, myPlayer);
+							
+                            await GP_AnimateTransitionToPageState(E_GamePageState.QuestionPresented);
+						});
+                        break;
+                    case 3:
+						// DISPLAY QUESTION STATS
+						Device.BeginInvokeOnMainThread(async () =>
+						{
+							GameQuestionStatsView.Opacity = 0.0;
+							GameQuestionStatsView.IsVisible = true;
+                            GameQuestionStatsView.DisplayStats(gameState);
+							await Task.Delay(500);
+							await GP_AnimateTransitionToPageState(E_GamePageState.QuestionStatsPresented);
+						});
+                        break;
+                    case 4:
+                        // DISPLAY GAME STATS
+                        break;
+                }
+            });
+
+            // HACK
             MessagingCenter.Subscribe<S_GameConnector, int>(this, "answerSubmitted", AnswerSubmitted);
-            MessagingCenter.Subscribe<S_GameConnector>(this, "enableAnswerSubmission", EnableAnswerSubmission);
-            MessagingCenter.Subscribe<S_GameConnector, M_AnswerStats>(this, "questionStatsReceived", DisplayQuestionStats);
         }
 
         private void ReleaseSignalRSubscriptions()
         {
-            MessagingCenter.Unsubscribe<S_GameConnector>(this, "questionReceived");
             MessagingCenter.Unsubscribe<S_GameConnector, int>(this, "answerSubmitted");
-            MessagingCenter.Unsubscribe<S_GameConnector>(this, "enableAnswerSubmission");
-            MessagingCenter.Unsubscribe<S_GameConnector, M_AnswerStats>(this, "questionStatsReceived");
-        }
-
-        private void QuestionReceived(S_GameConnector sender)
-        {
-            var localGameData = S_LocalGameData.Instance;
-            if (localGameData.FocusedPlayer == null || localGameData.FocusedQuestion == null)
-            {
-                Console.WriteLine("ERROR FOCUSED PLAYER OR QUESTION NOT FOUND");
-                return;
-            }
-            if (localGameData.MyPlayer == null)
-            {
-                Console.WriteLine("ERROR WITH MY PLAYER");
-                return;
-            }
-
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                GameQuestionView.Opacity = 0.0;
-                GameQuestionView.IsVisible = true;
-                QV_SetFocusedQuestionAndFocusedPlayer(localGameData.FocusedQuestion, localGameData.FocusedPlayer, localGameData.MyPlayer);
-                await GP_AnimateTransitionToPageState(E_GamePageState.QuestionPresented);
-            });
         }
 
         private void EnableAnswerSubmission(S_GameConnector sender)
@@ -303,24 +327,11 @@ namespace JudgementZone.UI
             QV_EnableAnswerSubmission();
         }
 
-        private void AnswerSubmitted(S_GameConnector sender, int answerKey)
+        private void AnswerSubmitted(S_GameConnector sender, int answerId)
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerKey);
-            });
-        }
-
-        private void DisplayQuestionStats(S_GameConnector sender, M_AnswerStats answerStats)
-        {
-
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                GameQuestionStatsView.Opacity = 0.0;
-				GameQuestionStatsView.IsVisible = true;
-                GameQuestionStatsView.DisplayStats(answerStats);
-                await Task.Delay(500);
-                await GP_AnimateTransitionToPageState(E_GamePageState.QuestionStatsPresented);
+                await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerId);
             });
         }
 
