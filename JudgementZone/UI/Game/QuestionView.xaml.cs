@@ -145,28 +145,15 @@ namespace JudgementZone.UI
 
         private void OnTouchUp(object sender, PositionEventArgs args)
         {
-            Device.BeginInvokeOnMainThread(async () =>
+            Device.BeginInvokeOnMainThread(() =>
             {
                 if (ControlsEnabled && !_rejectTouch && SelectedAnswerId >= 1 && SelectedAnswerId <= 4)
                 {
                     // Disable controls and animate
                     DisableAnswerControls();
 
-					// Generate answer submission - HACK JACK
-					//var myAnswer = new M_PlayerAnswer();
-					//myAnswer.PlayerId = S_LocalGameData.Instance.MyPlayer.PlayerId;
-					//myAnswer.PlayerAnswer = SelectedAnswerId;
-					//var gameKey = S_LocalGameData.Instance.GameKey;
-					//myAnswer.GameId = gameKey;
-
-                    // Get gamestate from realm
-					var gameStateRealm = Realm.GetInstance("GameState.Realm");
-					var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
-                    if (gameState != null)
-                    {
-						// Submit answer
-						await S_GameConnector.Connector.SendAnswerSubmission(SelectedAnswerId, gameState.GameKey);
-                    }
+                    // Submit answer
+                    MessagingCenter.Send(this, "AnswerSelected", SelectedAnswerId);
 
                     // Not using setter because no animation logic required
                     SelectedAnswerId = 0;

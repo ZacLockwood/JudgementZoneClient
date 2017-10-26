@@ -294,6 +294,11 @@ namespace JudgementZone.UI
                             QV_SetFocusedQuestionAndFocusedPlayer(focusedQuestion, focusedPlayer, myPlayer);
 							
                             await GP_AnimateTransitionToPageState(E_GamePageState.QuestionPresented);
+
+                            if (gameState.CanSubmitAnswer)
+                            {
+                                QV_EnableAnswerSubmission();
+                            }
 						});
                         break;
                     case 3:
@@ -313,25 +318,29 @@ namespace JudgementZone.UI
                 }
             });
 
-            // HACK
-            MessagingCenter.Subscribe<S_GameConnector, int>(this, "answerSubmitted", AnswerSubmitted);
+            MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
         }
 
         private void ReleaseSignalRSubscriptions()
         {
-            MessagingCenter.Unsubscribe<S_GameConnector, int>(this, "answerSubmitted");
+            MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
         }
 
-        private void EnableAnswerSubmission(S_GameConnector sender)
-        {
-            QV_EnableAnswerSubmission();
-        }
-
-        private void AnswerSubmitted(S_GameConnector sender, int answerId)
+        private void AnswerSelected(QuestionView sender, int answerId)
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerId);
+				var gameStateRealm = Realm.GetInstance("GameState.Realm");
+				var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
+                if (gameState != null)
+                {
+					await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerId);
+                    await S_GameConnector.Connector.SendAnswerSubmission(answerId, gameState.GameKey);
+                }
+                else
+                {
+                    sender.EnableAnswerControls();
+                }
             });
         }
 
