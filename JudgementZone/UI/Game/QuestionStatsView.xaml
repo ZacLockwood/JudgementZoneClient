@@ -1,57 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+<VG:ViewGestures xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="JudgementZone.UI.QuestionStatsView">
-	<ContentView.Content>
-        <StackLayout Padding="20" Spacing="15">
-            <Label x:Name="InfoLabel"
-                    VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    Margin="0,30"
-                    Text="Correct"
-                    TextColor="{StaticResource JZ_Magenta}"
-                    FontAttributes="Bold"
-                    FontSize="40"/>
-            <Label x:Name="RedStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Red"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Red}"/>
-            <Label x:Name="YellowStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Yellow"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Yellow}"/>
-            <Label x:Name="GreenStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Green"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Green}"/>
-            <Label x:Name="BlueStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Blue"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Blue}"/>
-            <Button x:Name="NextButton"
-                    VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"
-                    Text="Next"
-                    FontAttributes="Bold"
-                    FontSize="20"
-                    TextColor="Black"
-                    BackgroundColor="{StaticResource JZ_Magenta}"
-                    Clicked="NextButtonClicked"/>
-        </StackLayout>
-	</ContentView.Content>
-</ContentView>
+             x:Class="JudgementZone.UI.QuestionView"
+             xmlns:local="clr-namespace:JudgementZone.UI"
+             xmlns:VG="clr-namespace:ScnViewGestures.Plugin.Forms;assembly=ScnViewGestures">
+    <VG:ViewGestures.Content>
+        <StackLayout x:Name="MainStackLayout" Spacing="5" BackgroundColor="{StaticResource JZ_White}">
+                <StackLayout.Padding>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <OnPlatform.iOS>
+                            15, 35, 15, 15
+                        </OnPlatform.iOS>
+                        <OnPlatform.Android>
+                            15, 15, 15, 15
+                        </OnPlatform.Android>
+                    </OnPlatform>
+                </StackLayout.Padding>
+                <Frame VerticalOptions="Start" HorizontalOptions="Center"
+                       Padding="7,2.5"
+                       OutlineColor="#77FFFFFF"
+                       BackgroundColor="Transparent"
+                       HasShadow="false">
+                    <Label x:Name="FocusedPlayerLabel"
+                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            Text="Judgement Zone"
+                            FontSize="Large"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource JZ_White}"/>
+                </Frame>
+                <AbsoluteLayout x:Name="QuestionAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                    <Label x:Name="QuestionLabel"
+                            AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" AbsoluteLayout.LayoutBounds="0.5,0,1,-1"
+                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            FontSize="Large"
+                            FontAttributes="Bold"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource JZ_White}"
+                            Text="{Binding QuestionText}"/>
+                    <AbsoluteLayout x:Name="AnswerButtonsAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,1.0,.74,0.8">
+                        <local:AnswerTextFrame x:Name="RedAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Red}"
+                                                 BindingContext="{Binding .RedAnswer}">
+                            <x:Arguments>
+                                <x:Int16>1</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerTextFrame>
+                        <local:AnswerTextFrame x:Name="YellowAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Yellow}"
+                                                 BindingContext="{Binding .YellowAnswer}">
+                            <x:Arguments>
+                                <x:Int16>2</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerTextFrame>
+                        <local:AnswerTextFrame x:Name="GreenAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Green}"
+                                                 BindingContext="{Binding .GreenAnswer}">
+                            <x:Arguments>
+                                <x:Int16>3</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerTextFrame>
+                        <local:AnswerTextFrame x:Name="BlueAnswerButtonFrame"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Blue}"
+                                                 BindingContext="{Binding .BlueAnswer}">
+                            <x:Arguments>
+                                <x:Int16>4</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerTextFrame>
+                    </AbsoluteLayout>
+                <AbsoluteLayout x:Name="AnswerStats" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1,1.0,.245,0.8">
+                        <local:AnswerStatsFrame x:Name="RedAnswerStats"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Red}"
+                                                 BindingContext="{Binding .RedAnswer}">
+                            <x:Arguments>
+                                <x:Int16>1</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerStatsFrame>
+                        <local:AnswerStatsFrame x:Name="YellowAnswerStats"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Yellow}"
+                                                 BindingContext="{Binding .YellowAnswer}">
+                            <x:Arguments>
+                                <x:Int16>2</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerStatsFrame>
+                        <local:AnswerStatsFrame x:Name="GreenAnswerStats"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Green}"
+                                                 BindingContext="{Binding .GreenAnswer}">
+                            <x:Arguments>
+                                <x:Int16>3</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerStatsFrame>
+                        <local:AnswerStatsFrame x:Name="BlueAnswerStats"
+                                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                                 BackgroundColor="{StaticResource JZ_Blue}"
+                                                 BindingContext="{Binding .BlueAnswer}">
+                            <x:Arguments>
+                                <x:Int16>4</x:Int16>
+                            </x:Arguments>
+                        </local:AnswerStatsFrame>
+                    </AbsoluteLayout>
+                </AbsoluteLayout>
+            </StackLayout>
+    </VG:ViewGestures.Content>
+</VG:ViewGestures>

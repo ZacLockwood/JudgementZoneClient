@@ -43,6 +43,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\JZLoaderLogoView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\AnswerTextFrame.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\AnswerStatsFrame.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
@@ -90,6 +96,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UI\Game\JZLoaderLogoView.xaml.cs">
       <DependentUpon>JZLoaderLogoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Game\AnswerTextFrame.xaml.cs">
+      <DependentUpon>AnswerTextFrame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Game\AnswerStatsFrame.xaml.cs">
+      <DependentUpon>AnswerStatsFrame.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

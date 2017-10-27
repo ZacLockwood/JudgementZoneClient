@@ -3,7 +3,7 @@ using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-    public partial class AnswerButtonFrame : Frame
+    public partial class AnswerStatsFrame : Frame
     {
 		private const uint HIGHLIGHT_ANIM_LENGTH = 215;
         private const uint UNHIGHLIGHT_ANIM_LENGTH = 215;
@@ -15,15 +15,15 @@ namespace JudgementZone.UI
         private const double SCALE_STD = 1.0;
         private const double SCALE_MAX = 1.03;
 
-        public int AnswerFrameId { get; set; }
+        public int AnswerStatId { get; set; }
         public bool IsHighlighted { get; set; }
 
         #region Constructor
 
-        public AnswerButtonFrame()
+        public AnswerStatsFrame()
         {
             InitializeComponent();
-            AnswerFrameId = answerFrameId;
+            AnswerStatsId = answerStatsId;
         }
 
         #endregion
