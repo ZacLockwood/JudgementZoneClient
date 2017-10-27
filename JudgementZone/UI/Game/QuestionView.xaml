@@ -16,18 +16,30 @@
                         </OnPlatform.Android>
                     </OnPlatform>
                 </StackLayout.Padding>
-                <Frame VerticalOptions="Start" HorizontalOptions="Center"
-                       Padding="7,2.5"
-                       OutlineColor="#77FFFFFF"
-                       BackgroundColor="Transparent"
-                       HasShadow="false">
-                    <Label x:Name="FocusedPlayerLabel"
-                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
-                            Text="Judgement Zone"
-                            FontSize="Large"
-                            FontAttributes="Bold"
-                            TextColor="{StaticResource JZ_White}"/>
-                </Frame>
+                <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="Start" Orientation="Horizontal">
+                    <Label x:Name="QuestionNumIndicatorLabel"
+                           HorizontalOptions="Start" VerticalOptions="Center"
+                           HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+                           FontSize="Large"
+                           TextColor="{StaticResource JZ_White}"/>
+                    <Frame HorizontalOptions="CenterAndExpand" VerticalOptions="Center" 
+                           Padding="7,2.5"
+                           OutlineColor="#77FFFFFF"
+                           BackgroundColor="Transparent"
+                           HasShadow="false">
+                        <Label x:Name="FocusedPlayerLabel"
+                                HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                                Text="Judgement Zone"
+                                FontSize="Large"
+                                FontAttributes="Bold"
+                                TextColor="{StaticResource JZ_White}"/>
+                    </Frame>
+                    <Label x:Name="RoundNumIndicatorLabel"
+                           HorizontalOptions="End" VerticalOptions="Center"
+                           HorizontalTextAlignment="End" VerticalTextAlignment="Center"
+                           FontSize="Large"
+                           TextColor="{StaticResource JZ_White}"/>
+                </StackLayout>
                 <AbsoluteLayout x:Name="QuestionAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                     <Label x:Name="QuestionLabel"
                             AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" AbsoluteLayout.LayoutBounds="0.5,0,1,-1"

@@ -2,7 +2,7 @@
 
 namespace JudgementZone.Models
 {
-    public class M_ClientQuestionStats : RealmObject
+    public class M_Client_QuestionStats : RealmObject
     {
         
         // KEY
@@ -16,15 +16,15 @@ namespace JudgementZone.Models
 
 		public int CorrectAnswerId { get; set; }
 
-		public int NumRedGuesses { get; set; }
+		public int RedGuesses { get; set; }
 
-		public int NumYellowGuesses { get; set; }
+		public int YellowGuesses { get; set; }
 
-		public int NumGreenGuesses { get; set; }
+		public int GreenGuesses { get; set; }
 
-		public int NumBlueGuesses { get; set; }
+		public int BlueGuesses { get; set; }
 
-        public M_ClientQuestionStats()
+        public M_Client_QuestionStats()
         {
         }
     }

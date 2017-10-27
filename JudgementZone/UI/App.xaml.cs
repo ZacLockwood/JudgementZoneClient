@@ -23,7 +23,7 @@ namespace JudgementZone
         {
             // Handle when your app starts
             var gameStateRealm = Realm.GetInstance("GameState.Realm");
-            if (gameStateRealm.All<M_ClientGameState>().Any())
+            if (gameStateRealm.All<M_Client_GameState>().Any())
             {
                 Device.BeginInvokeOnMainThread(async () =>
                 {

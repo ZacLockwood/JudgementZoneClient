@@ -9,7 +9,7 @@
             <Color x:Key="JZ_Yellow">#F6E202</Color>
             <Color x:Key="JZ_Green">#00D23E</Color>
             <Color x:Key="JZ_Blue">#137AF9</Color>
-            <Color x:Key="JZ_Magenta">#FF00FF</Color>
+            <Color x:Key="JZ_Magenta">#66FF00FF</Color>
             <Color x:Key="JZ_White">#FFFFFF</Color>
             <Color x:Key="JZ_Gray">#808080</Color>
         </ResourceDictionary>

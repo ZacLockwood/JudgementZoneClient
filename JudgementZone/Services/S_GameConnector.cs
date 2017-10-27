@@ -5,6 +5,7 @@ using JudgementZone.Interfaces;
 using JudgementZone.Models;
 using Realms;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace JudgementZone.Services
 {
@@ -133,6 +134,21 @@ namespace JudgementZone.Services
             await gameHubProxy.Invoke("RequestContinueToNextQuestion", gameKey);
         }
 
+        public async Task SendQuestionSyncRequest()
+        {
+            var questionDeckRealm = Realm.GetInstance("QuestionDeck.Realm");
+            var lastSync = DateTimeOffset.MinValue;
+
+            if (questionDeckRealm.All<M_QuestionCard>().Any())
+            {
+                lastSync = questionDeckRealm.All<M_QuestionCard>().OrderByDescending(qc => qc.DateModified).First().DateModified.AddSeconds(2);
+            }
+
+			if (DEBUG_SERVER)
+				Console.WriteLine($"GameServer: Sending Sync Request for Timestamp {lastSync.ToString()}");
+			await gameHubProxy.Invoke("RequestQuestionListUpdate", lastSync);
+        }
+
         #endregion
 
         #region Receivers
@@ -140,14 +156,43 @@ namespace JudgementZone.Services
         private void SetupProxyEventHandlers()
         {
 
-            gameHubProxy.On<M_ClientGameState>("ServerUpdate", (gameState) => {
+            gameHubProxy.On<M_Client_GameState>("ServerUpdate", (gameState) => {
 				if (DEBUG_SERVER)
 					Console.WriteLine("GameServer: Game State Received");
                 var gameStateRealm = Realm.GetInstance("GameState.Realm");
+
+                if (gameState.ClientViewCode == 4)
+                {
+                    Console.WriteLine();
+                }
+
                 gameStateRealm.Write(() =>
                 {
                     gameStateRealm.Add(gameState, true);
                 });
+            });
+
+            gameHubProxy.On<List<M_QuestionCard>>("PushQuestionCards", (QuestionList) => {
+                if (QuestionList == null || QuestionList.Count() > 0)
+                {
+					if (DEBUG_SERVER)
+						Console.WriteLine($"GameServer: Received {QuestionList.Count()} QuestionCards");
+					var questionDeckRealm = Realm.GetInstance("QuestionDeck.Realm");
+					questionDeckRealm.Write(() =>
+					{
+						foreach (var questionCard in QuestionList)
+						{
+							questionDeckRealm.Add(questionCard, true);
+						}
+                        if (DEBUG_SERVER)
+                            Console.WriteLine($"Realm: Wrote {QuestionList.Count()} QuestionCards to Realm");
+                    });
+                }
+                else
+                {
+					if (DEBUG_SERVER)
+						Console.WriteLine($"GameServer: Received 0 QuestionCards. You're up to date!");
+                }
             });
 
             /*

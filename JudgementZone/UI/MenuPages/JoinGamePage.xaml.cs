@@ -24,7 +24,7 @@ namespace JudgementZone.UI
                 UsernameEntryField.Text = myPlayer.PlayerName;
             }
 
-            var gameState = Realm.GetInstance("GameState.Realm").All<M_ClientGameState>().FirstOrDefault();
+            var gameState = Realm.GetInstance("GameState.Realm").All<M_Client_GameState>().FirstOrDefault();
             if (gameState != null && !String.IsNullOrWhiteSpace(gameState.GameKey))
             {
                 GameKeyEntryField.Text = gameState.GameKey;
@@ -128,7 +128,7 @@ namespace JudgementZone.UI
 		private void SetupSignalRSubscriptions()
 		{
 			var gameStateRealm = Realm.GetInstance("GameState.Realm");
-            RealmGameStateListenerToken = gameStateRealm.All<M_ClientGameState>().SubscribeForNotifications((sender, changes, errors) =>
+            RealmGameStateListenerToken = gameStateRealm.All<M_Client_GameState>().SubscribeForNotifications((sender, changes, errors) =>
             {
                 var gameState = sender.FirstOrDefault();
                 if (gameState == null)
@@ -136,7 +136,7 @@ namespace JudgementZone.UI
                     return;
                 }
 
-                switch(gameState.ClientGameStateId)
+                switch(gameState.ClientViewCode)
                 {
                     case 1:
                         // WAITING FOR GAME START

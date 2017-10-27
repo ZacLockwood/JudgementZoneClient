@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using JudgementZone.Models;
 
 namespace JudgementZone.Interfaces
@@ -16,6 +17,7 @@ namespace JudgementZone.Interfaces
         Task SendGameStartRequest(string gameKey);
         Task SendAnswerSubmission(int myAnswer, string gameKey);
         Task SendContinueRequest(string gameKey);
+        Task SendQuestionSyncRequest();
 
 		// Display Methods - Invoked by Server - Implemented in the SetupProxyEventHandlers
 		// DisplayGameKey(string gameKey);

@@ -59,9 +59,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Models\M_Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\M_QuestionCard.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\M_ClientPlayerGameStats.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\M_ClientQuestionStats.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\M_ClientGameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\M_Client_PlayerGameStats.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\M_Client_QuestionStats.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\M_Client_GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\S_GameConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\I_GameConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\S_LocalGameData.cs" />
@@ -91,7 +91,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Game\JZLoaderLogoView.xaml.cs">
       <DependentUpon>JZLoaderLogoView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Models\M_ClientGameStats.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />

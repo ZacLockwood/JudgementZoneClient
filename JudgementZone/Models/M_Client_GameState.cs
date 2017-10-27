@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace JudgementZone.Models
 {
-    public class M_ClientGameState : RealmObject
+    public class M_Client_GameState : RealmObject
     {
 
         // KEY
@@ -12,7 +12,7 @@ namespace JudgementZone.Models
         public string GameKey { get; set; }
 
         // CLIENT STATE IDENTIFIER
-        public int ClientGameStateId { get; set; }
+        public int ClientViewCode { get; set; }
 
         // STATE-INDEPENDENT DATA
         public IList<M_Player> PlayerList { get; }
@@ -31,22 +31,22 @@ namespace JudgementZone.Models
 		// GAME STATE CONTEXT
 		public string FocusedPlayerId { get; set; }
 		
-		public int FocusedQuestionId { get; set; }
+		public int CurrentQuestionId { get; set; }
 		
 		public bool CanSubmitAnswer { get; set; }
 
-        public M_ClientQuestionStats ClientFocusedQuestionStats { get; set; }
+        public M_Client_QuestionStats QuestionStats { get; set; }
 
-        public M_ClientGameStats ClientGameStats { get; set; }
+        public IList<M_Client_PlayerGameStats> PlayerGameStatsList { get; }
 
         #region Constructor
 
-        public M_ClientGameState()
+        public M_Client_GameState()
         {
 			GameKey = TemporaryKeyGenerator();
         }
 
-        public M_ClientGameState(M_Player firstPlayer)
+        public M_Client_GameState(M_Player firstPlayer)
         {
             GameKey = TemporaryKeyGenerator();
 

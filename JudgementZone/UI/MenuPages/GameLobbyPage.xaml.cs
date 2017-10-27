@@ -17,7 +17,7 @@ namespace JudgementZone.UI
 
         #region Constructor
 
-        public GameLobbyPage(M_ClientGameState gameState)
+        public GameLobbyPage(M_Client_GameState gameState)
         {
             InitializeComponent();
 
@@ -87,7 +87,7 @@ namespace JudgementZone.UI
                     _uiLock = true;
 
                     var gameStateRealm = Realm.GetInstance("GameState.Realm");
-                    var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
+                    var gameState = gameStateRealm.All<M_Client_GameState>().FirstOrDefault();
 
                     if (gameState == null)
                     {
@@ -135,7 +135,7 @@ namespace JudgementZone.UI
 		private void SetupSignalRSubscriptions()
 		{
             var gameStateRealm = Realm.GetInstance("GameState.Realm");
-            var gameState = gameStateRealm.All<M_ClientGameState>().FirstOrDefault();
+            var gameState = gameStateRealm.All<M_Client_GameState>().FirstOrDefault();
             gameState.PlayerList.SubscribeForNotifications((sender, changes, errors) =>
             {
                 Device.BeginInvokeOnMainThread(() =>

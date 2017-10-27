@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using JudgementZone.Models;
-using JudgementZone.Services;
-using Realms;
 using ScnViewGestures.Plugin.Forms;
 using Xamarin.Forms;
 
@@ -40,55 +38,6 @@ namespace JudgementZone.UI
             TouchEnded += OnTouchUp;
 
             InitializeComponent();
-
-            BindingContextChanged += (sender, e) =>
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    var gameStateRealm = Realm.GetInstance("GameState.Realm");
-                    var myPlayerRealm = Realm.GetInstance("MyPlayerData.Realm");
-                    var gameState = gameStateRealm.All<M_ClientGameState>().First();
-                    var focusedPlayerId = gameState.FocusedPlayerId;
-                    var focusedPlayerName = gameState.PlayerList.First(p => p.PlayerId == focusedPlayerId).PlayerName;
-                    var myPlayer = myPlayerRealm.All<M_Player>().FirstOrDefault();
-					
-					if (myPlayer == null)
-					{
-						//HACK
-						return;
-					}
-					
-					if (focusedPlayerId == myPlayer.PlayerId)
-					{
-						FocusedPlayerLabel.Text = "My Turn!";
-					}
-					else
-					{
-						var name = focusedPlayerName;
-						if (name.ToCharArray().First().ToString().ToUpper() == name.ToCharArray().First().ToString())
-						{
-							FocusedPlayerLabel.Text = focusedPlayerName + "\'s Turn";
-						}
-						else
-						{
-							FocusedPlayerLabel.Text = focusedPlayerName + "\'s turn";
-						}
-					}
-
-                    if (QuestionLabel.Height > QuestionAbsoluteLayout.Height * 0.1875)
-                    {
-                        var leftOverSpace = 1.0 - (QuestionLabel.Height / QuestionAbsoluteLayout.Height);
-                        var spacing = leftOverSpace * 0.02;
-                        AbsoluteLayout.SetLayoutBounds(AnswerButtonsAbsoluteLayout, new Rectangle(0.5, 1.0, 1.0, leftOverSpace - spacing));
-                    }
-                    else
-                    {
-                        AbsoluteLayout.SetLayoutFlags(QuestionLabel, AbsoluteLayoutFlags.All);
-                        AbsoluteLayout.SetLayoutBounds(QuestionLabel, new Rectangle(0.5, 0.0, 1.0, 0.1875));
-                        AbsoluteLayout.SetLayoutBounds(AnswerButtonsAbsoluteLayout, new Rectangle(0.5, 1.0, 1.0, 0.8));
-                    }
-                });
-            };
         }
 
         #endregion
@@ -172,14 +121,56 @@ namespace JudgementZone.UI
 
         #region Public View Management
 
-        public void DisplayQuestionCard(M_QuestionCard newQuestionCard)
+        public void UpdateView(M_QuestionCard newQuestionCard, M_Player myPlayer, M_Player focusedPlayer, int questionNum, int maxQuestionNum, int roundNum, int maxRoundNum)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                // HACK MAYBE?
-                AbsoluteLayout.SetLayoutFlags(QuestionLabel, AbsoluteLayoutFlags.PositionProportional | AbsoluteLayoutFlags.WidthProportional);
-                AbsoluteLayout.SetLayoutBounds(QuestionLabel, new Rectangle(0.5, 0.0, 1.0, -1.0));
+                // ADD ERROR HANDLING!!!
+                // if question null
+                // if MP null
+                // if FP null
+
+                // Update Indicator Labels
+                QuestionNumIndicatorLabel.Text = $"{questionNum} / {maxQuestionNum}";
+                RoundNumIndicatorLabel.Text = $"{roundNum} / {maxRoundNum}";
+
+                // Player Label Text
+                if (focusedPlayer.PlayerId == myPlayer.PlayerId)
+				{
+					FocusedPlayerLabel.Text = "My Turn!";
+				}
+				else
+				{
+                    if (focusedPlayer.PlayerName.ToCharArray().First().ToString().ToUpper() == focusedPlayer.PlayerName.ToCharArray().First().ToString())
+					{
+                        FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s Turn";
+					}
+					else
+					{
+                        FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s turn";
+					}
+				}
+
+				// Set QuestionLabel properties to auto-size height
+				AbsoluteLayout.SetLayoutFlags(QuestionLabel, AbsoluteLayoutFlags.PositionProportional | AbsoluteLayoutFlags.WidthProportional);
+				AbsoluteLayout.SetLayoutBounds(QuestionLabel, new Rectangle(0.5, 0.0, 1.0, -1.0));
+
+                // Set Question/Answer Display Text
                 BindingContext = newQuestionCard;
+
+                // Adjust height distribution between QuestionLabel and AnswerButtonsAbsoluteLayout if necessary
+				if (QuestionLabel.Height > QuestionAbsoluteLayout.Height * 0.1875)
+				{
+					var leftOverSpace = 1.0 - (QuestionLabel.Height / QuestionAbsoluteLayout.Height);
+					var spacing = leftOverSpace * 0.02;
+					AbsoluteLayout.SetLayoutBounds(AnswerButtonsAbsoluteLayout, new Rectangle(0.5, 1.0, 1.0, leftOverSpace - spacing));
+				}
+				else
+				{
+					AbsoluteLayout.SetLayoutFlags(QuestionLabel, AbsoluteLayoutFlags.All);
+					AbsoluteLayout.SetLayoutBounds(QuestionLabel, new Rectangle(0.5, 0.0, 1.0, 0.1875));
+					AbsoluteLayout.SetLayoutBounds(AnswerButtonsAbsoluteLayout, new Rectangle(0.5, 1.0, 1.0, 0.8));
+				}
             });
         }
 

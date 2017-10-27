@@ -35,8 +35,8 @@ namespace JudgementZone.Models
 		[BsonElement("DateCreated")]
 		public DateTimeOffset DateCreated { get; set; }
 
-        [BsonElement("DateUpdated")]
-        public DateTimeOffset DateUpdated { get; set; }
+        [BsonElement("DateModified")]
+        public DateTimeOffset DateModified { get; set; }
 
 		public M_QuestionCard()
         {

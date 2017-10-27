@@ -14,11 +14,11 @@ namespace JudgementZone.UI
             InitializeComponent();
         }
 
-        public void DisplayStats(M_ClientGameState state)
+        public void DisplayStats(M_Client_GameState state)
         {
 			NextButton.IsEnabled = false;
 
-			var stats = state.ClientFocusedQuestionStats;
+			var stats = state.QuestionStats;
 
             if (stats == null)
             {
@@ -26,10 +26,10 @@ namespace JudgementZone.UI
                 return;
             }
 
-            RedStatsLabel.Text = stats.NumRedGuesses + " Guessed Red";
-            YellowStatsLabel.Text = stats.NumYellowGuesses + " Guessed Yellow";
-            GreenStatsLabel.Text = stats.NumGreenGuesses + " Guessed Green";
-            BlueStatsLabel.Text = stats.NumBlueGuesses + " Guessed Blue";
+            RedStatsLabel.Text = stats.RedGuesses + " Guessed Red";
+            YellowStatsLabel.Text = stats.YellowGuesses + " Guessed Yellow";
+            GreenStatsLabel.Text = stats.GreenGuesses + " Guessed Green";
+            BlueStatsLabel.Text = stats.BlueGuesses + " Guessed Blue";
 
             RedStatsLabel.Opacity = 0.45;
             YellowStatsLabel.Opacity = 0.45;
@@ -67,6 +67,23 @@ namespace JudgementZone.UI
             {
                 // Settings for focused player
                 var countCorrectGuesses = 0;
+
+                switch (stats.CorrectAnswerId)
+                {
+                    case 1:
+                        countCorrectGuesses = stats.RedGuesses;
+                        break;
+                    case 2:
+                        countCorrectGuesses = stats.YellowGuesses;
+                        break;
+                    case 3:
+                        countCorrectGuesses = stats.GreenGuesses;
+                        break;
+                    case 4:
+                        countCorrectGuesses = stats.BlueGuesses;
+                        break;
+
+                }
 
 
                 if (countCorrectGuesses == 0)
@@ -114,7 +131,7 @@ namespace JudgementZone.UI
         void NextButtonClicked(object sender, EventArgs e)
         {
             // HACK
-            var gameKey = Realm.GetInstance("GameState.Realm").All<M_ClientGameState>().First().GameKey;
+            var gameKey = Realm.GetInstance("GameState.Realm").All<M_Client_GameState>().First().GameKey;
             S_GameConnector.Connector.SendContinueRequest(gameKey);
             NextButton.IsEnabled = false;
         }
