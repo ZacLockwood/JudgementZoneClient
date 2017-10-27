@@ -131,8 +131,10 @@ namespace JudgementZone.UI
                 // if FP null
 
                 // Update Indicator Labels
-                QuestionNumIndicatorLabel.Text = $"{questionNum} / {maxQuestionNum}";
-                RoundNumIndicatorLabel.Text = $"{roundNum} / {maxRoundNum}";
+				//RoundNumIndicatorLabel.Text = $"Round {roundNum} / {maxRoundNum}";
+                //QuestionNumIndicatorLabel.Text = $"Question {questionNum} / {maxQuestionNum}";
+                RoundNumIndicatorLabel.Text = $"Round {roundNum}";
+                QuestionNumIndicatorLabel.Text = $"Question {questionNum}";
 
                 // Player Label Text
                 if (focusedPlayer.PlayerId == myPlayer.PlayerId)

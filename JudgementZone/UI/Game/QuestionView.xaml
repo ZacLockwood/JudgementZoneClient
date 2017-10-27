@@ -16,13 +16,14 @@
                         </OnPlatform.Android>
                     </OnPlatform>
                 </StackLayout.Padding>
-                <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="Start" Orientation="Horizontal">
-                    <Label x:Name="QuestionNumIndicatorLabel"
-                           HorizontalOptions="Start" VerticalOptions="Center"
+                <AbsoluteLayout HorizontalOptions="FillAndExpand" VerticalOptions="Start">
+                    <Label x:Name="RoundNumIndicatorLabel"
+                           AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
                            HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
-                           FontSize="Large"
+                           FontSize="Medium"
+                           FontAttributes="Bold"
                            TextColor="{StaticResource JZ_White}"/>
-                    <Frame HorizontalOptions="CenterAndExpand" VerticalOptions="Center" 
+                    <Frame AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1"
                            Padding="7,2.5"
                            OutlineColor="#77FFFFFF"
                            BackgroundColor="Transparent"
@@ -34,12 +35,13 @@
                                 FontAttributes="Bold"
                                 TextColor="{StaticResource JZ_White}"/>
                     </Frame>
-                    <Label x:Name="RoundNumIndicatorLabel"
-                           HorizontalOptions="End" VerticalOptions="Center"
+                    <Label x:Name="QuestionNumIndicatorLabel"
+                           AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
                            HorizontalTextAlignment="End" VerticalTextAlignment="Center"
-                           FontSize="Large"
+                           FontSize="Medium"
+                           FontAttributes="Bold"
                            TextColor="{StaticResource JZ_White}"/>
-                </StackLayout>
+                </AbsoluteLayout>
                 <AbsoluteLayout x:Name="QuestionAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                     <Label x:Name="QuestionLabel"
                             AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" AbsoluteLayout.LayoutBounds="0.5,0,1,-1"
