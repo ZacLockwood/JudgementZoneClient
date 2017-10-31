@@ -70,6 +70,7 @@ namespace JudgementZone.UI
 
                         if (S_GameConnector.Connector.IsConnected())
                         {
+                            await S_GameConnector.Connector.SendQuestionSyncRequest();
                             await MenuLogo.AnimateColorLoadFromZeroAsync(E_LogoColor.Random, 0.975, 300);
                             MenuLogo.IsAnimating = false;
                         }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using JudgementZone.Models;
 using JudgementZone.Services;
+using Realms;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
@@ -11,13 +13,16 @@ namespace JudgementZone.UI
     {
         LoaderPresented = 1,
         QuestionPresented,
-        QuestionStatsPresented
+        QuestionStatsPresented,
+        GameStatsPresented
     }
 
     public partial class GamePage : ContentPage
     {
 
         public E_GamePageState PageState { get; private set; } = E_GamePageState.LoaderPresented;
+
+        public IDisposable RealmGameStateListenerToken { get; private set; }
 
         #region Constructor
 
@@ -38,12 +43,14 @@ namespace JudgementZone.UI
 
         protected override void OnAppearing()
         {
-            SetupSignalRSubscriptions();
+            SetupRealmSubscriptions();
+            SetUpUISubscriptions();
         }
 
         protected override void OnDisappearing()
         {
-            ReleaseSignalRSubscriptions();
+            ReleaseRealmSubscriptions();
+            ReleaseUISubscriptions();
         }
 
         #endregion
@@ -227,21 +234,80 @@ namespace JudgementZone.UI
 
         #region UI Sub-View Helper Methods
 
-        private void QV_SetFocusedQuestionAndFocusedPlayer(M_QuestionCard focusedQuestion, M_Player focusedPlayer, M_Player myPlayer)
+        private void GTIB_Hide(bool animated = true)
         {
-            Device.BeginInvokeOnMainThread(() =>
+            if (!animated)
             {
-                GameQuestionView.DisplayQuestionCard(focusedQuestion);
+                GameTurnIndicatorBackground.Opacity = 0.0;
+                GameTurnIndicatorBackground.IsVisible = false;
+                return;
+            }
 
-                if (focusedPlayer.PlayerId == myPlayer.PlayerId)
-                {
-                    QV_EnableAnswerSubmission();
-                }
-                else
-                {
-                    QV_DisableAnswerSubmission();
-                }
-            });
+            if (GameTurnIndicatorBackground.AnimationIsRunning("FadeIn"))
+            {
+                GameTurnIndicatorBackground.AbortAnimation("FadeIn");
+            }
+            if (!GameTurnIndicatorBackground.AnimationIsRunning("FadeOut"))
+            {
+                GameTurnIndicatorBackground.IsVisible = true;
+                GameTurnIndicatorBackground.Animate("FadeOut",
+                                                    (percent) =>
+                                                    {
+                                                        GameTurnIndicatorBackground.Opacity = Math.Abs(percent - 1.0);
+                                                    },
+                                                    16, 500, Easing.CubicInOut,
+                                                    (double percent, bool canceled) =>
+                                                    {
+                                                        if (canceled)
+                                                        {
+                                                            GameTurnIndicatorBackground.Opacity = 1.0;
+                                                            GameTurnIndicatorBackground.IsVisible = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            GameTurnIndicatorBackground.Opacity = 0.0;
+                                                            GameTurnIndicatorBackground.IsVisible = false;
+                                                        }
+                                                    });
+            }
+        }
+
+        private void GTIB_Present(bool animated = true)
+        {
+            if (!animated)
+            {
+                GameTurnIndicatorBackground.Opacity = 1.0;
+                GameTurnIndicatorBackground.IsVisible = true;
+                return;
+            }
+
+            if (GameTurnIndicatorBackground.AnimationIsRunning("FadeOut"))
+            {
+                GameTurnIndicatorBackground.AbortAnimation("FadeOut");
+            }
+            if (!GameTurnIndicatorBackground.AnimationIsRunning("FadeIn"))
+            {
+                GameTurnIndicatorBackground.IsVisible = true;
+                GameTurnIndicatorBackground.Animate("FadeIn",
+                                                    (percent) =>
+                                                    {
+                                                        GameTurnIndicatorBackground.Opacity = percent;
+                                                    },
+                                                    16, 500, Easing.CubicInOut,
+                                                    (double percent, bool canceled) =>
+                                                    {
+                                                        if (canceled)
+                                                        {
+                                                            GameTurnIndicatorBackground.Opacity = 0.0;
+                                                            GameTurnIndicatorBackground.IsVisible = false;
+                                                        }
+                                                        else
+                                                        {
+                                                            GameTurnIndicatorBackground.Opacity = 1.0;
+                                                            GameTurnIndicatorBackground.IsVisible = true;
+                                                        }
+                                                    });
+            }
         }
 
         private void QV_EnableAnswerSubmission()
@@ -256,75 +322,141 @@ namespace JudgementZone.UI
 
         #endregion
 
-        #region SignalR Responders
+        #region Subscription Setup Methods
 
-        private void SetupSignalRSubscriptions()
+        private void SetupRealmSubscriptions()
         {
-            QuestionReceived(null);
-            MessagingCenter.Subscribe<S_GameConnector>(this, "questionReceived", QuestionReceived);
-            MessagingCenter.Subscribe<S_GameConnector, int>(this, "answerSubmitted", AnswerSubmitted);
-            MessagingCenter.Subscribe<S_GameConnector>(this, "enableAnswerSubmission", EnableAnswerSubmission);
-            MessagingCenter.Subscribe<S_GameConnector, M_AnswerStats>(this, "questionStatsReceived", DisplayQuestionStats);
-        }
-
-        private void ReleaseSignalRSubscriptions()
-        {
-            MessagingCenter.Unsubscribe<S_GameConnector>(this, "questionReceived");
-            MessagingCenter.Unsubscribe<S_GameConnector, int>(this, "answerSubmitted");
-            MessagingCenter.Unsubscribe<S_GameConnector>(this, "enableAnswerSubmission");
-            MessagingCenter.Unsubscribe<S_GameConnector, M_AnswerStats>(this, "questionStatsReceived");
-        }
-
-        private void QuestionReceived(S_GameConnector sender)
-        {
-            var localGameData = S_LocalGameData.Instance;
-            if (localGameData.FocusedPlayer == null || localGameData.FocusedQuestion == null)
+            var gameStateRealm = Realm.GetInstance("GameState.Realm");
+            RealmGameStateListenerToken = gameStateRealm.All<M_Client_GameState>().SubscribeForNotifications((sender, changes, errors) =>
             {
-                Console.WriteLine("ERROR FOCUSED PLAYER OR QUESTION NOT FOUND");
-                return;
+                var gameState = sender.FirstOrDefault();
+                if (gameState == null)
+                {
+                    return;
+                }
+
+                var myPlayer = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().FirstOrDefault();
+                var focusedPlayer = gameState.PlayerList.First(p => p.PlayerId == gameState.FocusedPlayerId);
+
+                if (focusedPlayer.PlayerId == myPlayer.PlayerId && GameTurnIndicatorBackground.Opacity < 1.0)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        var animated = changes != null;
+                        GTIB_Present(animated);
+                    });
+                }
+                else if (focusedPlayer.PlayerId != myPlayer.PlayerId && GameTurnIndicatorBackground.Opacity > 0.0)
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        var animated = changes != null;
+                        GTIB_Hide(animated);
+                    });
+                }
+
+                switch (gameState.ClientViewCode)
+                {
+                    case 1:
+                        // WAITING FOR GAME START
+                        break;
+                    case 2:
+                        // DISPLAY QUESTION
+                        Device.BeginInvokeOnMainThread(async () =>
+                        {
+                            // if new round, await new round animation
+                            // then continue...
+
+                            // Update Question View
+                            var focusedQuestion = Realm.GetInstance("QuestionDeck.Realm").Find<M_QuestionCard>(gameState.CurrentQuestionId);
+                            var questionNum = gameState.CurrentQuestionNum;
+                            var maxQuestionNum = gameState.MaxQuestionNum;
+                            var roundNum = gameState.CurrentRoundNum;
+                            var maxRoundNum = gameState.MaxRoundNum;
+                            GameQuestionView.UpdateView(focusedQuestion, myPlayer, focusedPlayer, questionNum, maxQuestionNum, roundNum, maxRoundNum);
+
+                            // Present Question View
+                            await GP_AnimateTransitionToPageState(E_GamePageState.QuestionPresented);
+
+                            // Enable Answer Submission
+                            if (gameState.CanSubmitAnswer)
+                            {
+                                GameQuestionView.EnableAnswerControls();
+                            }
+                            else
+                            {
+                                GameQuestionView.DisableAnswerControls();
+                            }
+                        });
+                        break;
+                    case 3:
+                        // DISPLAY QUESTION STATS
+                        Device.BeginInvokeOnMainThread(async () =>
+                        {
+                            var stats = gameState.QuestionStats;
+                            var focusedQuestion = Realm.GetInstance("QuestionDeck.Realm").Find<M_QuestionCard>(gameState.CurrentQuestionId);
+							var questionNum = gameState.CurrentQuestionNum;
+							var maxQuestionNum = gameState.MaxQuestionNum;
+							var roundNum = gameState.CurrentRoundNum;
+							var maxRoundNum = gameState.MaxRoundNum;
+
+                            GameQuestionStatsView.Opacity = 0.0;
+                            GameQuestionStatsView.IsVisible = true;
+                            GameQuestionStatsView.DisplayStats(stats, focusedQuestion, myPlayer, focusedPlayer, questionNum, maxQuestionNum, roundNum, maxRoundNum);
+
+                            await Task.Delay(500);
+                            await GP_AnimateTransitionToPageState(E_GamePageState.QuestionStatsPresented);
+                        });
+                        break;
+                    case 4:
+                        // DISPLAY GAME STATS
+                        break;
+                }
+            });
+        }
+
+        private void ReleaseRealmSubscriptions()
+        {
+            if (RealmGameStateListenerToken != null)
+            {
+                RealmGameStateListenerToken.Dispose();
+                RealmGameStateListenerToken = null;
             }
-            if (localGameData.MyPlayer == null)
-            {
-                Console.WriteLine("ERROR WITH MY PLAYER");
-                return;
-            }
-
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                GameQuestionView.Opacity = 0.0;
-                GameQuestionView.IsVisible = true;
-                QV_SetFocusedQuestionAndFocusedPlayer(localGameData.FocusedQuestion, localGameData.FocusedPlayer, localGameData.MyPlayer);
-                await GP_AnimateTransitionToPageState(E_GamePageState.QuestionPresented);
-            });
         }
 
-        private void EnableAnswerSubmission(S_GameConnector sender)
+        private void SetUpUISubscriptions()
         {
-            QV_EnableAnswerSubmission();
+            MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
         }
 
-        private void AnswerSubmitted(S_GameConnector sender, int answerKey)
+        private void ReleaseUISubscriptions()
         {
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerKey);
-            });
+            MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
         }
 
-        private void DisplayQuestionStats(S_GameConnector sender, M_AnswerStats answerStats)
-        {
+		#endregion
 
-            Device.BeginInvokeOnMainThread(async () =>
-            {
-                GameQuestionStatsView.Opacity = 0.0;
-				GameQuestionStatsView.IsVisible = true;
-                GameQuestionStatsView.DisplayStats(answerStats);
-                await Task.Delay(500);
-                await GP_AnimateTransitionToPageState(E_GamePageState.QuestionStatsPresented);
-            });
-        }
+		#region UI Subscription Responder Methods
+
+		private void AnswerSelected(QuestionView sender, int answerId)
+		{
+			Device.BeginInvokeOnMainThread(async () =>
+			{
+				var gameStateRealm = Realm.GetInstance("GameState.Realm");
+				var gameState = gameStateRealm.All<M_Client_GameState>().FirstOrDefault();
+				if (gameState != null)
+				{
+					await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerId);
+					await S_GameConnector.Connector.SendAnswerSubmission(answerId, gameState.GameKey);
+				}
+				else
+				{
+					sender.EnableAnswerControls();
+				}
+			});
+		}
 
         #endregion
 
-	}
+    }
 }

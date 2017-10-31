@@ -5,16 +5,6 @@ using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-  //  public enum E_LogoColor
-  //  {
-  //      Red = 1,
-  //      Yellow,
-		//Green,
-    //    Blue,
-    //    Random,
-    //    Current
-    //}
-
     public partial class JZLoaderLogoView : ContentView
     {
 

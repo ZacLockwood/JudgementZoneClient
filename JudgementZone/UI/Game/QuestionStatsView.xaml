@@ -1,51 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="JudgementZone.UI.QuestionStatsView">
-	<ContentView.Content>
-        <StackLayout Padding="20" Spacing="15">
-            <Label x:Name="InfoLabel"
-                    VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Center"
-                    Margin="0,30"
-                    Text="Correct"
-                    TextColor="{StaticResource JZ_Magenta}"
-                    FontAttributes="Bold"
-                    FontSize="40"/>
-            <Label x:Name="RedStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Red"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Red}"/>
-            <Label x:Name="YellowStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Yellow"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Yellow}"/>
-            <Label x:Name="GreenStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Green"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Green}"/>
-            <Label x:Name="BlueStatsLabel"
-                    VerticalOptions="Center" HorizontalOptions="FillAndExpand"
-                    VerticalTextAlignment="Center" HorizontalTextAlignment="Start"
-                    Text="Guessed Blue"
-                    TextColor="Black"
-                    FontAttributes="Bold"
-                    FontSize="30"
-                    BackgroundColor="{StaticResource JZ_Blue}"/>
+             x:Class="JudgementZone.UI.QuestionStatsView"
+             xmlns:local="clr-namespace:JudgementZone.UI">
+    <ContentView.Content>
+        <StackLayout x:Name="MainStackLayout" Spacing="5">
+            <StackLayout.Padding>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <OnPlatform.iOS>
+                        15, 35, 15, 15
+                    </OnPlatform.iOS>
+                    <OnPlatform.Android>
+                        15, 15, 15, 15
+                    </OnPlatform.Android>
+                </OnPlatform>
+            </StackLayout.Padding>
+            <AbsoluteLayout HorizontalOptions="FillAndExpand" VerticalOptions="Start">
+                <Label x:Name="RoundNumIndicatorLabel"
+                       AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
+                       HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource JZ_White}"/>
+                <Frame AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1"
+                       Padding="7,2.5"
+                       OutlineColor="#77FFFFFF"
+                       BackgroundColor="Transparent"
+                       HasShadow="false">
+                    <Label x:Name="FocusedPlayerLabel"
+                            HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                            Text="Judgement Zone"
+                            FontSize="Large"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource JZ_White}"/>
+                </Frame>
+                <Label x:Name="QuestionNumIndicatorLabel"
+                       AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
+                       HorizontalTextAlignment="End" VerticalTextAlignment="Center"
+                       FontSize="Medium"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource JZ_White}"/>
+            </AbsoluteLayout>
+            <AbsoluteLayout x:Name="QuestionAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <Label x:Name="QuestionLabel"
+                        AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional" AbsoluteLayout.LayoutBounds="0.5,0,1,-1"
+                        HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                        FontSize="Large"
+                        FontAttributes="Bold"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource JZ_White}"
+                        Text="{Binding QuestionText}"/>
+                <AbsoluteLayout x:Name="AnswerTextAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,1.0,.74,0.8">
+                    <local:AnswerTextFrame x:Name="AnswerTextFrameRed"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Red}"
+                                             BindingContext="{Binding .RedAnswer}">
+                    </local:AnswerTextFrame>
+                    <local:AnswerTextFrame x:Name="AnswerTextFrameYellow"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Yellow}"
+                                             BindingContext="{Binding .YellowAnswer}">
+                    </local:AnswerTextFrame>
+                    <local:AnswerTextFrame x:Name="AnswerTextFrameGreen"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Green}"
+                                             BindingContext="{Binding .GreenAnswer}">
+                    </local:AnswerTextFrame>
+                    <local:AnswerTextFrame x:Name="AnswerTextFrameBlue"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Blue}"
+                                             BindingContext="{Binding .BlueAnswer}">
+                    </local:AnswerTextFrame>
+                </AbsoluteLayout>
+                <AbsoluteLayout x:Name="AnswerStatsAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1,1.0,.245,0.8">
+                    <local:AnswerStatsFrame x:Name="AnswerStatsFrameRed"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Red}"
+                                             BindingContext="{Binding .RedGuesses}">
+                    </local:AnswerStatsFrame>
+                    <local:AnswerStatsFrame x:Name="AnswerStatsFrameYellow"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Yellow}"
+                                             BindingContext="{Binding .YellowGuesses}">
+                    </local:AnswerStatsFrame>
+                    <local:AnswerStatsFrame x:Name="AnswerStatsFrameGreen"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Green}"
+                                             BindingContext="{Binding .GreenGuesses}">
+                    </local:AnswerStatsFrame>
+                    <local:AnswerStatsFrame x:Name="AnswerStatsFrameBlue"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Blue}"
+                                             BindingContext="{Binding .BlueGuesses}">
+                    </local:AnswerStatsFrame>
+                </AbsoluteLayout>
+            </AbsoluteLayout>
             <Button x:Name="NextButton"
-                    VerticalOptions="EndAndExpand" HorizontalOptions="FillAndExpand"
+                    Margin="0,2,0,0"
+                    VerticalOptions="End" HorizontalOptions="FillAndExpand"
                     Text="Next"
                     FontAttributes="Bold"
                     FontSize="20"
@@ -53,5 +105,5 @@
                     BackgroundColor="{StaticResource JZ_Magenta}"
                     Clicked="NextButtonClicked"/>
         </StackLayout>
-	</ContentView.Content>
+    </ContentView.Content>
 </ContentView>

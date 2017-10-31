@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-    public partial class LoaderView : ContentView
+	public partial class LoaderView : ContentView
     {
 
         #region Constructor
@@ -21,7 +21,7 @@ namespace JudgementZone.UI
         public async Task StartContinuousFadeLoaderAsync(string loadMessage = null, E_LogoColor firstColor = E_LogoColor.Random)
         {
             LoaderLogo.CurrentColor = firstColor;
-            LoaderLogo.StartContinuousFadeLoader();
+			LoaderLogo.StartContinuousFadeLoader();
 
 			LoaderLabel.Opacity = 0.0;
 
@@ -54,9 +54,9 @@ namespace JudgementZone.UI
 			}
 
 			// Set Up for Animation
-			LoaderLabel.Opacity = 0.0;
-			LoaderLabel.TranslationY = LoaderLabel.Height * 1.25;
+            LoaderLabel.Opacity = 0.0;
 			LoaderLabel.Text = loadMessage;
+            LoaderLabel.TranslationY = LoaderLabel.Height * 1.25;
 			
 			// Animation
             var translateTask = LoaderLabel.TranslateTo(0, 0, duration, Easing.CubicOut);

@@ -1,6 +1,7 @@
 ﻿using Realms;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using System;
 
 namespace JudgementZone.Models
 {
@@ -30,6 +31,12 @@ namespace JudgementZone.Models
 
 		[BsonElement("BlueAnswer")]
 		public string BlueAnswer { get; set; }
+
+		[BsonElement("DateCreated")]
+		public DateTimeOffset DateCreated { get; set; }
+
+        [BsonElement("DateModified")]
+        public DateTimeOffset DateModified { get; set; }
 
 		public M_QuestionCard()
         {

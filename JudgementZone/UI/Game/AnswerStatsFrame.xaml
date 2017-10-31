@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Frame xmlns="http://xamarin.com/schemas/2014/forms"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="JudgementZone.UI.AnswerStatsFrame"
+       Padding="5"
+       IsClippedToBounds="true"
+       HasShadow="false">
+	<Frame.Content>
+        <Label x:Name="StatsLabel"
+                HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                FontSize="20"
+                Text="{Binding .}"
+                TextColor="Black"/>
+	</Frame.Content>
+</Frame>

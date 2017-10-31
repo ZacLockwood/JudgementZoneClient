@@ -9,7 +9,8 @@
             <BoxView x:Name="GameTurnIndicatorBackground"
                      AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
                      BackgroundColor="{StaticResource JZ_Magenta}"
-                     Opacity="1"/>
+                     Opacity="0.0"
+                     IsVisible="false"/>
             <local:LoaderView x:Name="GameLoaderView"
                               AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
                               Opacity="1">

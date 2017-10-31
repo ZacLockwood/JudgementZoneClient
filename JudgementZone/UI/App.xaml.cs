@@ -1,5 +1,8 @@
+﻿using Realms;
 using Xamarin.Forms;
 using JudgementZone.UI;
+using JudgementZone.Models;
+using System.Linq;
 
 namespace JudgementZone
 {
@@ -19,6 +22,25 @@ namespace JudgementZone
         protected override void OnStart()
         {
             // Handle when your app starts
+            var gameStateRealm = Realm.GetInstance("GameState.Realm");
+            if (gameStateRealm.All<M_Client_GameState>().Any())
+            {
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    var choice = await MainPage.DisplayAlert("Game in Progess", "Would you like to re-join the game you were just playing?", "Yes!", "Nah.");
+                    if (choice)
+                    {
+                        //REJOIN
+                    }
+                    else
+                    {
+                        gameStateRealm.Write(() =>
+                        {
+							gameStateRealm.RemoveAll();
+                        });
+                    }
+                });
+            }
         }
 
         protected override void OnSleep()

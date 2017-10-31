@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using JudgementZone.Interfaces;
 using JudgementZone.Models;
-using System.Collections.Generic;
-using Xamarin.Forms;
+using Realms;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace JudgementZone.Services
 {
@@ -109,19 +109,22 @@ namespace JudgementZone.Services
             await gameHubProxy.Invoke("RequestJoinGame", myPlayer, gameKey);
         }
 
-        public async Task SendGameStartRequest(M_Player myPlayer, string gameKey)
+        public async Task SendGameStartRequest(string gameKey)
         {
 			if (DEBUG_SERVER)
 				Console.WriteLine("GameServer: Requesting Game Start...");
-            await gameHubProxy.Invoke("RequestStartGame", myPlayer, gameKey);
+            await gameHubProxy.Invoke("RequestStartGame", gameKey);
         }
 
-        public async Task SendAnswerSubmission(M_PlayerAnswer myAnswer, string gameKey)
+        public async Task SendAnswerSubmission(int myAnswer, string gameKey)
         {
 			if (DEBUG_SERVER)
 				Console.WriteLine("GameServer: Sending Submission...");
-			MessagingCenter.Send(this, "answerSubmitted", myAnswer.PlayerAnswer);
-            await gameHubProxy.Invoke("SubmitAnswer", myAnswer, gameKey);
+			
+            var myPlayerDataRealm = Realm.GetInstance("MyPlayerData.Realm");
+			var myPlayer = myPlayerDataRealm.All<M_Player>().FirstOrDefault();
+
+            await gameHubProxy.Invoke("SubmitAnswer", myPlayer.PlayerId, myAnswer, gameKey);
         }
 
 		public async Task SendContinueRequest(string gameKey)
@@ -131,86 +134,63 @@ namespace JudgementZone.Services
             await gameHubProxy.Invoke("RequestContinueToNextQuestion", gameKey);
         }
 
+        public async Task SendQuestionSyncRequest()
+        {
+            var questionDeckRealm = Realm.GetInstance("QuestionDeck.Realm");
+            var lastSync = DateTimeOffset.MinValue;
+
+            if (questionDeckRealm.All<M_QuestionCard>().Any())
+            {
+                lastSync = questionDeckRealm.All<M_QuestionCard>().OrderByDescending(qc => qc.DateModified).First().DateModified.AddSeconds(2);
+            }
+
+			if (DEBUG_SERVER)
+				Console.WriteLine($"GameServer: Sending Sync Request for Timestamp {lastSync.ToString()}");
+            
+			await gameHubProxy.Invoke("RequestQuestionListUpdate", lastSync);
+        }
+
         #endregion
 
         #region Receivers
 
         private void SetupProxyEventHandlers()
         {
-			gameHubProxy.On<string>("DisplayGameKey", (gameKey) =>
-			{
+
+            gameHubProxy.On<M_Client_GameState>("ServerUpdate", (gameState) => {
 				if (DEBUG_SERVER)
-                    Console.WriteLine("GameServer: Game Key Received");
-                S_LocalGameData.Instance.GameKey = gameKey;
-                MessagingCenter.Send(this, "gameKeyReceived");
+					Console.WriteLine("GameServer: Game State Received");
+                
+                var gameStateRealm = Realm.GetInstance("GameState.Realm");
+
+                gameStateRealm.Write(() =>
+                {
+                    gameStateRealm.Add(gameState, true);
+                });
             });
 
-            gameHubProxy.On<List<M_Player>>("DisplayPlayerList", (remotePlayerList) =>
-			{
-				if (DEBUG_SERVER)
-					Console.WriteLine("GameServer: Player List Received");
-
-                // Add/Update/Remove PlayersInGame List
-                var localGamePlayerList = S_LocalGameData.Instance.PlayersInGame;
-                for (var i = localGamePlayerList.Count() - 1; i >= 0; i--)
+            gameHubProxy.On<List<M_QuestionCard>>("PushQuestionCards", (QuestionList) => {
+                if (QuestionList == null || QuestionList.Count() > 0)
                 {
-                    M_Player localPlayer = localGamePlayerList[i];
-                    var remotePlayer = remotePlayerList.FirstOrDefault(p => p.PlayerId == localPlayer.PlayerName);
-                    if (remotePlayer == null)
-                    {
-                        S_LocalGameData.Instance.PlayersInGame.Remove(localPlayer);
-                    }
-                    else
-                    {
-                        localPlayer.PlayerName = remotePlayer.PlayerName;
-                    }
+					if (DEBUG_SERVER)
+						Console.WriteLine($"GameServer: Received {QuestionList.Count()} QuestionCards");
+					var questionDeckRealm = Realm.GetInstance("QuestionDeck.Realm");
+					questionDeckRealm.Write(() =>
+					{
+						foreach (var questionCard in QuestionList)
+						{
+							questionDeckRealm.Add(questionCard, true);
+						}
+                        if (DEBUG_SERVER)
+                            Console.WriteLine($"Realm: Wrote {QuestionList.Count()} QuestionCards to Realm");
+                    });
                 }
-                foreach (M_Player remotePlayer in remotePlayerList.Where(rp => !localGamePlayerList.Any(lp => lp.PlayerId == rp.PlayerId)))
+                else
                 {
-                    localGamePlayerList.Add(remotePlayer);
+					if (DEBUG_SERVER)
+						Console.WriteLine($"GameServer: Received 0 QuestionCards. You're up to date!");
                 }
-
-                // Add/Update AllPlayers list [does not delete]
-                var localAllPlayerList = S_LocalGameData.Instance.AllPlayers;
-                foreach (M_Player remotePlayer in remotePlayerList)
-                {
-                    var localPlayer = localAllPlayerList.FirstOrDefault(lp => lp.PlayerId == remotePlayer.PlayerId);
-                    if (localPlayer == null)
-                    {
-						localAllPlayerList.Add(remotePlayer);
-                    }
-                    else
-                    {
-                        localPlayer.PlayerName = remotePlayer.PlayerName;
-                    }
-                }
-
-                MessagingCenter.Send(this, "playerListReceived");
-			});
-
-            gameHubProxy.On<string, M_QuestionCard>("DisplayQuestion", (focusedPlayerId, focusedQuestion) =>
-			{
-				if (DEBUG_SERVER)
-                    Console.WriteLine("GameServer: Qusetion Received");
-                var fp = S_LocalGameData.Instance.PlayersInGame.Where(p => p.PlayerId == focusedPlayerId).FirstOrDefault();
-                S_LocalGameData.Instance.FocusedPlayer = fp;
-                S_LocalGameData.Instance.FocusedQuestion = focusedQuestion;
-                MessagingCenter.Send(this, "questionReceived");
             });
-
-			gameHubProxy.On("EnableAnswerSubmission", () =>
-			{
-				if (DEBUG_SERVER)
-					Console.WriteLine("GameServer: Enable Submission Received");
-                MessagingCenter.Send(this, "enableAnswerSubmission");
-			});
-
-            gameHubProxy.On<M_AnswerStats>("DisplayQuestionStats", (questionStats) =>
-			{
-				if (DEBUG_SERVER)
-                    Console.WriteLine("GameServer: Stats Received");
-                MessagingCenter.Send(this, "questionStatsReceived", questionStats);
-			});
 
             gameHubProxy.On<string, Exception>("DisplayError", (silly, error) =>
             {

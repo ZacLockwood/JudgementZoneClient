@@ -1,12 +1,16 @@
 ﻿using System;
+using Realms;
 using JudgementZone.Models;
 using JudgementZone.Services;
 using Xamarin.Forms;
+using System.Linq;
 
 namespace JudgementZone.UI
 {
     public partial class StartGamePage : ContentPage
     {
+
+        private IDisposable RealmGameStateListenerToken;
 
         #region Constructor
 
@@ -14,7 +18,9 @@ namespace JudgementZone.UI
         {
             InitializeComponent();
 
-            var myPlayer = S_LocalGameData.Instance.MyPlayer;
+            var myPlayerDataRealm = Realm.GetInstance("MyPlayerData.Realm");
+
+            var myPlayer = myPlayerDataRealm.All<M_Player>().FirstOrDefault();
             if (myPlayer != null && !String.IsNullOrWhiteSpace(myPlayer.PlayerName))
             {
                 UsernameEntryField.Text = myPlayer.PlayerName;
@@ -78,18 +84,25 @@ namespace JudgementZone.UI
             if (S_GameConnector.Connector.IsConnected())
             {
                 // Get and store player
-                var myPlayer = S_LocalGameData.Instance.MyPlayer;
+                var playerRealm = Realm.GetInstance("MyPlayerData.Realm");
+                var myPlayer = playerRealm.All<M_Player>().FirstOrDefault();
                 if (myPlayer == null || String.IsNullOrWhiteSpace(myPlayer.PlayerId))
                 {
                     myPlayer = new M_Player()
                     {
                         PlayerName = UsernameEntryField.Text
                     };
-                    S_LocalGameData.Instance.MyPlayer = myPlayer;
+                    playerRealm.Write(() =>
+                    {
+                        playerRealm.Add(myPlayer, true);
+                    });
                 }
                 else
                 {
-                    myPlayer.PlayerName = UsernameEntryField.Text;
+                    playerRealm.Write(() =>
+                    {
+						myPlayer.PlayerName = UsernameEntryField.Text;
+                    });
                 }
 
                 S_GameConnector.Connector.SendNewGameRequest(myPlayer);
@@ -102,17 +115,43 @@ namespace JudgementZone.UI
 
         private void SetupSignalRSubscriptions()
         {
-            MessagingCenter.Subscribe(this, "gameKeyReceived", (S_GameConnector sender) =>
+            var gameStateRealm = Realm.GetInstance("GameState.Realm");
+            RealmGameStateListenerToken = gameStateRealm.All<M_Client_GameState>().SubscribeForNotifications((sender, changes, errors) =>
             {
-                Device.BeginInvokeOnMainThread(async () => {
-					await Navigation.PushAsync(new GameLobbyPage());
-                });
+                var gameState = sender.FirstOrDefault();
+                if (gameState == null)
+                {
+                    return;
+                }
+
+                switch(gameState.ClientViewCode)
+                {
+                    case 1:
+                        // WAITING FOR GAME START
+                        Device.BeginInvokeOnMainThread(async () => {
+                            await Navigation.PushAsync(new GameLobbyPage(gameState));
+                        });
+                        break;
+                    case 2:
+                        // DISPLAY QUESTION
+                        break;
+                    case 3:
+                        // DISPLAY QUESTION STATS
+                        break;
+                    case 4:
+                        // DISPLAY GAME STATS
+                        break;
+                }
             });
         }
 
         private void ReleaseSignalRSubscriptions()
         {
-            MessagingCenter.Unsubscribe<S_GameConnector, string>(this, "gameKeyReceived");
+            if (RealmGameStateListenerToken != null)
+            {
+                RealmGameStateListenerToken.Dispose();
+                RealmGameStateListenerToken = null;
+            }
         }
 
         #endregion

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JudgementZone.Models;
 
-namespace JudgementZone.Services
+namespace JudgementZone.Obsolete
 {
     public class S_LocalGameData
     {
