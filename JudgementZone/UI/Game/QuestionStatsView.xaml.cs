@@ -14,11 +14,9 @@ namespace JudgementZone.UI
             InitializeComponent();
         }
 
-        public void DisplayStats(M_Client_GameState state)
+        public void DisplayStats(M_Client_QuestionStats stats, M_QuestionCard focusedQuestion, M_Player myPlayer, M_Player focusedPlayer, int questionNum, int maxQuestionNum, int roundNum, int maxRoundNum)
         {
 			NextButton.IsEnabled = false;
-
-			var stats = state.QuestionStats;
 
             if (stats == null)
             {
@@ -26,46 +24,97 @@ namespace JudgementZone.UI
                 return;
             }
 
-            RedStatsLabel.Text = stats.RedGuesses + " Guessed Red";
-            YellowStatsLabel.Text = stats.YellowGuesses + " Guessed Yellow";
-            GreenStatsLabel.Text = stats.GreenGuesses + " Guessed Green";
-            BlueStatsLabel.Text = stats.BlueGuesses + " Guessed Blue";
+            if (focusedQuestion == null)
+			{
+				Console.WriteLine("QuestionStatsView: ERROR WITH FOCUSED QUESTION");
+				return;
+			}
 
-            RedStatsLabel.Opacity = 0.45;
-            YellowStatsLabel.Opacity = 0.45;
-            GreenStatsLabel.Opacity = 0.45;
-            BlueStatsLabel.Opacity = 0.45;
+            // Question/Round Indicators
+			RoundNumIndicatorLabel.Text = $"Round {roundNum}";
+			QuestionNumIndicatorLabel.Text = $"Question {questionNum}";
 
-            RedStatsLabel.FontAttributes = FontAttributes.None;
-            YellowStatsLabel.FontAttributes = FontAttributes.None;
-			GreenStatsLabel.FontAttributes = FontAttributes.None;
-            BlueStatsLabel.FontAttributes = FontAttributes.None;
+			// Player Label Text
+			if (focusedPlayer.PlayerId == myPlayer.PlayerId)
+			{
+				FocusedPlayerLabel.Text = "My Turn!";
+			}
+			else
+			{
+				if (focusedPlayer.PlayerName.ToCharArray().First().ToString().ToUpper() == focusedPlayer.PlayerName.ToCharArray().First().ToString())
+				{
+					FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s Turn";
+				}
+				else
+				{
+					FocusedPlayerLabel.Text = focusedPlayer.PlayerName + "\'s turn";
+				}
+			}
 
+			// Set QuestionLabel properties to auto-size height
+			AbsoluteLayout.SetLayoutFlags(QuestionLabel, AbsoluteLayoutFlags.PositionProportional | AbsoluteLayoutFlags.WidthProportional);
+			AbsoluteLayout.SetLayoutBounds(QuestionLabel, new Rectangle(0.5, 0.0, 1.0, -1.0));
+
+            // Set Bindings for Question, Answers, and Stats
+			QuestionLabel.BindingContext = focusedQuestion;
+			AnswerTextAbsoluteLayout.BindingContext = focusedQuestion;
+			AnswerStatsAbsoluteLayout.BindingContext = stats;
+
+            ForceLayout();
+
+			// Adjust height distribution between QuestionLabel and Answers/StatsAbsoluteLayout if necessary
+			if (QuestionLabel.Height > QuestionAbsoluteLayout.Height * 0.1875)
+			{
+				var leftOverSpace = 1.0 - (QuestionLabel.Height / QuestionAbsoluteLayout.Height);
+				var spacing = leftOverSpace * 0.02;
+				AbsoluteLayout.SetLayoutBounds(AnswerStatsAbsoluteLayout, new Rectangle(0.0, 1.0, 0.74, leftOverSpace - spacing));
+				AbsoluteLayout.SetLayoutBounds(AnswerTextAbsoluteLayout, new Rectangle(1.0, 1.0, 0.275, leftOverSpace - spacing));
+			}
+			else
+			{
+				AbsoluteLayout.SetLayoutFlags(QuestionLabel, AbsoluteLayoutFlags.All);
+				AbsoluteLayout.SetLayoutBounds(QuestionLabel, new Rectangle(0.5, 0.0, 1.0, 0.1875));
+				AbsoluteLayout.SetLayoutBounds(AnswerTextAbsoluteLayout, new Rectangle(0.0, 1.0, 0.74, 0.8));
+				AbsoluteLayout.SetLayoutBounds(AnswerStatsAbsoluteLayout, new Rectangle(1.0, 1.0, 0.245, 0.8));
+			}
+
+            // Adjust Correct Answer/Stats Highlight
+            AnswerStatsFrameRed.Opacity = 0.45;
+			AnswerTextFrameRed.Opacity = 0.45;
+            AnswerStatsFrameYellow.Opacity = 0.45;
+			AnswerTextFrameYellow.Opacity = 0.45;
+            AnswerStatsFrameGreen.Opacity = 0.45;
+			AnswerTextFrameGreen.Opacity = 0.45;
+            AnswerStatsFrameBlue.Opacity = 0.45;
+			AnswerTextFrameBlue.Opacity = 0.45;
             switch (stats.CorrectAnswerId)
             {
 				case 1:
-                    RedStatsLabel.Opacity = 1.0;
-                    RedStatsLabel.FontAttributes = FontAttributes.Bold;
+                    AnswerStatsFrameRed.Opacity = 1.0;
+                    AnswerTextFrameRed.Opacity = 1.0;
 					break;
 				case 2:
-                    YellowStatsLabel.Opacity = 1.0;
-					YellowStatsLabel.FontAttributes = FontAttributes.Bold;
+					AnswerStatsFrameYellow.Opacity = 1.0;
+					AnswerTextFrameYellow.Opacity = 1.0;
                     break;
 				case 3:
-                    GreenStatsLabel.Opacity = 1.0;
-					GreenStatsLabel.FontAttributes = FontAttributes.Bold;
+					AnswerStatsFrameGreen.Opacity = 1.0;
+					AnswerTextFrameGreen.Opacity = 1.0;
 					break;
 				case 4:
-                    BlueStatsLabel.Opacity = 1.0;
-					BlueStatsLabel.FontAttributes = FontAttributes.Bold;
+					AnswerStatsFrameBlue.Opacity = 1.0;
+					AnswerTextFrameBlue.Opacity = 1.0;
 					break;
             }
 
-            // HACK
-            var myPlayerId = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().First().PlayerId;
-            if (state.FocusedPlayerId == myPlayerId)
+            // Set End Turn button / Info text based on player focus
+            if (focusedPlayer.PlayerId == myPlayer.PlayerId)
             {
+				NextButton.Text = "End Turn";
+				NextButton.IsEnabled = true;
+
                 // Settings for focused player
+                /*
                 var countCorrectGuesses = 0;
 
                 switch (stats.CorrectAnswerId)
@@ -105,14 +154,15 @@ namespace JudgementZone.UI
                 {
                     var someStrings = new String[] { $"{countCorrectGuesses} People Guessed Correctly", $"You Have {countCorrectGuesses} New Friends", $"Guess These {countCorrectGuesses} Are Your Favorite" };
                     InfoLabel.Text = someStrings[new Random().Next(0, someStrings.Count())];
-                }
-
-                NextButton.Text = "End Turn";
-                NextButton.IsEnabled = true;
+                }*/
             }
             else
-            {
+			{
+
+				NextButton.Text = "Waiting...";
+
                 // Settings for other players
+                /*
                 if (stats.IsPlayerCorrect)
                 {
                     var winStrings = new String[] { "Correct!", "Nice Job!", "Woohoo!", "Perceptive!", "Killing the Game!" };
@@ -123,8 +173,7 @@ namespace JudgementZone.UI
                     var loseStrings = new String[] { "Incorrect", "Boo!", "Better Luck Next Time!", "Wrong!", "Nope!" };
                     InfoLabel.Text = loseStrings[new Random().Next(0, loseStrings.Count())];
                 }
-
-                NextButton.Text = "Waiting...";
+                */
             }
         }
 

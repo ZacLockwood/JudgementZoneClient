@@ -20,7 +20,7 @@ namespace JudgementZone.UI
 
         #region Constructor
 
-        public AnswerButtonFrame()
+        public AnswerButtonFrame(int answerFrameId)
         {
             InitializeComponent();
             AnswerFrameId = answerFrameId;

@@ -13,7 +13,8 @@ namespace JudgementZone.UI
     {
         LoaderPresented = 1,
         QuestionPresented,
-        QuestionStatsPresented
+        QuestionStatsPresented,
+        GameStatsPresented
     }
 
     public partial class GamePage : ContentPage
@@ -363,6 +364,9 @@ namespace JudgementZone.UI
                         // DISPLAY QUESTION
                         Device.BeginInvokeOnMainThread(async () =>
                         {
+                            // if new round, await new round animation
+                            // then continue...
+
                             // Update Question View
                             var focusedQuestion = Realm.GetInstance("QuestionDeck.Realm").Find<M_QuestionCard>(gameState.CurrentQuestionId);
                             var questionNum = gameState.CurrentQuestionNum;
@@ -389,9 +393,17 @@ namespace JudgementZone.UI
                         // DISPLAY QUESTION STATS
                         Device.BeginInvokeOnMainThread(async () =>
                         {
+                            var stats = gameState.QuestionStats;
+                            var focusedQuestion = Realm.GetInstance("QuestionDeck.Realm").Find<M_QuestionCard>(gameState.CurrentQuestionId);
+							var questionNum = gameState.CurrentQuestionNum;
+							var maxQuestionNum = gameState.MaxQuestionNum;
+							var roundNum = gameState.CurrentRoundNum;
+							var maxRoundNum = gameState.MaxRoundNum;
+
                             GameQuestionStatsView.Opacity = 0.0;
                             GameQuestionStatsView.IsVisible = true;
-                            GameQuestionStatsView.DisplayStats(gameState);
+                            GameQuestionStatsView.DisplayStats(stats, focusedQuestion, myPlayer, focusedPlayer, questionNum, maxQuestionNum, roundNum, maxRoundNum);
+
                             await Task.Delay(500);
                             await GP_AnimateTransitionToPageState(E_GamePageState.QuestionStatsPresented);
                         });

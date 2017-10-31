@@ -146,6 +146,7 @@ namespace JudgementZone.Services
 
 			if (DEBUG_SERVER)
 				Console.WriteLine($"GameServer: Sending Sync Request for Timestamp {lastSync.ToString()}");
+            
 			await gameHubProxy.Invoke("RequestQuestionListUpdate", lastSync);
         }
 
@@ -159,12 +160,8 @@ namespace JudgementZone.Services
             gameHubProxy.On<M_Client_GameState>("ServerUpdate", (gameState) => {
 				if (DEBUG_SERVER)
 					Console.WriteLine("GameServer: Game State Received");
+                
                 var gameStateRealm = Realm.GetInstance("GameState.Realm");
-
-                if (gameState.ClientViewCode == 4)
-                {
-                    Console.WriteLine();
-                }
 
                 gameStateRealm.Write(() =>
                 {
@@ -194,92 +191,6 @@ namespace JudgementZone.Services
 						Console.WriteLine($"GameServer: Received 0 QuestionCards. You're up to date!");
                 }
             });
-
-            /*
-			gameHubProxy.On<string>("DisplayGameKey", (gameKey) =>
-			{
-				if (DEBUG_SERVER)
-                    Console.WriteLine("GameServer: Game Key Received");
-                var realm = Realm.GetInstance();
-                realm.Write(() =>
-                {
-                    M_GameState newGame = new M_GameState()
-                    {
-                        GameId = gameKey
-                    };
-                    realm.Add(newGame, true);
-                });
-            });
-
-            gameHubProxy.On<List<M_Player>>("DisplayPlayerList", (remotePlayerList) =>
-			{
-				if (DEBUG_SERVER)
-					Console.WriteLine("GameServer: Player List Received");
-
-				var realm = Realm.GetInstance();
-				realm.Write(() =>
-				{
-                    var gameState = realm.All<M_GameState>().FirstOrDefault();
-                    if (gameState == null)
-                    {
-                        Console.WriteLine("FAIL");
-                    }
-                    else
-                    {
-                        gameState.GamePlayers = remotePlayerList;
-                    }
-				});
-			});
-
-            gameHubProxy.On<string, M_QuestionCard>("DisplayQuestion", (focusedPlayerId, focusedQuestion) =>
-			{
-				if (DEBUG_SERVER)
-                    Console.WriteLine("GameServer: Qusetion Received");
-
-                var realm = Realm.GetInstance();
-                realm.Write(() =>
-                {
-					var gameState = realm.All<M_GameState>().FirstOrDefault();
-					if (gameState == null)
-					{
-						Console.WriteLine("FAIL");
-					}
-					else
-					{
-                        gameState.FocusedPlayerId = focusedPlayerId;
-                        gameState.FocusedQuestionId = focusedQuestion.QuestionId;
-                        gameState.GameQuestions.Add(focusedQuestion);
-					}
-                });
-            });
-
-			gameHubProxy.On("EnableAnswerSubmission", () =>
-			{
-				if (DEBUG_SERVER)
-					Console.WriteLine("GameServer: Enable Submission Received");
-                MessagingCenter.Send(this, "enableAnswerSubmission");
-			});
-
-            gameHubProxy.On<M_AnswerStats>("DisplayQuestionStats", (questionStats) =>
-			{
-				if (DEBUG_SERVER)
-                    Console.WriteLine("GameServer: Stats Received");
-
-				var realm = Realm.GetInstance();
-				realm.Write(() =>
-				{
-					var gameState = realm.All<M_GameState>().FirstOrDefault();
-					if (gameState == null)
-					{
-						Console.WriteLine("FAIL");
-					}
-					else
-					{
-                        gameState.GameAnswerStats.Add(questionStats);
-					}
-				});
-			});
-            */
 
             gameHubProxy.On<string, Exception>("DisplayError", (silly, error) =>
             {

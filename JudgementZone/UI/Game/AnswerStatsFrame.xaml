@@ -6,7 +6,7 @@
        IsClippedToBounds="true"
        HasShadow="false">
 	<Frame.Content>
-        <Label x:Name="AnswerLabel"
+        <Label x:Name="StatsLabel"
                 HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                 FontSize="20"
                 Text="{Binding .}"
