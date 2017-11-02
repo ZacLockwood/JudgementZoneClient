@@ -26,8 +26,11 @@
                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
                                 Opacity="0"/>
             <local:QuestionStatsView x:Name="GameQuestionStatsView"
-                                   AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
-                                   Opacity="0"/>
+                                     AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
+                                     Opacity="0"/>
+            <local:GameStatsView x:Name="GameStatsView"
+                                 AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.5,1,1"
+                                 Opacity="0"/>
         </AbsoluteLayout>
 	</ContentPage.Content>
 </ContentPage>

@@ -49,6 +49,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\AnswerStatsFrame.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\GameStatsView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\PlayerGameStatsView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
@@ -102,6 +108,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UI\Game\AnswerStatsFrame.xaml.cs">
       <DependentUpon>AnswerStatsFrame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Game\GameStatsView.xaml.cs">
+      <DependentUpon>GameStatsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Game\PlayerGameStatsView.xaml.cs">
+      <DependentUpon>PlayerGameStatsView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
