@@ -6,6 +6,8 @@ using JudgementZone.Models;
 using Realms;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.WindowsAzure.MobileServices;
+using Xamarin.Forms;
 
 namespace JudgementZone.Services
 {
@@ -40,6 +42,9 @@ namespace JudgementZone.Services
         private readonly HubConnection hubConnection;
         private readonly IHubProxy gameHubProxy;
 
+        // Track whether the user has authenticated.
+        private bool authenticated = false;
+
         #region Constructor
 
         private S_GameConnector()
@@ -70,9 +75,19 @@ namespace JudgementZone.Services
             // Start connection
             try
             {
-                hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
-                await hubConnection.Start();
-                return true;
+                if (App.Authenticator != null)
+                    authenticated = await App.Authenticator.Authenticate();
+
+                if (authenticated == true)
+                {
+                    hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
+                    await hubConnection.Start();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception ex)
             {
@@ -81,7 +96,55 @@ namespace JudgementZone.Services
             }
         }
 
-		public void StopConnection()
+        //private async Task ExecuteLoginCommand(string service)
+        //{
+        //    var IsLoading = false;
+
+        //    if (IsLoading || string.IsNullOrEmpty(service)) return;
+
+        //    MobileServiceAuthenticationProvider provider;
+
+        //    switch (service)
+        //    {
+        //        case "Facebook":
+        //            provider = MobileServiceAuthenticationProvider.Facebook;
+        //            break;
+        //        case "Twitter":
+        //            provider = MobileServiceAuthenticationProvider.Twitter;
+        //            break;
+        //        case "Microsoft":
+        //            provider = MobileServiceAuthenticationProvider.MicrosoftAccount;
+        //            break;
+        //        case "Google":
+        //            provider = MobileServiceAuthenticationProvider.Google;
+        //            break;
+        //        default:
+        //            throw new ArgumentOutOfRangeException(service);
+        //    }
+
+        //    IsLoading = true;
+
+        //    try
+        //    {
+        //        //await App.Platform.Authorize(container, provider);
+        //        var user = await DependencyService.Get<I_MobileClient>().Authorize(provider);
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        if (ex.Message.Contains("Authentication was cancelled by the user"))
+        //        {
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        var page = new ContentPage();
+        //        await page.DisplayAlert("Error", "Error logging in. Please check connectivity and try again.", "OK", null);
+        //    }
+
+        //    IsLoading = false;
+        //}
+
+        public void StopConnection()
 		{
 			hubConnection.Stop();
 		}
@@ -120,7 +183,7 @@ namespace JudgementZone.Services
         {
 			if (DEBUG_SERVER)
 				Console.WriteLine("GameServer: Sending Submission...");
-			
+
             var myPlayerDataRealm = Realm.GetInstance("MyPlayerData.Realm");
 			var myPlayer = myPlayerDataRealm.All<M_Player>().FirstOrDefault();
 
@@ -146,7 +209,7 @@ namespace JudgementZone.Services
 
 			if (DEBUG_SERVER)
 				Console.WriteLine($"GameServer: Sending Sync Request for Timestamp {lastSync.ToString()}");
-            
+
 			await gameHubProxy.Invoke("RequestQuestionListUpdate", lastSync);
         }
 
@@ -160,7 +223,7 @@ namespace JudgementZone.Services
             gameHubProxy.On<M_Client_GameState>("ServerUpdate", (gameState) => {
 				if (DEBUG_SERVER)
 					Console.WriteLine("GameServer: Game State Received");
-                
+
                 var gameStateRealm = Realm.GetInstance("GameState.Realm");
 
                 gameStateRealm.Write(() =>

@@ -3,6 +3,8 @@ using Xamarin.Forms;
 using JudgementZone.UI;
 using JudgementZone.Models;
 using System.Linq;
+using Microsoft.WindowsAzure.MobileServices;
+using JudgementZone.Interfaces;
 
 namespace JudgementZone
 {
@@ -51,6 +53,13 @@ namespace JudgementZone
         protected override void OnResume()
         {
             // Handle when your app resumes
+        }
+
+        public static IAuthenticate Authenticator { get; private set; }
+
+        public static void Init(IAuthenticate authenticator)
+        {
+            Authenticator = authenticator;
         }
     }
 }

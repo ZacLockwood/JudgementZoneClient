@@ -51,6 +51,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IAuthenticate .cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\I_MobileClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -108,7 +110,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
     <Folder Include="$(MSBuildThisFileDirectory)Services\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Interfaces\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\MenuPages\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\Game\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\ViewGestures\" />
