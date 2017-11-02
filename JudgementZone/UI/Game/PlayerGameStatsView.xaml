@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="JudgementZone.UI.PlayerGameStatsView"
+    xmlns:local="clr-namespace:JudgementZone.UI">
+	<ContentView.Content>
+        <StackLayout x:Name="MainStackLayout" Spacing="5">
+            <Label x:Name="MyPlayerNameLabel"
+                    HorizontalOptions="FillAndExpand" VerticalOptions="Center"
+                    HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                    FontSize="Large"
+                    FontAttributes="Bold"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource JZ_White}"
+                    Text="{Binding PlayerName}"/>
+            <Label x:Name="MyPlayerStatsLabel"
+                    HorizontalOptions="FillAndExpand" VerticalOptions="Center"
+                    HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+                    FontSize="Medium"
+                    FontAttributes="None"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource JZ_White}"
+                    Text="My Answers"/>
+            <AbsoluteLayout x:Name="MyPlayerStatsAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <AbsoluteLayout x:Name="MPAnswerTextAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.0,1.0,0.74,1.0">
+                    <local:AnswerTextFrame x:Name="MPAnswerTextFrameRed"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Red}"
+                                             BindingContext="My Red Answers"/>
+                    <local:AnswerTextFrame x:Name="MPAnswerTextFrameYellow"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Yellow}"
+                                             BindingContext="My Yellow Answers"/>
+                    <local:AnswerTextFrame x:Name="MPAnswerTextFrameGreen"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Green}"
+                                             BindingContext="My Green Answers"/>
+                    <local:AnswerTextFrame x:Name="MPAnswerTextFrameBlue"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Blue}"
+                                             BindingContext="My Blue Answers"/>
+                </AbsoluteLayout>
+                <AbsoluteLayout x:Name="MPAnswerStatsAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1.0,1.0,0.245,1.0">
+                    <local:AnswerStatsFrame x:Name="MPAnswerStatsFrameRed"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Red}"
+                                             BindingContext="{Binding .PlayerSelectionsRed}"/>
+                    <local:AnswerStatsFrame x:Name="MPAnswerStatsFrameYellow"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Yellow}"
+                                             BindingContext="{Binding .PlayerSelectionsYellow}"/>
+                    <local:AnswerStatsFrame x:Name="MPAnswerStatsFrameGreen"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Green}"
+                                             BindingContext="{Binding .PlayerSelectionsGreen}"/>
+                    <local:AnswerStatsFrame x:Name="MPAnswerStatsFrameBlue"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Blue}"
+                                             BindingContext="{Binding .PlayerSelectionsBlue}"/>
+                </AbsoluteLayout>
+            </AbsoluteLayout>
+            <Label x:Name="OtherPlayerStatsLabel"
+                    HorizontalOptions="FillAndExpand" VerticalOptions="Center"
+                    HorizontalTextAlignment="Start" VerticalTextAlignment="Center"
+                    FontSize="Medium"
+                    FontAttributes="None"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource JZ_White}"
+                    Text="Other Player's Guesses"/>
+            <AbsoluteLayout x:Name="OtherPlayerStatsAbsoluteLayout" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+                <AbsoluteLayout x:Name="OPAnswerTextAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.0,1.0,.74,1.0">
+                    <local:AnswerTextFrame x:Name="OPAnswerTextFrameRed"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Red}"
+                                             BindingContext="Red Guesses"/>
+                    <local:AnswerTextFrame x:Name="OPAnswerTextFrameYellow"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Yellow}"
+                                             BindingContext="Yellow Guesses"/>
+                    <local:AnswerTextFrame x:Name="OPAnswerTextFrameGreen"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Green}"
+                                             BindingContext="Green Guesses"/>
+                    <local:AnswerTextFrame x:Name="OPAnswerTextFrameBlue"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Blue}"
+                                             BindingContext="Blue Guesses"/>
+                </AbsoluteLayout>
+                <AbsoluteLayout x:Name="OPAnswerStatsAbsoluteLayout" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1.0,1.0,0.245,1.0">
+                    <local:AnswerStatsFrame x:Name="OPAnswerStatsFrameRed"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds=".5,0.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Red}"
+                                             BindingContext="{Binding .OtherSelectionsRed}"/>
+                    <local:AnswerStatsFrame x:Name="OPAnswerStatsFrameYellow"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.333,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Yellow}"
+                                             BindingContext="{Binding .OtherSelectionsYellow}"/>
+                    <local:AnswerStatsFrame x:Name="OPAnswerStatsFrameGreen"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,0.666,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Green}"
+                                             BindingContext="{Binding .OtherSelectionsGreen}"/>
+                    <local:AnswerStatsFrame x:Name="OPAnswerStatsFrameBlue"
+                                             AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.5,1.0,1,0.235"
+                                             BackgroundColor="{StaticResource JZ_Blue}"
+                                             BindingContext="{Binding .OtherSelectionsBlue}"/>
+                </AbsoluteLayout>
+            </AbsoluteLayout>
+        </StackLayout>
+	</ContentView.Content>
+</ContentView>

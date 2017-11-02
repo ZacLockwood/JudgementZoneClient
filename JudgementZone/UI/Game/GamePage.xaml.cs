@@ -82,6 +82,11 @@ namespace JudgementZone.UI
                 GameQuestionStatsView.AbortAnimation("FadeIn");
             }
 
+            if (GameStatsView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.GameStatsPresented)
+            {
+                GameStatsView.AbortAnimation("FadeIn");
+            }
+
             if (!GameLoaderView.AnimationIsRunning("FadeOut") && GameLoaderView.Opacity > 0.0 && newPageState != E_GamePageState.LoaderPresented)
             {
                 GameLoaderView.Animate("FadeOut",
@@ -131,6 +136,23 @@ namespace JudgementZone.UI
                                                   {
                                                       GameQuestionStatsView.IsVisible = false;
                                                       GameQuestionStatsView.IsEnabled = false;
+                                                  }
+                                              });
+            }
+
+            if (!GameStatsView.AnimationIsRunning("FadeOut") && GameStatsView.Opacity > 0.0 && newPageState != E_GamePageState.GameStatsPresented)
+            {
+                GameStatsView.Animate("FadeOut",
+                                              (percent) =>
+                                              {
+                                                  GameStatsView.Opacity = Math.Abs(percent - 1.0);
+                                              }, 16, 250, Easing.CubicInOut,
+                                              (double percent, bool canceled) =>
+                                              {
+                                                  if (!canceled)
+                                                  {
+                                                      GameStatsView.IsVisible = false;
+                                                      GameStatsView.IsEnabled = false;
                                                   }
                                               });
             }
@@ -221,6 +243,34 @@ namespace JudgementZone.UI
                                                               MainAbsoluteLayout.RaiseChild(GameQuestionStatsView);
                                                           }
                                                       });
+                    }
+                    break;
+                case E_GamePageState.GameStatsPresented:
+                    if (GameStatsView.AnimationIsRunning("FadeOut"))
+                    {
+                        GameStatsView.AbortAnimation("FadeOut");
+                    }
+                    if (!GameStatsView.AnimationIsRunning("FadeIn"))
+                    {
+                        GameStatsView.IsVisible = true;
+                        GameStatsView.Animate("FadeIn",
+                                                  (percent) =>
+                                                  {
+                                                      GameStatsView.Opacity = percent;
+                                                  },
+                                                  16, 250, Easing.CubicInOut,
+                                                  (double percent, bool canceled) =>
+                                                  {
+                                                      if (canceled)
+                                                      {
+                                                          GameStatsView.IsVisible = false;
+                                                      }
+                                                      else
+                                                      {
+                                                          GameStatsView.IsEnabled = true;
+                                                          MainAbsoluteLayout.RaiseChild(GameStatsView);
+                                                      }
+                                                  });
                     }
                     break;
             }
@@ -410,6 +460,11 @@ namespace JudgementZone.UI
                         break;
                     case 4:
                         // DISPLAY GAME STATS
+                        Device.BeginInvokeOnMainThread(async () =>
+                        {
+                            GameStatsView.UpdateView(gameState.PlayerGameStatsList.ToList(), gameState.PlayerList.ToList());
+							await GP_AnimateTransitionToPageState(E_GamePageState.GameStatsPresented);
+                        });
                         break;
                 }
             });
@@ -427,11 +482,13 @@ namespace JudgementZone.UI
         private void SetUpUISubscriptions()
         {
             MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
+            MessagingCenter.Subscribe<GameStatsView>(this, "EndGameButtonPressed", EndGameButtonPressed);
         }
 
         private void ReleaseUISubscriptions()
         {
             MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
+            MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
         }
 
 		#endregion
@@ -453,6 +510,25 @@ namespace JudgementZone.UI
 				{
 					sender.EnableAnswerControls();
 				}
+			});
+		}
+
+        private void EndGameButtonPressed(GameStatsView sender)
+		{
+			Device.BeginInvokeOnMainThread(async () =>
+			{
+                if (PageState == E_GamePageState.GameStatsPresented)
+                {
+                    await Navigation.PopModalAsync();
+
+                    ReleaseRealmSubscriptions();
+
+                    var gameStateRealm = Realm.GetInstance("GameState.Realm");
+                    gameStateRealm.Write(() =>
+                    {
+                        gameStateRealm.RemoveAll();
+                    });
+                }
 			});
 		}
 

@@ -58,12 +58,12 @@ namespace JudgementZone.UI
 
 		protected override void OnAppearing()
 		{
-			SetupSignalRSubscriptions();
+			SetupRealmSubscriptions();
         }
 
 		protected override void OnDisappearing()
 		{
-			ReleaseSignalRSubscriptions();
+			ReleaseRealmSubscriptions();
 		}
 
 		#endregion
@@ -113,7 +113,7 @@ namespace JudgementZone.UI
 
         #region SignalR Responders
 
-        private void SetupSignalRSubscriptions()
+        private void SetupRealmSubscriptions()
         {
             var gameStateRealm = Realm.GetInstance("GameState.Realm");
             RealmGameStateListenerToken = gameStateRealm.All<M_Client_GameState>().SubscribeForNotifications((sender, changes, errors) =>
@@ -129,6 +129,7 @@ namespace JudgementZone.UI
                     case 1:
                         // WAITING FOR GAME START
                         Device.BeginInvokeOnMainThread(async () => {
+                            ReleaseRealmSubscriptions();
                             await Navigation.PushAsync(new GameLobbyPage(gameState));
                         });
                         break;
@@ -145,7 +146,7 @@ namespace JudgementZone.UI
             });
         }
 
-        private void ReleaseSignalRSubscriptions()
+        private void ReleaseRealmSubscriptions()
         {
             if (RealmGameStateListenerToken != null)
             {
