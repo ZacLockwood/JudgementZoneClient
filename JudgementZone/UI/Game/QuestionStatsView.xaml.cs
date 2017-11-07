@@ -4,17 +4,109 @@ using JudgementZone.Models;
 using Xamarin.Forms;
 using JudgementZone.Services;
 using Realms;
+using JudgementZone.Interfaces;
 
 namespace JudgementZone.UI
 {
-    public partial class QuestionStatsView : ContentView
+    public partial class QuestionStatsView : ContentView, I_PresentableGameView
     {
         public QuestionStatsView()
         {
             InitializeComponent();
         }
 
-        public void DisplayStats(M_Client_QuestionStats stats, M_QuestionCard focusedQuestion, M_Player myPlayer, M_Player focusedPlayer, int questionNum, int maxQuestionNum, int roundNum, int maxRoundNum)
+		#region View Presentation Management
+
+		public void Present()
+		{
+			// Cancel FadeOut if running
+			if (this.AnimationIsRunning("FadeOut"))
+			{
+				this.AbortAnimation("FadeOut");
+			}
+
+			// Only animate if not already animating
+			// And if not currently presented/visible
+			if (!this.AnimationIsRunning("FadeIn") && (Opacity < 1.0 || !IsVisible))
+			{
+				// Gauruntee start from 0 opacity if not visible
+				if (!IsVisible)
+				{
+					Opacity = 0.0;
+				}
+
+				// Gauruntee visibility
+				IsVisible = true;
+
+				// Animate
+				var startingOpacity = Opacity;
+				this.Animate("FadeIn", (percent) =>
+				{
+					Opacity = startingOpacity + percent * (1.0 - startingOpacity);
+				},
+					16, 250, Easing.CubicInOut,
+					(double percent, bool canceled) =>
+					{
+						if (!canceled)
+						{
+							// Gauruntee 1.0 opacity and enable controls on successful completion
+							Opacity = 1.0;
+							IsEnabled = true;
+						}
+					}
+				);
+			}
+			else if (!this.AnimationIsRunning("FadeIn"))
+			{
+				// Guaruntee full opacity/visibility if animation not running
+				// Possibly redundant
+				Opacity = 1.0;
+				IsVisible = true;
+			}
+		}
+
+		public void Hide()
+		{
+			// Disable view controls immediately
+			IsEnabled = false;
+
+			// Cancel FadeIn if running
+			if (this.AnimationIsRunning("FadeIn"))
+			{
+				this.AbortAnimation("FadeIn");
+			}
+
+			// Only animate if not already animating
+			// And if currently visible/presented
+			if (!this.AnimationIsRunning("FadeOut") && (Opacity > 0.0 && IsVisible))
+			{
+				var startingOpacity = Opacity;
+
+				this.Animate("FadeOut", (percent) =>
+				{
+					Opacity = startingOpacity - percent * startingOpacity;
+				},
+					16, 250, Easing.CubicInOut,
+					(double percent, bool canceled) =>
+					{
+						if (!canceled)
+						{
+							IsVisible = false;
+						}
+					});
+			}
+			else if (!this.AnimationIsRunning("FadeOut"))
+			{
+				// Guaruntee 0 opacity/no visibility if animation not running
+				// Possibly redundant
+				Opacity = 0.0;
+				IsVisible = false;
+			}
+		}
+
+		#endregion
+
+		public void DisplayStats(M_Client_QuestionStats stats, M_QuestionCard focusedQuestion, M_Player myPlayer, M_Player focusedPlayer, int questionNum, int maxQuestionNum, int roundNum, int maxRoundNum)
         {
 			NextButton.IsEnabled = false;
 

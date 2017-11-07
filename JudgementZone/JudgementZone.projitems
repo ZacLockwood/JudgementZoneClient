@@ -115,6 +115,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Game\PlayerGameStatsView.xaml.cs">
       <DependentUpon>PlayerGameStatsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\I_PresentableGameView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
