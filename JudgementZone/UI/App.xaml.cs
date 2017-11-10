@@ -5,11 +5,15 @@ using JudgementZone.Models;
 using System.Linq;
 using Microsoft.WindowsAzure.MobileServices;
 using JudgementZone.Interfaces;
+using JudgementZone.Services;
+using System.Threading.Tasks;
 
 namespace JudgementZone
 {
     public partial class App : Application
     {
+        public static MobileServiceClient client = new MobileServiceClient(ServerConstants.SIGNALR_URL);//ServerConstants.SIGNALR_URL, handler
+
         public App()
         {
             InitializeComponent();

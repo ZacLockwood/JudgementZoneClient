@@ -6,8 +6,6 @@ using JudgementZone.Models;
 using Realms;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.WindowsAzure.MobileServices;
-using Xamarin.Forms;
 
 namespace JudgementZone.Services
 {
@@ -42,8 +40,7 @@ namespace JudgementZone.Services
         private readonly HubConnection hubConnection;
         private readonly IHubProxy gameHubProxy;
 
-        // Track whether the user has authenticated.
-        private bool authenticated = false;
+
 
         #region Constructor
 
@@ -53,7 +50,7 @@ namespace JudgementZone.Services
             hubConnection = new HubConnection(ServerConstants.SIGNALR_URL);
 
             // Create Hub Proxies (Multiple)
-            gameHubProxy = hubConnection.CreateHubProxy(ServerConstants.SIGNALR_GAME_HUB_NAME); // GameHub name must match server class name
+            gameHubProxy = hubConnection.CreateHubProxy(ServerConstants.SIGNALR_GAME_HUB_NAME);
 
             // Set Up Hub Proxies to Recieve Data
             SetupProxyEventHandlers();
@@ -75,13 +72,16 @@ namespace JudgementZone.Services
             // Start connection
             try
             {
+                // Track whether the user has authenticated.
+                bool authenticated = false;
+
                 if (App.Authenticator != null)
                     authenticated = await App.Authenticator.Authenticate();
 
                 if (authenticated == true)
                 {
-                    hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
-                    await hubConnection.Start();
+                    //hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
+                    //await hubConnection.Start();
                     return true;
                 }
                 else
@@ -95,54 +95,6 @@ namespace JudgementZone.Services
                 return false;
             }
         }
-
-        //private async Task ExecuteLoginCommand(string service)
-        //{
-        //    var IsLoading = false;
-
-        //    if (IsLoading || string.IsNullOrEmpty(service)) return;
-
-        //    MobileServiceAuthenticationProvider provider;
-
-        //    switch (service)
-        //    {
-        //        case "Facebook":
-        //            provider = MobileServiceAuthenticationProvider.Facebook;
-        //            break;
-        //        case "Twitter":
-        //            provider = MobileServiceAuthenticationProvider.Twitter;
-        //            break;
-        //        case "Microsoft":
-        //            provider = MobileServiceAuthenticationProvider.MicrosoftAccount;
-        //            break;
-        //        case "Google":
-        //            provider = MobileServiceAuthenticationProvider.Google;
-        //            break;
-        //        default:
-        //            throw new ArgumentOutOfRangeException(service);
-        //    }
-
-        //    IsLoading = true;
-
-        //    try
-        //    {
-        //        //await App.Platform.Authorize(container, provider);
-        //        var user = await DependencyService.Get<I_MobileClient>().Authorize(provider);
-        //    }
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        if (ex.Message.Contains("Authentication was cancelled by the user"))
-        //        {
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var page = new ContentPage();
-        //        await page.DisplayAlert("Error", "Error logging in. Please check connectivity and try again.", "OK", null);
-        //    }
-
-        //    IsLoading = false;
-        //}
 
         public void StopConnection()
 		{
