@@ -12,14 +12,15 @@ using JudgementZone.Services;
 //Needed for user authentication
 using System.Net.Http;
 using Xamarin.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace JudgementZone.Droid
 {
     [Activity(Label = "JudgementZone.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate
     {
-        // Define an authenticated user.
-        private MobileServiceUser user;
+        //// Define an authenticated user.
+        //private MobileServiceUser user;
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -41,16 +42,21 @@ namespace JudgementZone.Droid
             var success = false;
             var message = string.Empty;
 
-            while (user == null)
+            var token = new JObject();
+            // Replace access_token_value with actual value of your access token obtained
+            // using the Facebook or Google SDK.
+            token.Add("access_token", "1kfFAGRNJru1FTz70BzhT3Zg");
+
+            while (success == false)
             {
                 try
                 {
                     // Sign in with login using a server-managed flow.
-                    user = await App.client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, "judgementzoneDEV");
+                    var user = await App.client.LoginAsync(MobileServiceAuthenticationProvider.Google, token);
 
                     if (user != null)
                     {
-                        message = string.Format("you are now signed-in as {0}.", user.UserId);
+                        //message = string.Format("you are now signed-in as {0}.", user.UserId);
                         success = true;
                     }
                 }
