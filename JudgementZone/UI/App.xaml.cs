@@ -12,8 +12,6 @@ namespace JudgementZone
 {
     public partial class App : Application
     {
-        public static MobileServiceClient client = new MobileServiceClient(ServerConstants.SIGNALR_URL);//ServerConstants.SIGNALR_URL, handler
-
         public App()
         {
             InitializeComponent();

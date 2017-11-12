@@ -14,7 +14,10 @@ namespace JudgementZone.Services
         // Debug Properties
         private const bool DEBUG_SERVER = true;
 
-		// Singleton Instance Properties
+        // Track whether the user has authenticated.
+        public bool authenticated = false;
+
+        // Singleton Instance Properties
         private static volatile S_GameConnector instance;
 		private static object syncRoot = new Object();
         public static S_GameConnector Connector
@@ -72,10 +75,7 @@ namespace JudgementZone.Services
             // Start connection
             try
             {
-                // Track whether the user has authenticated.
-                bool authenticated = false;
-
-                if (App.Authenticator != null)
+                if (App.Authenticator != null && !authenticated)
                     authenticated = await App.Authenticator.Authenticate();
 
                 if (authenticated == true)

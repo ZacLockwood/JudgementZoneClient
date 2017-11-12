@@ -38,46 +38,35 @@ namespace JudgementZone.Droid
 
         public async Task<bool> Authenticate()
         {
-            var success = false;
             var message = string.Empty;
+            var success = false;
 
-            while (user == null)
+            try
             {
-                try
+
+                MobileServiceClient client = new MobileServiceClient(ServerConstants.SIGNALR_URL);
+
+                while (!success)
                 {
+
                     // Sign in with login using a server-managed flow.
-                    user = await App.client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, "judgementzoneDEV");
+                    user = await client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, "judgementzonedev");
 
                     if (user != null)
                     {
                         message = string.Format("you are now signed-in as {0}.", user.UserId);
-                        success = true;
+                            success = true;
                     }
-                }
-                catch (Exception ex)
-                {
-                    message = ex.Message;
                 }
             }
 
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+
             return success;
         }
-
-        //public int GetStatusBarHeight()
-        //{
-        //    int height;
-
-        //    int idStatusBarHeight = Resources.GetIdentifier("status_bar_height", "dimen", "android");
-        //    if (idStatusBarHeight > 0)
-        //    {
-        //        height = Resources.GetDimensionPixelSize(idStatusBarHeight);
-        //    }
-        //    else
-        //    {
-        //        height = 0;
-        //    }
-
-        //    return height;
-        //}
     }
 }

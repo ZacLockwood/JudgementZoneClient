@@ -10,6 +10,9 @@ namespace JudgementZone.UI
 
         private bool _uiLock;
 
+        //HACK
+        private bool hasAttemptedLogin = false;
+
         #region Constructor
 
         public MainMenuPage()
@@ -25,6 +28,12 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
+                //HACK
+                if (hasAttemptedLogin) {
+                    return;
+                }
+                hasAttemptedLogin = true;
+
                 // Check if should animate
                 var animationEnabled = !MenuLogo.IsAnimating;
                 if (animationEnabled)
@@ -33,7 +42,7 @@ namespace JudgementZone.UI
                 }
 
                 // Check if already connected
-                if (S_GameConnector.Connector.IsConnected())
+                if (S_GameConnector.Connector.IsConnected() || S_GameConnector.Connector.authenticated)
                 {
                     if (animationEnabled)
                     {
@@ -44,7 +53,7 @@ namespace JudgementZone.UI
                 else
                 {
                     var firstAnimComplete = false;
-                    while (!S_GameConnector.Connector.IsConnected())
+                    while (!S_GameConnector.Connector.IsConnected() || !S_GameConnector.Connector.authenticated)
                     {
                         // Run this at beginning of loop so that connection can not restore during alert,
                         // thereby skipping the callback animation and leaving MenuLogo in a permenant unusable state
@@ -61,12 +70,8 @@ namespace JudgementZone.UI
                             var animTask = MenuLogo.AnimateColorLoadToZeroAsync(0.975, 300);
                             await animTask;
                             firstAnimComplete = true;
-                            await connectionTask;
                         }
-                        else
-                        {
-                            await connectionTask;
-                        }
+                        await connectionTask;
 
                         if (S_GameConnector.Connector.IsConnected())
                         {
