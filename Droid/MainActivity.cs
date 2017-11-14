@@ -44,13 +44,13 @@ namespace JudgementZone.Droid
             try
             {
 
-                MobileServiceClient client = new MobileServiceClient(ServerConstants.SIGNALR_URL);
+                MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 
                 while (!success)
                 {
 
                     // Sign in with login using a server-managed flow.
-                    user = await client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, "judgementzonedev");
+                    user = await client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, ServerConstants.SERVER_URI_SCHEME);
 
                     if (user != null)
                     {

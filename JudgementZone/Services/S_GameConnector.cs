@@ -50,7 +50,7 @@ namespace JudgementZone.Services
         private S_GameConnector()
         {
             // Create Hub Connection (Single)
-            hubConnection = new HubConnection(ServerConstants.SIGNALR_URL);
+            hubConnection = new HubConnection(ServerConstants.SERVER_FULL_URL);
 
             // Create Hub Proxies (Multiple)
             gameHubProxy = hubConnection.CreateHubProxy(ServerConstants.SIGNALR_GAME_HUB_NAME);
