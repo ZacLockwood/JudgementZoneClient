@@ -47,7 +47,7 @@ namespace JudgementZone.UI
         protected override void OnAppearing()
         {
             SetupRealmSubscriptions();
-            SetUpUISubscriptions();
+            SetupUISubscriptions();
         }
 
         protected override void OnDisappearing()
@@ -112,7 +112,7 @@ namespace JudgementZone.UI
                     break;
             }
 
-            // Hide all views not to be displayed
+            // Hide all views not meant to be displayed
             foreach (var gameView in gameViewsToHide)
             {
                 gameView.Hide();
@@ -123,6 +123,11 @@ namespace JudgementZone.UI
 
             // Unlock UI
             IsEnabled = true;
+
+            foreach (var view in MainAbsoluteLayout.Children)
+            {
+                Console.WriteLine($"{view.GetType()}");
+            }
 
         }
 
@@ -325,7 +330,7 @@ namespace JudgementZone.UI
             }
         }
 
-        private void SetUpUISubscriptions()
+        private void SetupUISubscriptions()
         {
             MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
             MessagingCenter.Subscribe<GameStatsView>(this, "EndGameButtonPressed", EndGameButtonPressed);
@@ -363,17 +368,25 @@ namespace JudgementZone.UI
 		{
 			Device.BeginInvokeOnMainThread(async () =>
 			{
-                if (PageState == E_GamePageState.GameStatsPresented)
+                try
                 {
-                    await Navigation.PopModalAsync();
-
-                    ReleaseRealmSubscriptions();
-
-                    var gameStateRealm = Realm.GetInstance("GameState.Realm");
-                    gameStateRealm.Write(() =>
-                    {
-                        gameStateRealm.RemoveAll();
-                    });
+					if (PageState == E_GamePageState.GameStatsPresented)
+					{
+						ReleaseUISubscriptions();
+						ReleaseRealmSubscriptions();
+						
+						var gameStateRealm = Realm.GetInstance("GameState.Realm");
+						gameStateRealm.Write(() =>
+						{
+							gameStateRealm.RemoveAll();
+						});
+						
+                        await Navigation.PopAsync();
+					}
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ex caught: {ex.Message}");
                 }
 			});
 		}

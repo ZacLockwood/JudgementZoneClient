@@ -77,9 +77,12 @@ namespace JudgementZone.UI
 					{
 						if (!canceled)
 						{
-							// Gauruntee 1.0 opacity and enable controls on successful completion
-							Opacity = 1.0;
-							IsEnabled = true;
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+    							// Gauruntee 1.0 opacity and enable controls on successful completion
+    							Opacity = 1.0;
+    							IsEnabled = true;
+                            });
 						}
 					}
 				);

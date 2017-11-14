@@ -49,9 +49,12 @@ namespace JudgementZone.UI
 					{
 						if (!canceled)
 						{
-							// Gauruntee 1.0 opacity and enable controls on successful completion
-							Opacity = 1.0;
-							IsEnabled = true;
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+    							// Gauruntee 1.0 opacity and enable controls on successful completion
+    							Opacity = 1.0;
+    							IsEnabled = true;
+                            });
 						}
 					}
 				);
@@ -159,8 +162,8 @@ namespace JudgementZone.UI
 			{
 				var leftOverSpace = 1.0 - (QuestionLabel.Height / QuestionAbsoluteLayout.Height);
 				var spacing = leftOverSpace * 0.02;
-				AbsoluteLayout.SetLayoutBounds(AnswerStatsAbsoluteLayout, new Rectangle(0.0, 1.0, 0.74, leftOverSpace - spacing));
-				AbsoluteLayout.SetLayoutBounds(AnswerTextAbsoluteLayout, new Rectangle(1.0, 1.0, 0.275, leftOverSpace - spacing));
+                AbsoluteLayout.SetLayoutBounds(AnswerTextAbsoluteLayout, new Rectangle(1.0, 1.0, 0.74, leftOverSpace - spacing));
+				AbsoluteLayout.SetLayoutBounds(AnswerStatsAbsoluteLayout, new Rectangle(0.0, 1.0, 0.245, leftOverSpace - spacing));
 			}
 			else
 			{
