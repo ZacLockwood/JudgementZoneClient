@@ -6,6 +6,7 @@ using Foundation;
 using ScnViewGestures.Plugin.Forms.iOS.Renderers;
 using UIKit;
 
+//Needed for authentication
 using Microsoft.WindowsAzure.MobileServices;
 using System.Threading.Tasks;
 using JudgementZone.Interfaces;
@@ -14,9 +15,9 @@ using JudgementZone.Services;
 namespace JudgementZone.iOS
 {
     [Register("AppDelegate")]
-    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IAuthenticate
+    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IAuthenticate //Needed for authentication
     {
-        // Define a user and client
+        //Needed for authentication: Defines a user and client
         private MobileServiceUser user;
         MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 
@@ -25,6 +26,7 @@ namespace JudgementZone.iOS
             global::Xamarin.Forms.Forms.Init();
             ViewGesturesRenderer.Init();
 
+            //Needed for authentication
             App.Init(this);
 
             LoadApplication(new App());
@@ -32,6 +34,7 @@ namespace JudgementZone.iOS
             return base.FinishedLaunching(app, options);
         }
 
+        //Needed for authentication
         public async Task<bool> Authenticate()
         {
             var message = string.Empty;
@@ -65,6 +68,7 @@ namespace JudgementZone.iOS
             return success;
         }
 
+        //Needed for authentication
         public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
         {
             return client.ResumeWithURL(url);

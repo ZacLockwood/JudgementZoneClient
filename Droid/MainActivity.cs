@@ -9,17 +9,14 @@ using JudgementZone.Interfaces;
 using System;
 using JudgementZone.Services;
 
-//Needed for user authentication
-using System.Net.Http;
-using Xamarin.Forms;
-
 namespace JudgementZone.Droid
 {
     [Activity(Label = "JudgementZone.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate //Needed for authentication
     {
-        // Define an authenticated user.
+        //Needed for authentication: Defines a user and client
         private MobileServiceUser user;
+        MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -30,12 +27,13 @@ namespace JudgementZone.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
 
-            // Initialize the authenticator before loading the app.
+            //Needed for authentication: Initialize the authenticator before loading the app
             App.Init((IAuthenticate)this);
 
             LoadApplication(new App());
         }
 
+        //Needed for authentication
         public async Task<bool> Authenticate()
         {
             var message = string.Empty;
@@ -43,19 +41,15 @@ namespace JudgementZone.Droid
 
             try
             {
-
-                MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
-
                 while (!success)
                 {
-
-                    // Sign in with login using a server-managed flow.
+                    // Sign in with login using a server-managed flow
                     user = await client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, ServerConstants.SERVER_URI_SCHEME);
 
                     if (user != null)
                     {
                         message = string.Format("you are now signed-in as {0}.", user.UserId);
-                            success = true;
+                        success = true;
                     }
                 }
             }
