@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JudgementZone.Interfaces;
 using System;
 using JudgementZone.Services;
+//using Newtonsoft.Json.Linq;
 
 namespace JudgementZone.Droid
 {
@@ -15,7 +16,6 @@ namespace JudgementZone.Droid
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate //Needed for authentication
     {
         //Needed for authentication: Defines a user and client
-        private MobileServiceUser user;
         MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 
         protected override void OnCreate(Bundle bundle)
@@ -34,10 +34,18 @@ namespace JudgementZone.Droid
         }
 
         //Needed for authentication
-        public async Task<bool> Authenticate()
+        public async Task<MobileServiceUser> Authenticate()
         {
+            //var token = new JObject();
+            // Replace access_token_value with actual value of your access token obtained
+            // using the Facebook or Google SDK.
+            //token.Add("access_token", "");
+
+
             var message = string.Empty;
             var success = false;
+
+            MobileServiceUser user = new MobileServiceUser("none");
 
             try
             {
@@ -46,6 +54,9 @@ namespace JudgementZone.Droid
                     // Sign in with login using a server-managed flow
                     user = await client.LoginAsync(this, MobileServiceAuthenticationProvider.Google, ServerConstants.SERVER_URI_SCHEME);
 
+                    // Sign in with login using a client-managed flow
+                    //user = await client.LoginAsync(MobileServiceAuthenticationProvider.Google, token);
+
                     if (user != null)
                     {
                         message = string.Format("you are now signed-in as {0}.", user.UserId);
@@ -53,14 +64,13 @@ namespace JudgementZone.Droid
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 message = ex.Message;
+                return user;
             }
 
-
-            return success;
+            return user;
         }
     }
 }

@@ -12,6 +12,8 @@ namespace JudgementZone
 {
     public partial class App : Application
     {
+        public const string AppName = "JudgementZone";
+
         public App()
         {
             InitializeComponent();

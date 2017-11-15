@@ -6,6 +6,8 @@ using JudgementZone.Models;
 using Realms;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.WindowsAzure.MobileServices;
+using Xamarin.Auth;
 
 namespace JudgementZone.Services
 {
@@ -75,11 +77,18 @@ namespace JudgementZone.Services
             // Start connection
             try
             {
+                MobileServiceUser user = new MobileServiceUser("none");
                 if (App.Authenticator != null && !authenticated)
-                    authenticated = await App.Authenticator.Authenticate();
-
-                if (authenticated == true)
                 {
+                    user = await App.Authenticator.Authenticate();
+                }
+
+                if (user.UserId == "none")
+                {
+                    authenticated = true;
+
+                    SaveCredentials(user);
+
                     //hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
                     //await hubConnection.Start();
                     return true;
@@ -93,6 +102,18 @@ namespace JudgementZone.Services
             {
                 Console.WriteLine(ex);
                 return false;
+            }
+        }
+
+        public void SaveCredentials(MobileServiceUser user)
+        {
+            if (!string.IsNullOrWhiteSpace(user.UserId) && !string.IsNullOrWhiteSpace(user.MobileServiceAuthenticationToken))
+            {
+                Account account = new Account("ClientUserName");
+
+                account.Properties.Add("UserId", user.UserId);
+                account.Properties.Add("AuthToken", user.MobileServiceAuthenticationToken);
+                AccountStore.Create().Save(account, App.AppName);
             }
         }
 
