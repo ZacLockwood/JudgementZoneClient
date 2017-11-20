@@ -82,11 +82,13 @@ namespace JudgementZone.Services
                 {
                     user = await App.Authenticator.Authenticate();
                 }
-
-                if (user.UserId == "none")
+                else
                 {
-                    authenticated = true;
+                    return false;
+                }
 
+                if (user.UserId != "none")
+                {
                     SaveCredentials(user);
 
                     //hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);

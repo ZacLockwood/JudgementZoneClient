@@ -18,7 +18,6 @@ namespace JudgementZone.iOS
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IAuthenticate //Needed for authentication
     {
         //Needed for authentication: Defines a user and client
-        private MobileServiceUser user;
         MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
@@ -35,10 +34,12 @@ namespace JudgementZone.iOS
         }
 
         //Needed for authentication
-        public async Task<bool> Authenticate()
+        public async Task<MobileServiceUser> Authenticate()
         {
             var message = string.Empty;
             var success = false;
+
+            MobileServiceUser user = new MobileServiceUser("none");
 
             try
             {
@@ -60,12 +61,13 @@ namespace JudgementZone.iOS
             catch (Exception ex)
             {
                 message = ex.Message;
+                return user;
             }
 
             UIAlertView avAlert = new UIAlertView("Sign-in result", message, null, "OK", null);
             avAlert.Show();
 
-            return success;
+            return user;
         }
 
         //Needed for authentication

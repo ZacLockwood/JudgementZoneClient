@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using JudgementZone.Interfaces;
 using System;
 using JudgementZone.Services;
+using Newtonsoft.Json.Linq;
+using Xamarin.Auth;
+using System.Linq;
 //using Newtonsoft.Json.Linq;
 
 namespace JudgementZone.Droid
@@ -16,7 +19,7 @@ namespace JudgementZone.Droid
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate //Needed for authentication
     {
         //Needed for authentication: Defines a user and client
-        MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
+        MobileServiceClient client = new MobileServiceClient("");//ServerConstants.SERVER_FULL_URL
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -36,16 +39,39 @@ namespace JudgementZone.Droid
         //Needed for authentication
         public async Task<MobileServiceUser> Authenticate()
         {
-            //var token = new JObject();
-            // Replace access_token_value with actual value of your access token obtained
-            // using the Facebook or Google SDK.
-            //token.Add("access_token", "");
-
-
             var message = string.Empty;
             var success = false;
 
             MobileServiceUser user = new MobileServiceUser("none");
+
+            var token = new JObject();
+            try
+            {
+                // Replace access_token_value with actual value of your access token obtained
+                // using the Facebook or Google SDK.
+
+                //Pull out the auth token from the key store
+                var account = AccountStore.Create().FindAccountsForService(App.AppName).FirstOrDefault();
+                token.Add("access_token", account.Properties["AuthToken"]);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+            }
+
+            if (token.Last != null)
+            {
+                try
+                {
+                    await client.LoginAsync(MobileServiceAuthenticationProvider.Google, token);
+                    //user =
+                }
+                catch (Exception ex)
+                {
+                    string msg = ex.Message;
+                }
+            }
+
 
             try
             {
@@ -60,6 +86,7 @@ namespace JudgementZone.Droid
                     if (user != null)
                     {
                         message = string.Format("you are now signed-in as {0}.", user.UserId);
+                        S_GameConnector.Connector.authenticated = true;
                         success = true;
                     }
                 }
