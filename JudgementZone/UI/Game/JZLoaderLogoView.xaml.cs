@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using JudgementZone.Interfaces;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
@@ -70,7 +71,7 @@ namespace JudgementZone.UI
 
 		#endregion
 
-		#region Sychronous Animation Starters
+        #region Sychronous Animation Starters
 
         public void AnimateColorSwap(bool pickRandomColor = true, double pulseScale = 0.98, uint duration = 400, Easing easing = null)
         {
@@ -98,7 +99,7 @@ namespace JudgementZone.UI
 			});
         }
 
-        public void StartContinuousFadeLoader(bool crossFade = true, bool pickRandomColor = true, double pulseScale = 0.9, uint duration = 1200, Easing easing = null)
+		public void StartContinuousFadeLoader(bool crossFade = true, bool pickRandomColor = true, double pulseScale = 0.9, uint duration = 1200, Easing easing = null)
 		{
 			Device.BeginInvokeOnMainThread(async () =>
 			{
@@ -109,7 +110,7 @@ namespace JudgementZone.UI
 					IsAnimating = true;
 					while (!_continuousFadeLoaderCancelationTokenSource.IsCancellationRequested)
 					{
-                        await AnimateColorFadeAsync(crossFade, pickRandomColor, pulseScale, duration, Easing.SinInOut);
+						await AnimateColorFadeAsync(crossFade, pickRandomColor, pulseScale, duration, Easing.SinInOut);
 					}
 					IsAnimating = false;
 				}
@@ -118,7 +119,10 @@ namespace JudgementZone.UI
 
 		public void StopContinuousFadeLoader()
 		{
-			_continuousFadeLoaderCancelationTokenSource.Cancel();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				_continuousFadeLoaderCancelationTokenSource.Cancel();
+            });
 		}
 
         #endregion
@@ -195,21 +199,21 @@ namespace JudgementZone.UI
                 await unloadTask;
             }
 
-			// Switch Colors
-			CurrentColor = NextLogoColor(pickRandomColor);
+            // Switch Colors
+            CurrentColor = NextLogoColor(pickRandomColor);
 
-			// Animation Part 2
-			var reloadTask = ColoredLogo.TranslateTo(0, 0, eachAnimDuration, easing);
+            // Animation Part 2
+            var reloadTask = ColoredLogo.TranslateTo(0, 0, eachAnimDuration, easing);
             if (Math.Abs(pulseScale - 1.0) > 0.005)
             {
-				var growTask = LogoAbsoluteLayout.ScaleTo(1.0, eachAnimDuration, easing);
-				await Task.WhenAll(reloadTask, growTask);
+                var growTask = LogoAbsoluteLayout.ScaleTo(1.0, eachAnimDuration, easing);
+                await Task.WhenAll(reloadTask, growTask);
             }
             else
             {
                 await reloadTask;
             }
-		}
+        }
 
 		public async Task AnimateColorFadeAsync(bool crossFade = false, bool pickRandomColor = true, double pulseScale = 0.975, uint duration = 500, Easing easing = null)
 		{

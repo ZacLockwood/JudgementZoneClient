@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JudgementZone.Interfaces;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-	public partial class LoaderView : ContentView
+	public partial class LoaderView : ContentView, I_PresentableGameView
     {
+
+        public E_LogoColor FirstColor { get; set; } = E_LogoColor.Random;
+
+        public string LoaderMessage { get; set; } = null;
 
         #region Constructor
 
@@ -14,21 +19,119 @@ namespace JudgementZone.UI
             InitializeComponent();
         }
 
-        #endregion
+		#endregion
 
-        #region Public Animation Tasks
+		#region View Presentation Management
 
-        public async Task StartContinuousFadeLoaderAsync(string loadMessage = null, E_LogoColor firstColor = E_LogoColor.Random)
+		public void Present()
+		{
+			// Cancel FadeOut if running
+			if (this.AnimationIsRunning("FadeOut"))
+			{
+				this.AbortAnimation("FadeOut");
+			}
+
+			// Only animate if not already animating
+			// And if not currently presented/visible
+			if (!this.AnimationIsRunning("FadeIn") && (Opacity < 1.0 || !IsVisible))
+			{
+				// Gauruntee start from 0 opacity if not visible
+				if (!IsVisible)
+				{
+					Opacity = 0.0;
+				}
+
+				// Gauruntee visibility
+				IsVisible = true;
+
+				// Animate
+				var startingOpacity = Opacity;
+				StartContinuousFadeLoaderAsync();
+				this.Animate("FadeIn", (percent) =>
+				{
+					Opacity = startingOpacity + percent * (1.0 - startingOpacity);
+				},
+					16, 250, Easing.CubicInOut,
+					(double percent, bool canceled) =>
+					{
+						if (!canceled)
+						{
+							// Gauruntee 1.0 opacity and enable controls on successful completion
+							Opacity = 1.0;
+							IsEnabled = true;
+						}
+						else
+						{
+							// Stop fade loader if canceled
+							StopContinuousFadeLoader();
+						}
+					}
+				);
+			}
+			else if (!this.AnimationIsRunning("FadeIn"))
+			{
+				// Guaruntee full opacity/visibility if animation not running
+				// Possibly redundant
+				Opacity = 1.0;
+				IsVisible = true;
+			}
+		}
+
+		public void Hide()
+		{
+			// Disable view controls immediately
+			IsEnabled = false;
+
+			// Cancel FadeIn if running
+			if (this.AnimationIsRunning("FadeIn"))
+			{
+				this.AbortAnimation("FadeIn");
+			}
+
+			// Only animate if not already animating
+			// And if currently visible/presented
+			if (!this.AnimationIsRunning("FadeOut") && (Opacity > 0.0 && IsVisible))
+			{
+				var startingOpacity = Opacity;
+
+				this.Animate("FadeOut", (percent) =>
+				{
+					Opacity = startingOpacity - percent * startingOpacity;
+				},
+					16, 250, Easing.CubicInOut,
+					(double percent, bool canceled) =>
+					{
+						if (!canceled)
+						{
+							StopContinuousFadeLoader();
+							IsVisible = false;
+						}
+					});
+			}
+			else if (!this.AnimationIsRunning("FadeOut"))
+			{
+				// Guaruntee 0 opacity/no visibility if animation not running
+				// Possibly redundant
+				Opacity = 0.0;
+				IsVisible = false;
+			}
+		}
+
+		#endregion
+
+		#region Public Animation Tasks
+
+		public async Task StartContinuousFadeLoaderAsync()
         {
-            LoaderLogo.CurrentColor = firstColor;
+            LoaderLogo.CurrentColor = FirstColor;
 			LoaderLogo.StartContinuousFadeLoader();
 
 			LoaderLabel.Opacity = 0.0;
 
-            if (!String.IsNullOrWhiteSpace(loadMessage))
+            if (!String.IsNullOrWhiteSpace(LoaderMessage))
             {
                 await Task.Delay(800);
-                await LoadMessageFadeIn(loadMessage);
+                await LoadMessageFadeIn(LoaderMessage);
             }
         }
 

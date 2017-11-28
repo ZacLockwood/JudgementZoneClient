@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:JudgementZone.UI"
+             x:Class="JudgementZone.UI.GamePage"
+             BackgroundColor="{StaticResource Dark_Background}">
+	<ContentView.Content>
+        <StackLayout VerticalOptions="StartAndExpand" HorizontalOptions="Center"
+                     Spacing="15" Padding="20,175" > 
+            <Label x:Name="RoundNumLabel"
+                   TextColor="{StaticResource JZ_Magenta}" 
+                   FontSize= "75" 
+                   FontAttributes="Bold"
+                   FontFamily="Futura-CondensedExtraBold"/>
+        </StackLayout>
+	</ContentView.Content>
+</ContentView>
