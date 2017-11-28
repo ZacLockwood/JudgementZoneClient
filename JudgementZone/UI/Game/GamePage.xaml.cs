@@ -26,6 +26,8 @@ namespace JudgementZone.UI
 
         public IDisposable RealmGameStateListenerToken { get; private set; }
 
+        public DateTimeOffset GamePageCreationDate { get; set; } = DateTimeOffset.UtcNow;
+
         #region Constructor
 
         public GamePage()
@@ -46,14 +48,20 @@ namespace JudgementZone.UI
 
         protected override void OnAppearing()
         {
-            SetupRealmSubscriptions();
-            SetupUISubscriptions();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				SetupRealmSubscriptions();
+				SetupUISubscriptions();
+            });
         }
 
         protected override void OnDisappearing()
         {
-            ReleaseRealmSubscriptions();
-            ReleaseUISubscriptions();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				ReleaseRealmSubscriptions();
+				ReleaseUISubscriptions();
+            });
         }
 
         #endregion
@@ -332,14 +340,22 @@ namespace JudgementZone.UI
 
         private void SetupUISubscriptions()
         {
-            MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
-            MessagingCenter.Subscribe<GameStatsView>(this, "EndGameButtonPressed", EndGameButtonPressed);
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
+				MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
+				MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
+				MessagingCenter.Subscribe<GameStatsView>(this, "EndGameButtonPressed", EndGameButtonPressed);
+            });
         }
 
         private void ReleaseUISubscriptions()
         {
-            MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
-            MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
+			Device.BeginInvokeOnMainThread(() =>
+			{
+                MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
+                MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
+            });
         }
 
 		#endregion
@@ -370,7 +386,9 @@ namespace JudgementZone.UI
 			{
                 try
                 {
-					if (PageState == E_GamePageState.GameStatsPresented)
+                    Console.WriteLine($"GAME PAGE CREATED: {GamePageCreationDate}");
+
+                    if (PageState == E_GamePageState.GameStatsPresented)
 					{
 						ReleaseUISubscriptions();
 						ReleaseRealmSubscriptions();
@@ -381,12 +399,13 @@ namespace JudgementZone.UI
 							gameStateRealm.RemoveAll();
 						});
 						
-                        await Navigation.PopAsync();
+                        await Navigation.PopModalAsync();
 					}
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Ex caught: {ex.Message}");
+                    throw ex;
                 }
 			});
 		}
