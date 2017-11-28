@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using JudgementZone.Models;
 using JudgementZone.Services;
 using Realms;
 using Xamarin.Forms;
+using JudgementZone.Interfaces;
 
 namespace JudgementZone.UI
 {
@@ -24,6 +26,8 @@ namespace JudgementZone.UI
 
         public IDisposable RealmGameStateListenerToken { get; private set; }
 
+        public DateTimeOffset GamePageCreationDate { get; set; } = DateTimeOffset.UtcNow;
+
         #region Constructor
 
         public GamePage()
@@ -33,7 +37,8 @@ namespace JudgementZone.UI
             Device.BeginInvokeOnMainThread(async () =>
             {
                 QV_DisableAnswerSubmission(); //HACK
-                await GameLoaderView.StartContinuousFadeLoaderAsync("Waiting for Other Players...");
+                GameLoaderView.LoaderMessage = "Waiting for other players...";
+                await GameLoaderView.StartContinuousFadeLoaderAsync();
             });
         }
 
@@ -43,14 +48,20 @@ namespace JudgementZone.UI
 
         protected override void OnAppearing()
         {
-            SetupRealmSubscriptions();
-            SetUpUISubscriptions();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				SetupRealmSubscriptions();
+				SetupUISubscriptions();
+            });
         }
 
         protected override void OnDisappearing()
         {
-            ReleaseRealmSubscriptions();
-            ReleaseUISubscriptions();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				ReleaseRealmSubscriptions();
+				ReleaseUISubscriptions();
+            });
         }
 
         #endregion
@@ -61,222 +72,70 @@ namespace JudgementZone.UI
         {
             if (newPageState == PageState)
                 return;
-
+            
             PageState = newPageState;
 
             // Lock UI
             IsEnabled = false;
 
-            if (GameLoaderView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.LoaderPresented)
+            // Create full list of displayed views
+            List<I_PresentableGameView> gameViewsToHide = new List<I_PresentableGameView>
             {
-                GameLoaderView.AbortAnimation("FadeIn");
-            }
+                GameLoaderView,
+                GameQuestionView,
+                GameQuestionStatsView,
+                GameStatsView
+            };
 
-            if (GameQuestionView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.QuestionPresented)
-            {
-                GameQuestionView.AbortAnimation("FadeIn");
-            }
-
-            if (GameQuestionStatsView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.QuestionStatsPresented)
-            {
-                GameQuestionStatsView.AbortAnimation("FadeIn");
-            }
-
-            if (GameStatsView.AnimationIsRunning("FadeIn") && newPageState != E_GamePageState.GameStatsPresented)
-            {
-                GameStatsView.AbortAnimation("FadeIn");
-            }
-
-            if (!GameLoaderView.AnimationIsRunning("FadeOut") && GameLoaderView.Opacity > 0.0 && newPageState != E_GamePageState.LoaderPresented)
-            {
-                GameLoaderView.Animate("FadeOut",
-                                       (percent) =>
-                                       {
-                                           GameLoaderView.Opacity = Math.Abs(percent - 1.0);
-                                       },
-                                       16, 250, Easing.CubicInOut,
-                                       (double percent, bool canceled) =>
-                                       {
-                                           if (!canceled)
-                                           {
-                                               GameLoaderView.StopContinuousFadeLoader();
-                                               GameLoaderView.IsVisible = false;
-                                               GameLoaderView.IsEnabled = false;
-                                           }
-                                       });
-            }
-
-            if (!GameQuestionView.AnimationIsRunning("FadeOut") && GameQuestionView.Opacity > 0.0 && newPageState != E_GamePageState.QuestionPresented)
-            {
-                GameQuestionView.Animate("FadeOut",
-                                         (percent) =>
-                                         {
-                                             GameQuestionView.Opacity = Math.Abs(percent - 1.0);
-                                         }, 16, 250, Easing.CubicInOut,
-                                         (double percent, bool canceled) =>
-                                         {
-                                             if (!canceled)
-                                             {
-                                                 GameQuestionView.IsVisible = false;
-                                                 GameQuestionView.IsEnabled = false;
-                                             }
-                                         });
-            }
-
-            if (!GameQuestionStatsView.AnimationIsRunning("FadeOut") && GameQuestionStatsView.Opacity > 0.0 && newPageState != E_GamePageState.QuestionStatsPresented)
-            {
-                GameQuestionStatsView.Animate("FadeOut",
-                                              (percent) =>
-                                              {
-                                                  GameQuestionStatsView.Opacity = Math.Abs(percent - 1.0);
-                                              }, 16, 250, Easing.CubicInOut,
-                                              (double percent, bool canceled) =>
-                                              {
-                                                  if (!canceled)
-                                                  {
-                                                      GameQuestionStatsView.IsVisible = false;
-                                                      GameQuestionStatsView.IsEnabled = false;
-                                                  }
-                                              });
-            }
-
-            if (!GameStatsView.AnimationIsRunning("FadeOut") && GameStatsView.Opacity > 0.0 && newPageState != E_GamePageState.GameStatsPresented)
-            {
-                GameStatsView.Animate("FadeOut",
-                                              (percent) =>
-                                              {
-                                                  GameStatsView.Opacity = Math.Abs(percent - 1.0);
-                                              }, 16, 250, Easing.CubicInOut,
-                                              (double percent, bool canceled) =>
-                                              {
-                                                  if (!canceled)
-                                                  {
-                                                      GameStatsView.IsVisible = false;
-                                                      GameStatsView.IsEnabled = false;
-                                                  }
-                                              });
-            }
-
-            switch (newPageState)
-            {
-                case E_GamePageState.LoaderPresented:
-                    if (GameLoaderView.AnimationIsRunning("FadeOut"))
-                    {
-                        GameLoaderView.AbortAnimation("FadeOut");
-                    }
-                    if (!GameLoaderView.AnimationIsRunning("FadeIn"))
-                    {
-                        GameLoaderView.IsVisible = true;
-                        GameLoaderView.StartContinuousFadeLoaderAsync(loadMessage, startColor);
-                        GameLoaderView.Animate("FadeIn",
-                                               (percent) =>
-                                               {
-                                                   GameLoaderView.Opacity = percent;
-                                               },
-                                               16, 250, Easing.CubicInOut,
-                                               (double percent, bool canceled) =>
-                                               {
-                                                   if (canceled)
-                                                   {
-                                                       GameLoaderView.StopContinuousFadeLoader();
-                                                       GameLoaderView.IsVisible = false;
-                                                   }
-                                                   else
-                                                   {
-                                                       GameLoaderView.IsEnabled = true;
-                                                   }
-                                               });
-                    }
-                    break;
+            // Get view to present/remove from views to hide
+            I_PresentableGameView viewToPresent;
+            switch(newPageState)
+			{
+				case E_GamePageState.LoaderPresented:
+                    GameLoaderView.FirstColor = startColor;
+                    GameLoaderView.LoaderMessage = loadMessage;
+					viewToPresent = GameLoaderView;
+                    gameViewsToHide.Remove(GameLoaderView);
+					break;
                 case E_GamePageState.QuestionPresented:
-                    if (GameQuestionView.AnimationIsRunning("FadeOut"))
-                    {
-                        GameQuestionView.AbortAnimation("FadeOut");
-                    }
-                    if (!GameQuestionView.AnimationIsRunning("FadeIn"))
-                    {
-                        GameQuestionView.IsVisible = true;
-                        GameQuestionView.Animate("FadeIn",
-                                                 (percent) =>
-                                                 {
-                                                     GameQuestionView.Opacity = percent;
-                                                 },
-                                                 16, 250, Easing.CubicInOut,
-                                                 (double percent, bool canceled) =>
-                                                 {
-                                                     if (canceled)
-                                                     {
-                                                         GameQuestionView.IsVisible = false;
-                                                     }
-                                                     else
-                                                     {
-                                                         GameQuestionView.IsEnabled = true;
-                                                         MainAbsoluteLayout.RaiseChild(GameQuestionView);
-                                                     }
-
-                                                 });
-                    }
+                    viewToPresent = GameQuestionView;
+                    gameViewsToHide.Remove(GameQuestionView);
+					MainAbsoluteLayout.RaiseChild(GameQuestionView);
                     break;
                 case E_GamePageState.QuestionStatsPresented:
-                    if (GameQuestionStatsView.AnimationIsRunning("FadeOut"))
-                    {
-                        GameQuestionStatsView.AbortAnimation("FadeOut");
-                    }
-                    if (!GameQuestionStatsView.AnimationIsRunning("FadeIn"))
-                    {
-                        GameQuestionStatsView.IsVisible = true;
-                        GameQuestionStatsView.Animate("FadeIn",
-                                                      (percent) =>
-                                                      {
-                                                          GameQuestionStatsView.Opacity = percent;
-                                                      },
-                                                      16, 250, Easing.CubicInOut,
-                                                      (double percent, bool canceled) =>
-                                                      {
-                                                          if (canceled)
-                                                          {
-                                                              GameQuestionStatsView.IsVisible = false;
-                                                          }
-                                                          else
-                                                          {
-                                                              GameQuestionStatsView.IsEnabled = true;
-                                                              MainAbsoluteLayout.RaiseChild(GameQuestionStatsView);
-                                                          }
-                                                      });
-                    }
+                    viewToPresent = GameQuestionStatsView;
+                    gameViewsToHide.Remove(GameQuestionStatsView);
+                    MainAbsoluteLayout.RaiseChild(GameQuestionStatsView);
                     break;
                 case E_GamePageState.GameStatsPresented:
-                    if (GameStatsView.AnimationIsRunning("FadeOut"))
-                    {
-                        GameStatsView.AbortAnimation("FadeOut");
-                    }
-                    if (!GameStatsView.AnimationIsRunning("FadeIn"))
-                    {
-                        GameStatsView.IsVisible = true;
-                        GameStatsView.Animate("FadeIn",
-                                                  (percent) =>
-                                                  {
-                                                      GameStatsView.Opacity = percent;
-                                                  },
-                                                  16, 250, Easing.CubicInOut,
-                                                  (double percent, bool canceled) =>
-                                                  {
-                                                      if (canceled)
-                                                      {
-                                                          GameStatsView.IsVisible = false;
-                                                      }
-                                                      else
-                                                      {
-                                                          GameStatsView.IsEnabled = true;
-                                                          MainAbsoluteLayout.RaiseChild(GameStatsView);
-                                                      }
-                                                  });
-                    }
+                    viewToPresent = GameStatsView;
+                    gameViewsToHide.Remove(GameStatsView);
+                    MainAbsoluteLayout.RaiseChild(GameStatsView);
+                    break;
+				default:
+					GameLoaderView.FirstColor = startColor;
+					GameLoaderView.LoaderMessage = loadMessage;
+                    viewToPresent = GameLoaderView;
+                    gameViewsToHide.Remove(GameLoaderView);
                     break;
             }
+
+            // Hide all views not meant to be displayed
+            foreach (var gameView in gameViewsToHide)
+            {
+                gameView.Hide();
+            }
+
+            // Present view
+            viewToPresent.Present();
 
             // Unlock UI
             IsEnabled = true;
+
+            foreach (var view in MainAbsoluteLayout.Children)
+            {
+                Console.WriteLine($"{view.GetType()}");
+            }
 
         }
 
@@ -479,16 +338,24 @@ namespace JudgementZone.UI
             }
         }
 
-        private void SetUpUISubscriptions()
+        private void SetupUISubscriptions()
         {
-            MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
-            MessagingCenter.Subscribe<GameStatsView>(this, "EndGameButtonPressed", EndGameButtonPressed);
+            Device.BeginInvokeOnMainThread(() =>
+            {
+				MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
+				MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
+				MessagingCenter.Subscribe<QuestionView, int>(this, "AnswerSelected", AnswerSelected);
+				MessagingCenter.Subscribe<GameStatsView>(this, "EndGameButtonPressed", EndGameButtonPressed);
+            });
         }
 
         private void ReleaseUISubscriptions()
         {
-            MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
-            MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
+			Device.BeginInvokeOnMainThread(() =>
+			{
+                MessagingCenter.Unsubscribe<QuestionView, int>(this, "AnswerSelected");
+                MessagingCenter.Unsubscribe<GameStatsView, int>(this, "EndGameButtonPressed");
+            });
         }
 
 		#endregion
@@ -517,17 +384,28 @@ namespace JudgementZone.UI
 		{
 			Device.BeginInvokeOnMainThread(async () =>
 			{
-                if (PageState == E_GamePageState.GameStatsPresented)
+                try
                 {
-                    await Navigation.PopModalAsync();
+                    Console.WriteLine($"GAME PAGE CREATED: {GamePageCreationDate}");
 
-                    ReleaseRealmSubscriptions();
-
-                    var gameStateRealm = Realm.GetInstance("GameState.Realm");
-                    gameStateRealm.Write(() =>
-                    {
-                        gameStateRealm.RemoveAll();
-                    });
+                    if (PageState == E_GamePageState.GameStatsPresented)
+					{
+						ReleaseUISubscriptions();
+						ReleaseRealmSubscriptions();
+						
+						var gameStateRealm = Realm.GetInstance("GameState.Realm");
+						gameStateRealm.Write(() =>
+						{
+							gameStateRealm.RemoveAll();
+						});
+						
+                        await Navigation.PopModalAsync();
+					}
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ex caught: {ex.Message}");
+                    throw ex;
                 }
 			});
 		}

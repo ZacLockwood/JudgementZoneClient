@@ -148,11 +148,14 @@ namespace JudgementZone.UI
 
         private void ReleaseRealmSubscriptions()
         {
-            if (RealmGameStateListenerToken != null)
+            Device.BeginInvokeOnMainThread(() =>
             {
-                RealmGameStateListenerToken.Dispose();
-                RealmGameStateListenerToken = null;
-            }
+				if (RealmGameStateListenerToken != null)
+				{
+					RealmGameStateListenerToken.Dispose();
+					RealmGameStateListenerToken = null;
+				}
+            });
         }
 
         #endregion
