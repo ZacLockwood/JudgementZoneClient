@@ -41,7 +41,7 @@ namespace JudgementZone.UI
 
         #region View Lifecycle
 
-        protected async override void OnAppearing()
+        protected override void OnAppearing()
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
@@ -62,6 +62,8 @@ namespace JudgementZone.UI
         {
             if (App.Authenticator != null && !S_GameConnector.authenticated)
             {
+                FacebookLogin.Text = "Logging in...";
+
                 var result = await App.Authenticator.Authenticate();
 
                 S_GameConnector.authenticated = result;

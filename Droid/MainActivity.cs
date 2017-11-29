@@ -16,12 +16,20 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Collections.Generic;
 using JudgementZone.UI;
+using Xamarin.Facebook;
+using Newtonsoft.Json;
 
 namespace JudgementZone.Droid
 {
     [Activity(Label = "JudgementZone.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate
     {
+        struct FacebookUser
+        {
+            public string name { get; set; }
+            public string id { get; set; }
+        }
+
         public AccountStore AccountStore { get; private set; }
 
         // 1 = google, 2 = facebook
@@ -48,8 +56,67 @@ namespace JudgementZone.Droid
         //Needed for authentication
         public async Task<bool> Authenticate()
         {
-            // Check if a current Azure token is available within the key store
-            string savedToken = null;
+            // Check if a current Azure credentials are available within the key store
+            string savedToken = CheckForCurrentCredentials();
+
+            if (savedToken != null) // If there is a saved token then login using that
+            {
+                var success = await AzureAuthentication(loginProvider, savedToken);
+
+                if (success)// If authenticated, save Azure credentials, notify user, and proceed to main menu
+                {
+                    // Save the Azure credentials
+                    SaveCredentials(
+                        "azure_token",
+                        S_GameConnector.client.CurrentUser.MobileServiceAuthenticationToken,
+                        S_GameConnector.client.CurrentUser.UserId);
+
+                    // Label login as successful
+                    S_GameConnector.authenticated = true;
+
+                    // Pull out the user name and id from Facebook
+                    FacebookUser fbUser;
+                    using (var httpClient = new System.Net.Http.HttpClient())
+                    {
+                        var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + savedToken));
+                        response.EnsureSuccessStatusCode();
+                        var content = response.Content.ReadAsStringAsync().Result;
+
+                        fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);// USE THIS TO SAVE THE NAME OF THE USER
+                    }
+
+                    // Display success toast notification
+                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
+                        this,
+                        string.Format("You are now signed-in as {0}.", fbUser.name),
+                        Android.Widget.ToastLength.Short);
+                    toast.Show();
+
+                    LoginPage.page.ConnectAndGoToMenu();
+                    return true;
+                }
+                else
+                {
+                    // Display success toast notification
+                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
+                        this,
+                        string.Format("Failed to automatically login."),
+                        Android.Widget.ToastLength.Short);
+                    toast.Show();
+
+                    return ProviderAuthentication(loginProvider);
+                }
+            }
+            else // If there isn't a valid token then prompt user for login
+            {
+                return ProviderAuthentication(loginProvider);
+            }
+        }
+
+        // Checks to see if there are current Azure credentials and a Facebook token
+        private string CheckForCurrentCredentials()
+        {
+            string savedToken = string.Empty;
             var accounts = AccountStore.FindAccountsForService(ServerConstants.ACCOUNT_STORE_LABEL);
             if (accounts != null)
             {
@@ -73,47 +140,7 @@ namespace JudgementZone.Droid
                 }
             }
 
-            if (savedToken != null) // If there is a saved token then login using that
-            {
-                var success = await AzureAuthentication(loginProvider, savedToken);
-
-                if (success)// If authenticated, save Azure credentials, notify user, and proceed to main menu
-                {
-                    // Save the Azure credentials
-                    SaveCredentials(
-                        "azure_token",
-                        S_GameConnector.client.CurrentUser.MobileServiceAuthenticationToken,
-                        S_GameConnector.client.CurrentUser.UserId);
-
-                    // Label login as successful
-                    S_GameConnector.authenticated = true;
-
-                    // Prep message
-                    var popUpMsg = string.Format("You are now signed-in as {0}.", S_GameConnector.client.CurrentUser.UserId);
-
-                    // Display success toast notification
-                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(this, popUpMsg, Android.Widget.ToastLength.Short);
-                    toast.Show();
-
-                    LoginPage.page.ConnectAndGoToMenu();
-                    return true;
-                }
-                else
-                {
-                    // Display success toast notification
-                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                        this,
-                        string.Format("Failed to automatically login."),
-                        Android.Widget.ToastLength.Short);
-                    toast.Show();
-
-                    return ProviderAuthentication(loginProvider);
-                }
-            }
-            else // If there isn't a valid token then prompt user for login
-            {
-                return ProviderAuthentication(loginProvider);
-            }
+            return savedToken;
         }
 
         // Authenticate with a token provider
@@ -167,13 +194,23 @@ namespace JudgementZone.Droid
                         {
                             var values = eventArgs.Account.Properties;
                             var accessToken = values["access_token"];
-                            var userId = values["user_id"];
+
+                            // Pull out the user name and id from Facebook
+                            FacebookUser fbUser;
+                            using (var httpClient = new System.Net.Http.HttpClient())
+                            {
+                                var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + accessToken));
+                                response.EnsureSuccessStatusCode();
+                                var content = response.Content.ReadAsStringAsync().Result;
+
+                                fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);// USE THIS TO SAVE THE NAME OF THE USER
+                            }
 
                             // Save the provider credentials
                             SaveCredentials(
                                 "facebook_token",
                                 accessToken,
-                                "facebook_user");
+                                fbUser.id);
 
                             didAuthenticate = await AzureAuthentication(loginProvider, accessToken);
 
@@ -190,7 +227,7 @@ namespace JudgementZone.Droid
                                 S_GameConnector.authenticated = true;
 
                                 // Prep message
-                                var popUpMsg = string.Format("You are now signed-in as {0}.", S_GameConnector.client.CurrentUser.UserId);
+                                var popUpMsg = string.Format("You are now signed-in as {0}.", fbUser.name);
 
                                 // Display success toast notification
                                 Android.Widget.Toast toast = Android.Widget.Toast.MakeText(this, popUpMsg, Android.Widget.ToastLength.Short);
@@ -327,3 +364,42 @@ namespace JudgementZone.Droid
         }
     }
 }
+
+////{"name":"Jack Kawell","id":"1992132101055548"}
+////199213210105554
+
+//int index = 9;
+//char curChar = 'a';
+//string fullName = string.Empty;
+
+//                        while (curChar != '"')
+//                        {
+//                            curChar = content[index];
+//                            fullName += curChar;
+//                            index++;
+//                        }
+
+//                        fullName = fullName.Substring(0, fullName.Length - 1);
+
+//                        index = content.Length-3;
+//                        curChar = 'a';
+//                        string userId = string.Empty;
+
+//                        while (curChar != '"')
+//                        {
+//                            curChar = content[index];
+//                            userId += curChar;
+//                            index--;
+//                        }
+
+//                        string flippedId = string.Empty;
+//                        for (int i = userId.Length - 1; i >= 0; i--)
+//                        {
+//                            flippedId += userId[i];
+//                        }
+
+//                        userId = flippedId;
+
+//                        userId = userId.Substring(0, fullName.Length - 1);
+
+//                        var x = 1;
