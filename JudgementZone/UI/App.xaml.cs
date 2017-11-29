@@ -3,25 +3,42 @@ using Xamarin.Forms;
 using JudgementZone.UI;
 using JudgementZone.Models;
 using System.Linq;
+using Microsoft.WindowsAzure.MobileServices;
+using JudgementZone.Interfaces;
+using JudgementZone.Services;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using Xamarin.Auth;
 
 namespace JudgementZone
 {
     public partial class App : Application
     {
+        public const string AppName = "JudgementZone";
+
+        //public static string accessToken;
+
         public App()
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainMenuPage())
+            //if (!S_GameConnector.authenticated)
+            //{
+            //    MainPage = new LoginPage();
+            //}
+
+            MainPage = new NavigationPage(LoginPage.page)
             {
                 BarBackgroundColor = Color.Black,
                 BarTextColor = Color.White
             };
         }
 
-        protected override void OnStart()
+        protected override async void OnStart()
         {
-            // Handle when your app starts
             var gameStateRealm = Realm.GetInstance("GameState.Realm");
             if (gameStateRealm.All<M_Client_GameState>().Any())
             {
@@ -36,7 +53,7 @@ namespace JudgementZone
                     {
                         gameStateRealm.Write(() =>
                         {
-							gameStateRealm.RemoveAll();
+                            gameStateRealm.RemoveAll();
                         });
                     }
                 });
@@ -52,5 +69,16 @@ namespace JudgementZone
         {
             // Handle when your app resumes
         }
+
+        #region Helper Methods
+
+        public static IAuthenticate Authenticator { get; private set; }
+
+        public static void Init(IAuthenticate authenticator)
+        {
+            Authenticator = authenticator;
+        }
+
+        #endregion
     }
 }
