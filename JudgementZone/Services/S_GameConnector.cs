@@ -16,10 +16,10 @@ namespace JudgementZone.Services
         private const bool DEBUG_SERVER = true;
 
         // Track whether the user has authenticated.
-        public static bool authenticated = false;
+        public bool authenticated = false;
 
         //Needed for authentication: Defines a user and client
-        public static MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
+        public MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 
         // Singleton Instance Properties
         private static volatile S_GameConnector instance;
@@ -92,6 +92,8 @@ namespace JudgementZone.Services
                     try
                     {
                         hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
+                        hubConnection.Headers.Add("X-ZUMO-AUTH", client.CurrentUser.MobileServiceAuthenticationToken);
+                        //hubConnection.Headers[""]
                         await hubConnection.Start();
                         return true;
                     }
@@ -120,7 +122,15 @@ namespace JudgementZone.Services
 
         public bool IsConnected()
         {
-            return hubConnection.State == ConnectionState.Connected;
+            try
+            {
+                return hubConnection.State == ConnectionState.Connected;
+            }
+            catch (Exception e)
+            {
+                var msg = e.Message;
+                return false;
+            }
         }
 
         #endregion

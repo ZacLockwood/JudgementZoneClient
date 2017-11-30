@@ -68,11 +68,11 @@ namespace JudgementZone.Droid
                     // Save the Azure credentials
                     SaveCredentials(
                         "azure_token",
-                        S_GameConnector.client.CurrentUser.MobileServiceAuthenticationToken,
-                        S_GameConnector.client.CurrentUser.UserId);
+                        S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
+                        S_GameConnector.Connector.client.CurrentUser.UserId);
 
                     // Label login as successful
-                    S_GameConnector.authenticated = true;
+                    S_GameConnector.Connector.authenticated = true;
 
                     // Pull out the user name and id from Facebook
                     FacebookUser fbUser;
@@ -128,8 +128,8 @@ namespace JudgementZone.Droid
                     {
                         if (!IsAzureTokenExpired(tokenString))//THIS METHOD DOESN'T WORK WITH NON-AZURE TOKENS
                         {
-                            S_GameConnector.client.CurrentUser = new MobileServiceUser(acct.Username);
-                            S_GameConnector.client.CurrentUser.MobileServiceAuthenticationToken = tokenString;
+                            S_GameConnector.Connector.client.CurrentUser = new MobileServiceUser(acct.Username);
+                            S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken = tokenString;
                         }
                     }
 
@@ -220,11 +220,11 @@ namespace JudgementZone.Droid
                                 // Save the Azure credentials
                                 SaveCredentials(
                                     "azure_token",
-                                    S_GameConnector.client.CurrentUser.MobileServiceAuthenticationToken,
-                                    S_GameConnector.client.CurrentUser.UserId);
+                                    S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
+                                    S_GameConnector.Connector.client.CurrentUser.UserId);
 
                                 // Label login as successful
-                                S_GameConnector.authenticated = true;
+                                S_GameConnector.Connector.authenticated = true;
 
                                 // Prep message
                                 var popUpMsg = string.Format("You are now signed-in as {0}.", fbUser.name);
@@ -277,7 +277,7 @@ namespace JudgementZone.Droid
                     try
                     {
                         // Authenticate with the Azure App Service using a client-managed flow
-                        await S_GameConnector.client.LoginAsync(MobileServiceAuthenticationProvider.Google, googleToken);
+                        await S_GameConnector.Connector.client.LoginAsync(MobileServiceAuthenticationProvider.Google, googleToken);
                     }
                     catch (Exception e)
                     {
@@ -297,7 +297,7 @@ namespace JudgementZone.Droid
                     try
                     {
                         // Authenticate with the Azure App Service using a client-managed flow
-                        await S_GameConnector.client.LoginAsync(MobileServiceAuthenticationProvider.Facebook, facebookToken);
+                        await S_GameConnector.Connector.client.LoginAsync(MobileServiceAuthenticationProvider.Facebook, facebookToken);
                         return true;
                     }
                     catch (Exception e)
@@ -364,42 +364,3 @@ namespace JudgementZone.Droid
         }
     }
 }
-
-////{"name":"Jack Kawell","id":"1992132101055548"}
-////199213210105554
-
-//int index = 9;
-//char curChar = 'a';
-//string fullName = string.Empty;
-
-//                        while (curChar != '"')
-//                        {
-//                            curChar = content[index];
-//                            fullName += curChar;
-//                            index++;
-//                        }
-
-//                        fullName = fullName.Substring(0, fullName.Length - 1);
-
-//                        index = content.Length-3;
-//                        curChar = 'a';
-//                        string userId = string.Empty;
-
-//                        while (curChar != '"')
-//                        {
-//                            curChar = content[index];
-//                            userId += curChar;
-//                            index--;
-//                        }
-
-//                        string flippedId = string.Empty;
-//                        for (int i = userId.Length - 1; i >= 0; i--)
-//                        {
-//                            flippedId += userId[i];
-//                        }
-
-//                        userId = flippedId;
-
-//                        userId = userId.Substring(0, fullName.Length - 1);
-
-//                        var x = 1;

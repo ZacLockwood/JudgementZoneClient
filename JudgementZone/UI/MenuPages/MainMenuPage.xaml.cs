@@ -37,7 +37,7 @@ namespace JudgementZone.UI
                 }
 
                 // Check if already connected
-                if (S_GameConnector.Connector.IsConnected() || S_GameConnector.authenticated)
+                if (S_GameConnector.Connector.IsConnected() || S_GameConnector.Connector.authenticated)
                 {
                     if (animationEnabled)
                     {
@@ -49,7 +49,7 @@ namespace JudgementZone.UI
                 {
                     var firstAnimComplete = false;
                     ////HACK
-                    while ((!S_GameConnector.Connector.IsConnected() || !S_GameConnector.authenticated) && !hasAttemptedLogin)
+                    while ((!S_GameConnector.Connector.IsConnected() || !S_GameConnector.Connector.authenticated) && !hasAttemptedLogin)
                     {
                         // Run this at beginning of loop so that connection can not restore during alert,
                         // thereby skipping the callback animation and leaving MenuLogo in a permenant unusable state
@@ -103,7 +103,7 @@ namespace JudgementZone.UI
                     }
                     else
                     {
-                        if (S_GameConnector.authenticated)
+                        if (S_GameConnector.Connector.authenticated)
                         {
                             await DisplayAlert("Authenticated", "Successfully authenticated but couldn't connect to the server.", "OK");
                         }
@@ -132,7 +132,7 @@ namespace JudgementZone.UI
                     }
                     else
                     {
-                        if (S_GameConnector.authenticated)
+                        if (S_GameConnector.Connector.authenticated)
                         {
                             await DisplayAlert("Authenticated", "Successfully authenticated but couldn't connect to the server.", "OK");
                         }

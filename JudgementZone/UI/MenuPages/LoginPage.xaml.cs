@@ -60,13 +60,13 @@ namespace JudgementZone.UI
 
         async void FacebookLoginClicked(object sender, EventArgs e)
         {
-            if (App.Authenticator != null && !S_GameConnector.authenticated)
+            if (App.Authenticator != null && !S_GameConnector.Connector.authenticated)
             {
                 FacebookLogin.Text = "Logging in...";
 
                 var result = await App.Authenticator.Authenticate();
 
-                S_GameConnector.authenticated = result;
+                S_GameConnector.Connector.authenticated = result;
             }
         }
 
