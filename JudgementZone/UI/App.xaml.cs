@@ -12,7 +12,7 @@ namespace JudgementZone
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainMenuPage())
+            MainPage = new NavigationPage(new TestPage())
             {
                 BarBackgroundColor = Color.Black,
                 BarTextColor = Color.White

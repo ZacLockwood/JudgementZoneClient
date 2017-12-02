@@ -58,6 +58,9 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\Game\PlayerGameStatsView.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\TestPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
@@ -121,6 +124,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\I_PresentableGameView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\Game\RoundScreen.xaml.cs">
       <DependentUpon>RoundScreen.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ExplodedPieChartView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\TestPage.xaml.cs">
+      <DependentUpon>TestPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

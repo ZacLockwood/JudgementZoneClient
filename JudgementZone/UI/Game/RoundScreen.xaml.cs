@@ -2,7 +2,7 @@
 using JudgementZone.Models;
 using Xamarin.Forms;
 
-namespace JudgementZone.UI.Game
+namespace JudgementZone.UI
 {
     public partial class RoundScreen : ContentView
     {
