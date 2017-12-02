@@ -2,14 +2,12 @@
 using JudgementZone.Models;
 using Xamarin.Forms;
 
-namespace JudgementZone.UI.Game
+namespace JudgementZone.UI
 {
     public partial class RoundScreen : ContentView
     {
         public RoundScreen()
         {
-
-
             InitializeComponent();
         }
 
@@ -17,7 +15,7 @@ namespace JudgementZone.UI.Game
 
         public void UpdateView(int roundNum)
         {
-            
+
             RoundNumLabel.Text = $"Round {roundNum}";
 
         }
