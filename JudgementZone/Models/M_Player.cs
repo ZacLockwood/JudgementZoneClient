@@ -14,6 +14,9 @@ namespace JudgementZone.Models
 		[BsonElement("PlayerName")]
 		public string PlayerName { get; set; }
 
+        [BsonElement("IsReadyToStart")]
+        public bool IsReadyToStart { get; set; }
+
         public M_Player()
         {
         }

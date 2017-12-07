@@ -10,13 +10,10 @@ using System;
 using JudgementZone.Services;
 
 //Needed for user authentication
-using Xamarin.Forms;
 using Xamarin.Auth;
 using Newtonsoft.Json.Linq;
 using System.Text;
-using System.Collections.Generic;
 using JudgementZone.UI;
-using Xamarin.Facebook;
 using Newtonsoft.Json;
 
 namespace JudgementZone.Droid

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using JudgementZone.Services;
 using Xamarin.Forms;
-using System.Threading;
 
 namespace JudgementZone.UI
 {
@@ -10,9 +8,6 @@ namespace JudgementZone.UI
     {
 
         private bool _uiLock;
-
-        //HACK
-        private static bool hasAttemptedLogin = false;
 
         #region Constructor
 
@@ -49,7 +44,7 @@ namespace JudgementZone.UI
                 {
                     var firstAnimComplete = false;
                     ////HACK
-                    while ((!S_GameConnector.Connector.IsConnected() || !S_GameConnector.Connector.authenticated) && !hasAttemptedLogin)
+                    while (!S_GameConnector.Connector.IsConnected() || !S_GameConnector.Connector.authenticated)
                     {
                         // Run this at beginning of loop so that connection can not restore during alert,
                         // thereby skipping the callback animation and leaving MenuLogo in a permenant unusable state
@@ -58,9 +53,6 @@ namespace JudgementZone.UI
                             Console.WriteLine("CONNECTION ERROR");
                             await DisplayAlert("Connection Error", "Could not connect to server. Press ok to try again.", "OK");
                         }
-
-                        hasAttemptedLogin = true;
-                        //await App.Authenticator.Authenticate();
 
                         if (animationEnabled && !firstAnimComplete)
                         {

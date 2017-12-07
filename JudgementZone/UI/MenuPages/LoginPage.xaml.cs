@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using JudgementZone.Services;
 using Xamarin.Forms;
-using System.Threading;
 
 namespace JudgementZone.UI
 {
@@ -58,16 +56,19 @@ namespace JudgementZone.UI
 
         #region Button Handlers
 
-        async void FacebookLoginClicked(object sender, EventArgs e)
+        void FacebookLoginClicked(object sender, EventArgs e)
         {
-            if (App.Authenticator != null && !S_GameConnector.Connector.authenticated)
+            Device.BeginInvokeOnMainThread(async () =>
             {
-                FacebookLogin.Text = "Logging in...";
+                if (App.Authenticator != null && !S_GameConnector.Connector.authenticated)
+                {
+                    FacebookLogin.Text = "Logging in...";
 
-                var result = await App.Authenticator.Authenticate();
+                    var result = await App.Authenticator.Authenticate();
 
-                S_GameConnector.Connector.authenticated = result;
-            }
+                    S_GameConnector.Connector.authenticated = result;
+                }
+            });
         }
 
         public void ConnectAndGoToMenu()
@@ -83,7 +84,7 @@ namespace JudgementZone.UI
                     MenuLogo.IsAnimating = false;
                 }
 
-                await Navigation.PushModalAsync(new MainMenuPage());
+                await Navigation.PushAsync(new MainMenuPage());
             });
         }
 

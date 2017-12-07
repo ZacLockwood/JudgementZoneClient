@@ -3,32 +3,15 @@ using Xamarin.Forms;
 using JudgementZone.UI;
 using JudgementZone.Models;
 using System.Linq;
-using Microsoft.WindowsAzure.MobileServices;
 using JudgementZone.Interfaces;
-using JudgementZone.Services;
-using System.Threading.Tasks;
-using System.Net.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using Xamarin.Auth;
 
 namespace JudgementZone
 {
     public partial class App : Application
     {
-        public const string AppName = "JudgementZone";
-
-        //public static string accessToken;
-
         public App()
         {
             InitializeComponent();
-
-            //if (!S_GameConnector.authenticated)
-            //{
-            //    MainPage = new LoginPage();
-            //}
 
             MainPage = new NavigationPage(LoginPage.page)
             {
@@ -37,7 +20,7 @@ namespace JudgementZone
             };
         }
 
-        protected override async void OnStart()
+        protected override void OnStart()
         {
             var gameStateRealm = Realm.GetInstance("GameState.Realm");
             if (gameStateRealm.All<M_Client_GameState>().Any())
