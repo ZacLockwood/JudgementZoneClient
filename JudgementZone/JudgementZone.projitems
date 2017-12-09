@@ -60,8 +60,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IAuthenticate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
@@ -126,10 +131,13 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
     <Folder Include="$(MSBuildThisFileDirectory)Services\" />
-    <Folder Include="$(MSBuildThisFileDirectory)UI\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Interfaces\" />
-    <Folder Include="$(MSBuildThisFileDirectory)UI\MenuPages\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\Game\" />
     <Folder Include="$(MSBuildThisFileDirectory)UI\ViewGestures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\MenuPages\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
