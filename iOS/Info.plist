@@ -42,5 +42,18 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>iOS JZ URL Type</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>judgementzonedev</string>
+			</array>
+			<key>CFBundleURLTypes</key>
+			<string>None</string>
+		</dict>
+	</array>
 </dict>
 </plist>
