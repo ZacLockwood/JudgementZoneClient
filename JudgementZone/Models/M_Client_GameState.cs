@@ -30,9 +30,9 @@ namespace JudgementZone.Models
 
 		// GAME STATE CONTEXT
 		public string FocusedPlayerId { get; set; }
-		
+
 		public int CurrentQuestionId { get; set; }
-		
+
 		public bool CanSubmitAnswer { get; set; }
 
         public M_Client_QuestionStats QuestionStats { get; set; }

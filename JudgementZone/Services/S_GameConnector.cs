@@ -151,11 +151,11 @@ namespace JudgementZone.Services
             await gameHubProxy.Invoke("RequestJoinGame", myPlayer, gameKey);
         }
 
-        public async Task SendGameStartRequest(string gameKey)
+        public async Task SendGameStartRequest(M_Player myPlayer, string gameKey)
         {
             if (DEBUG_SERVER)
                 Console.WriteLine("GameServer: Requesting Game Start...");
-            await gameHubProxy.Invoke("RequestStartGame", gameKey);
+            await gameHubProxy.Invoke("RequestStartGame", myPlayer, gameKey);
         }
 
         public async Task SendAnswerSubmission(int myAnswer, string gameKey)

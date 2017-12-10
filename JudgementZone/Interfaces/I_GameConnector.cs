@@ -14,7 +14,7 @@ namespace JudgementZone.Interfaces
         // Request Methods
         Task SendNewGameRequest(M_Player myPlayer);
         Task SendJoinGameRequest(M_Player myPlayer, string gameKey);
-        Task SendGameStartRequest(string gameKey);
+        Task SendGameStartRequest(M_Player myPlayer, string gameKey);
         Task SendAnswerSubmission(int myAnswer, string gameKey);
         Task SendContinueRequest(string gameKey);
         Task SendQuestionSyncRequest();
