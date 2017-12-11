@@ -80,11 +80,11 @@ namespace JudgementZone.iOS
                     //alertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, (action) => Console.WriteLine("OK Clicked.")));
                     //UIViewController.PresentViewController(alertController, true, null);
 
-                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                        this,
-                        string.Format("You are now signed-in as {0}.", fbUser.name),
-                        Android.Widget.ToastLength.Short);
-                    toast.Show();
+                    //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
+                    //    this,
+                    //    string.Format("You are now signed-in as {0}.", fbUser.name),
+                    //    Android.Widget.ToastLength.Short);
+                    //toast.Show();
 
                     LoginPage.page.ConnectAndGoToMenu();
                     return true;
@@ -92,11 +92,11 @@ namespace JudgementZone.iOS
                 else
                 {
                     // Display success toast notification
-                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                        this,
-                        string.Format("Failed to automatically login."),
-                        Android.Widget.ToastLength.Short);
-                    toast.Show();
+                    //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
+                    //    this,
+                    //    string.Format("Failed to automatically login."),
+                    //    Android.Widget.ToastLength.Short);
+                    //toast.Show();
 
                     return ProviderAuthentication(loginProvider);
                 }
@@ -140,118 +140,87 @@ namespace JudgementZone.iOS
         // Authenticate with a token provider
         private bool ProviderAuthentication(int loginProvider)
         {
-            OAuth2Authenticator auth = null;
-
             bool didAuthenticate = false;
 
-            switch (loginProvider)
+            OAuth2Authenticator auth = new OAuth2Authenticator(
+                clientId: ServerConstants.FACEBOOK_APP_CLIENTID,
+                scope: "",
+                authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
+                redirectUrl: new Uri("http://www.facebook.com/connect/login_success.html")
+                );
+
+            auth.Completed += async (sender, eventArgs) =>
             {
-                case 1: // Google
-                    #region Google auth
-                    //auth = new OAuth2Authenticator(
-                    //    clientId: ServerConstants.GOOGLE_APP_CLIENTID,
-                    //    scope: "",
-                    //    authorizeUrl: new Uri("https://accounts.google.com/o/oauth2/v2/auth"),
-                    //    redirectUrl: new Uri(ServerConstants.GOOGLE_APP_REDIRECT_URI)
-                    //);
+                if (eventArgs.IsAuthenticated)
+                {
+                    var values = eventArgs.Account.Properties;
+                    var accessToken = values["access_token"];
 
-                    //StartActivity(auth.GetUI(this));
-
-                    //auth.Completed += (sender, eventArgs) =>
-                    //{
-                    //    if (eventArgs.IsAuthenticated)
-                    //    {
-                    //        // Use eventArgs.Account to do wonderful things
-                    //    }
-                    //    else
-                    //    {
-                    //        // The user cancelled
-                    //    }
-                    //};
-                    break;
-                #endregion
-
-                case 2: // Facebook
-                    #region Facebook auth
-                    auth = new OAuth2Authenticator(
-                        clientId: ServerConstants.FACEBOOK_APP_CLIENTID,
-                        scope: "",
-                        authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-                        redirectUrl: new Uri("http://www.facebook.com/connect/login_success.html")
-                        );
-
-                    StartActivity(auth.GetUI(this));
-
-                    auth.Completed += async (sender, eventArgs) =>
+                    // Pull out the user name and id from Facebook
+                    FacebookUser fbUser;
+                    using (var httpClient = new System.Net.Http.HttpClient())
                     {
-                        if (eventArgs.IsAuthenticated)
+                        var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + accessToken));
+                        response.EnsureSuccessStatusCode();
+                        var content = response.Content.ReadAsStringAsync().Result;
+
+                        fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);// USE THIS TO SAVE THE NAME OF THE USER
+                    }
+
+                    // Save the provider credentials
+                    SaveCredentials(
+                        "facebook_token",
+                        accessToken,
+                        fbUser.id);
+
+                    didAuthenticate = await AzureAuthentication(loginProvider, accessToken);
+
+                    // If authenticated, save Azure credentials, notify user, and proceed to main menu
+                    if (didAuthenticate)
+                    {
+                        // Save the Azure credentials
+                        SaveCredentials(
+                            "azure_token",
+                            S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
+                            S_GameConnector.Connector.client.CurrentUser.UserId);
+
+                        // Label login as successful
+                        S_GameConnector.Connector.authenticated = true;
+
+                        // Display success toast notification
+                        //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
+                        //    this,
+                        //    string.Format("You are now signed-in as {0}.", fbUser.name),
+                        //    Android.Widget.ToastLength.Short);
+                        //toast.Show();
+
+                        LoginPage.page.ConnectAndGoToMenu();
+                    }
+                    else
+                    {
+                        if (!didAuthenticate)
                         {
-                            var values = eventArgs.Account.Properties;
-                            var accessToken = values["access_token"];
-
-                            // Pull out the user name and id from Facebook
-                            FacebookUser fbUser;
-                            using (var httpClient = new System.Net.Http.HttpClient())
-                            {
-                                var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + accessToken));
-                                response.EnsureSuccessStatusCode();
-                                var content = response.Content.ReadAsStringAsync().Result;
-
-                                fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);// USE THIS TO SAVE THE NAME OF THE USER
-                            }
-
-                            // Save the provider credentials
-                            SaveCredentials(
-                                "facebook_token",
-                                accessToken,
-                                fbUser.id);
-
-                            didAuthenticate = await AzureAuthentication(loginProvider, accessToken);
-
-                            // If authenticated, save Azure credentials, notify user, and proceed to main menu
-                            if (didAuthenticate)
-                            {
-                                // Save the Azure credentials
-                                SaveCredentials(
-                                    "azure_token",
-                                    S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
-                                    S_GameConnector.Connector.client.CurrentUser.UserId);
-
-                                // Label login as successful
-                                S_GameConnector.Connector.authenticated = true;
-
-                                // Prep message
-                                var popUpMsg = string.Format("You are now signed-in as {0}.", fbUser.name);
-
-                                // Display success toast notification
-                                Android.Widget.Toast toast = Android.Widget.Toast.MakeText(this, popUpMsg, Android.Widget.ToastLength.Short);
-                                toast.Show();
-
-                                LoginPage.page.ConnectAndGoToMenu();
-                            }
-                            else
-                            {
-                                if (!didAuthenticate)
-                                {
-                                    // Prep message
-                                    var popUpMsg = string.Format("Failed to login.");
-
-                                    // Display success toast notification
-                                    Android.Widget.Toast toast = Android.Widget.Toast.MakeText(this, popUpMsg, Android.Widget.ToastLength.Short);
-                                    toast.Show();
-                                }
-                            }
+                            //// Display success toast notification
+                            //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
+                            //    this,
+                            //    string.Format("Failed to login."),
+                            //    Android.Widget.ToastLength.Short);
+                            //toast.Show();
                         }
-                        else
-                        {
-                            // The user cancelled
-                            didAuthenticate = false;
-                        }
-                    };
+                    }
+                }
+                else
+                {
+                    // The user cancelled
+                    didAuthenticate = false;
+                }
+            };
 
-                    break;
-                    #endregion
-            }
+            //StartActivity(auth.GetUI(this));
+
+            UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(auth.GetUI(), true, null);
+
+            //PresentViewController(auth.GetUI(), true, null);
 
             return didAuthenticate;
         }
@@ -259,50 +228,23 @@ namespace JudgementZone.iOS
         // Login to the Azure App Service with a provider token
         private async Task<bool> AzureAuthentication(int loginProvider, string accessToken)
         {
-            switch (loginProvider)
+            // Initialize the token to send to Azure
+            var facebookToken = JObject.FromObject(new
             {
-                case 1: //Google
-                    #region Google auth
-                    var googleToken = new JObject()
-                    {
-                        ["access_token"] = accessToken
-                    };
+                access_token = accessToken
+            });
 
-                    try
-                    {
-                        // Authenticate with the Azure App Service using a client-managed flow
-                        await S_GameConnector.Connector.client.LoginAsync(MobileServiceAuthenticationProvider.Google, googleToken);
-                    }
-                    catch (Exception e)
-                    {
-                        var msg = e.Message;
-                    }
-                    return true;
-                #endregion
-
-                case 2: //Facebook
-                    #region Facebook auth
-                    // Initialize the token to send to Azure
-                    var facebookToken = JObject.FromObject(new
-                    {
-                        access_token = accessToken
-                    });
-
-                    try
-                    {
-                        // Authenticate with the Azure App Service using a client-managed flow
-                        await S_GameConnector.Connector.client.LoginAsync(MobileServiceAuthenticationProvider.Facebook, facebookToken);
-                        return true;
-                    }
-                    catch (Exception e)
-                    {
-                        var msg = e.Message;
-                        return false;
-                    }
-                    #endregion
+            try
+            {
+                // Authenticate with the Azure App Service using a client-managed flow
+                await S_GameConnector.Connector.client.LoginAsync(MobileServiceAuthenticationProvider.Facebook, facebookToken);
+                return true;
             }
-
-            return false;
+            catch (Exception e)
+            {
+                var msg = e.Message;
+                return false;
+            }
         }
 
         // Save the user name and token of the login

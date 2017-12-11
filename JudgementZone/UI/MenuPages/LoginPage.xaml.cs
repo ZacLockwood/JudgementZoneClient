@@ -62,11 +62,19 @@ namespace JudgementZone.UI
             {
                 if (App.Authenticator != null && !S_GameConnector.Connector.authenticated)
                 {
-                    FacebookLogin.Text = "Logging in...";
+                    try
+                    {
 
-                    var result = await App.Authenticator.Authenticate();
+                        FacebookLogin.Text = "Logging in...";
 
-                    S_GameConnector.Connector.authenticated = result;
+                        var result = await App.Authenticator.Authenticate();
+
+                        S_GameConnector.Connector.authenticated = result;
+                    }
+                    catch (Exception e)
+                    {
+                        var msg = e.Message;
+                    }
                 }
             });
         }
