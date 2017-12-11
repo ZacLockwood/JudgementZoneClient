@@ -60,7 +60,7 @@ namespace JudgementZone.UI
             Device.BeginInvokeOnMainThread(() =>
             {
 				ReleaseRealmSubscriptions();
-				ReleaseUISubscriptions();
+				ReleaseUISubscriptions(); 
             });
         }
 
@@ -81,6 +81,7 @@ namespace JudgementZone.UI
             // Create full list of displayed views
             List<I_PresentableGameView> gameViewsToHide = new List<I_PresentableGameView>
             {
+                
                 GameLoaderView,
                 GameQuestionView,
                 GameQuestionStatsView,
@@ -274,6 +275,10 @@ namespace JudgementZone.UI
                         Device.BeginInvokeOnMainThread(async () =>
                         {
                             // if new round, await new round animation
+                            if (gameState.IsNewRound)
+                            {
+                                Navigation.PushAsync(new RoundScreen(gameState.CurrentRoundNum));
+                            }
                             // then continue...
 
                             // Update Question View

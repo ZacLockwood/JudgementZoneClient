@@ -6,16 +6,23 @@ namespace JudgementZone.UI.Game
 {
     public partial class RoundScreen : ContentView
     {
+        int roundNum;
+
         public RoundScreen()
         {
+            InitializeComponent();
+        }
 
-
+        public RoundScreen(int rn)
+        {
+            roundNum = rn;
+            UpdateView();
             InitializeComponent();
         }
 
         #region Public View Management
 
-        public void UpdateView(int roundNum)
+        public void UpdateView()
         {
             
             RoundNumLabel.Text = $"Round {roundNum}";

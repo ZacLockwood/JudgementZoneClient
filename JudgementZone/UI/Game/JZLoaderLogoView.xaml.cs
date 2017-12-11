@@ -39,6 +39,7 @@ namespace JudgementZone.UI
 					_currentColor = value;
                 }
 
+
                 ColoredLogo.Source = GetImageSourceForColor(_currentColor);
             }
         }
