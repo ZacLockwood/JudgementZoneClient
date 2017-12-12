@@ -46,10 +46,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>iOS JZ URL Type</string>
+			<string>iOS JZ Callback URI</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>judgementzonedev</string>
+				<string>judgementzone</string>
 			</array>
 			<key>CFBundleURLTypes</key>
 			<string>None</string>

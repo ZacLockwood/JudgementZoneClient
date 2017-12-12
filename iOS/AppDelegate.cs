@@ -92,7 +92,7 @@ namespace JudgementZone.iOS
                 clientId: ServerConstants.FACEBOOK_APP_CLIENTID,
                 scope: "",
                 authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-                redirectUrl: new Uri("http://www.facebook.com/connect/login_success.html")
+                redirectUrl: new Uri("https://www.facebook.com/connect/login_success.html")
                 );
 
             auth.Completed += async (sender, eventArgs) =>
@@ -301,7 +301,7 @@ namespace JudgementZone.iOS
                 // Display failure toast notification
                 UIAlertView avAlert = new UIAlertView(
                     title: "Failed to Login",
-                    message: string.Format("Failed to automatically login."),
+                    message: string.Format("Failed to login."),
                     del: (IUIAlertViewDelegate)null,
                     cancelButtonTitle: "Cancel",
                     otherButtons: "OK");

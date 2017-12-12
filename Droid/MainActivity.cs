@@ -96,7 +96,7 @@ namespace JudgementZone.Droid
                 clientId: ServerConstants.FACEBOOK_APP_CLIENTID,
                 scope: "",
                 authorizeUrl: new Uri("https://m.facebook.com/dialog/oauth/"),
-                redirectUrl: new Uri("http://www.facebook.com/connect/login_success.html")
+                redirectUrl: new Uri("https://www.facebook.com/connect/login_success.html")
                 );
 
             StartActivity(auth.GetUI(this));
@@ -145,10 +145,7 @@ namespace JudgementZone.Droid
                     }
                     else
                     {
-                        if (!didAuthenticate)
-                        {
-                            DisplayLoginNotification(string.Empty, didAuthenticate);
-                        }
+                        DisplayLoginNotification(string.Empty, didAuthenticate);
                     }
                 }
                 else
@@ -302,7 +299,7 @@ namespace JudgementZone.Droid
                 // Display success toast notification
                 Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
                     this,
-                    string.Format("You are now signed-in as {0}.", name),
+                    string.Format("You are now signed in as {0}.", name),
                     Android.Widget.ToastLength.Short);
                 toast.Show();
             }
@@ -311,7 +308,7 @@ namespace JudgementZone.Droid
                 // Display failure toast notification
                 Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
                         this,
-                        string.Format("Failed to automatically login."),
+                        string.Format("Failed to login."),
                         Android.Widget.ToastLength.Short);
                 toast.Show();
             }
