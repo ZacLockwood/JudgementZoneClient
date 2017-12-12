@@ -13,6 +13,7 @@ namespace JudgementZone.UI
 {
 	public class ExplodedPieChartView : ContentView
 	{
+        // Helper class
 		class ChartData
 		{
 			public ChartData(int value, SKColor color)
@@ -26,7 +27,19 @@ namespace JudgementZone.UI
 			public SKColor Color { private set; get; }
 		}
 
-		ChartData[] chartData =
+		// 
+		ChartData[] myAnswersChartData =
+		{
+			new ChartData(45, SKColors.Red),
+			new ChartData(13, SKColors.Green),
+			new ChartData(27, SKColors.Blue),
+			new ChartData(19, SKColors.Magenta),
+			new ChartData(40, SKColors.Cyan),
+			new ChartData(22, SKColors.Brown),
+			new ChartData(29, SKColors.Gray)
+		};
+
+		ChartData[] theirAnswersChartData =
 		{
 			new ChartData(45, SKColors.Red),
 			new ChartData(13, SKColors.Green),
@@ -52,57 +65,72 @@ namespace JudgementZone.UI
 			SKSurface surface = args.Surface;
 			SKCanvas canvas = surface.Canvas;
 
-
-
-
-
 			canvas.Clear();
 
 			int totalValues = 0;
 
-			foreach (ChartData item in chartData)
+			foreach (ChartData item in myAnswersChartData)
 			{
 				totalValues += item.Value;
 			}
 
 			SKPoint center = new SKPoint(info.Width / 2, info.Height / 2);
-			float explodeOffset = 50;
-			float radius = Math.Min(info.Width / 2, info.Height / 2) - 2 * explodeOffset;
+			float radius = Math.Min(info.Width / 2, info.Height / 2);
 			SKRect rect = new SKRect(center.X - radius, center.Y - radius,
 									 center.X + radius, center.Y + radius);
 
 			float startAngle = 0;
 
-			foreach (ChartData item in chartData)
+			foreach (ChartData item in myAnswersChartData)
 			{
-				float sweepAngle = 360f * item.Value / totalValues;
+				float sweepAngle = 180f * item.Value / totalValues;
 
 				using (SKPath path = new SKPath())
-				using (SKPaint fillPaint = new SKPaint())
-				using (SKPaint outlinePaint = new SKPaint())
+				using (SKPaint paint = new SKPaint())
 				{
-					path.MoveTo(center);
-					path.ArcTo(rect, startAngle, sweepAngle, false);
+					// Sweep forward, then backward, to complete connection
+					path.ArcTo(rect, startAngle, sweepAngle, true);
+					path.ArcTo(rect, startAngle + sweepAngle, -sweepAngle, false);
 					path.Close();
 
-					fillPaint.Style = SKPaintStyle.Fill;
-					fillPaint.Color = item.Color;
-
-					outlinePaint.Style = SKPaintStyle.Stroke;
-					outlinePaint.StrokeWidth = 5;
-					outlinePaint.Color = SKColors.Black;
-
-					// Calculate "explode" transform
-					float angle = startAngle + 0.5f * sweepAngle;
-					float x = explodeOffset * (float)Math.Cos(Math.PI * angle / 180);
-					float y = explodeOffset * (float)Math.Sin(Math.PI * angle / 180);
+					// Stroke settings
+					paint.Style = SKPaintStyle.Stroke;
+					paint.StrokeWidth = 20;
+					paint.Color = item.Color;
 
 					canvas.Save();
-					canvas.Translate(x, y);
 
 					// Fill and stroke the path
-					canvas.DrawPath(path, fillPaint);
-					canvas.DrawPath(path, outlinePaint);
+					canvas.DrawPath(path, paint);
+					canvas.Restore();
+				}
+
+				startAngle += sweepAngle;
+			}
+
+            startAngle = 180;
+
+			foreach (ChartData item in theirAnswersChartData)
+			{
+				float sweepAngle = 180f * item.Value / totalValues;
+
+				using (SKPath path = new SKPath())
+				using (SKPaint paint = new SKPaint())
+				{
+					// Sweep forward, then backward, to complete connection
+					path.ArcTo(rect, startAngle, sweepAngle, true);
+					path.ArcTo(rect, startAngle + sweepAngle, -sweepAngle, false);
+					path.Close();
+
+					// Stroke settings
+					paint.Style = SKPaintStyle.Stroke;
+					paint.StrokeWidth = 20;
+					paint.Color = item.Color;
+
+					canvas.Save();
+
+					// Fill and stroke the path
+					canvas.DrawPath(path, paint);
 					canvas.Restore();
 				}
 
