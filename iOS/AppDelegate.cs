@@ -26,8 +26,6 @@ namespace JudgementZone.iOS
             public string id { get; set; }
         }
 
-        //public AccountStore AccountStore { get; private set; }
-
         // 1 = google, 2 = facebook
         private int loginProvider = 2;
 
@@ -43,60 +41,38 @@ namespace JudgementZone.iOS
             return base.FinishedLaunching(app, options);
         }
 
-        //Needed for authentication
+        // Needed for authentication
         public async Task<bool> Authenticate()
         {
             // Check if a current Azure credentials are available within the key store
-            string savedToken = CheckForCurrentCredentials();
+            string providerToken = CheckForCurrentCredentials();
 
-            if (savedToken != null) // If there is a saved token then login using that
+            if (providerToken != null) // If there is a saved token then login using that
             {
-                var success = await AzureAuthentication(loginProvider, savedToken);
+                var success = await AzureAuthentication(loginProvider, providerToken);
 
                 if (success)// If authenticated, save Azure credentials, notify user, and proceed to main menu
                 {
                     // Save the Azure credentials
                     SaveCredentials(
-                        "azure_token",
-                        S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
-                        S_GameConnector.Connector.client.CurrentUser.UserId);
+                        tokenName: "azure",
+                        accessToken: S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
+                        userName: S_GameConnector.Connector.client.CurrentUser.UserId);
 
                     // Label login as successful
                     S_GameConnector.Connector.authenticated = true;
 
-                    // Pull out the user name and id from Facebook
-                    FacebookUser fbUser;
-                    using (var httpClient = new System.Net.Http.HttpClient())
-                    {
-                        var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + savedToken));
-                        response.EnsureSuccessStatusCode();
-                        var content = response.Content.ReadAsStringAsync().Result;
+                    // Pull out the user name and id from the provider
+                    FacebookUser fbUser = await GetUserData(loginProvider, providerToken);
 
-                        fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);// USE THIS TO SAVE THE NAME OF THE USER
-                    }
-
-                    // Display success alert notification
-                    //var alertController = UIAlertController.Create("Signed in!", string.Format("You are now signed-in as {0}.", fbUser.name), UIAlertControllerStyle.Alert);
-                    //alertController.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, (action) => Console.WriteLine("OK Clicked.")));
-                    //UIViewController.PresentViewController(alertController, true, null);
-
-                    //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                    //    this,
-                    //    string.Format("You are now signed-in as {0}.", fbUser.name),
-                    //    Android.Widget.ToastLength.Short);
-                    //toast.Show();
+                    DisplayLoginNotification(fbUser.name, success);
 
                     LoginPage.page.ConnectAndGoToMenu();
                     return true;
                 }
                 else
                 {
-                    // Display success toast notification
-                    //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                    //    this,
-                    //    string.Format("Failed to automatically login."),
-                    //    Android.Widget.ToastLength.Short);
-                    //toast.Show();
+                    DisplayLoginNotification(string.Empty, success);
 
                     return ProviderAuthentication(loginProvider);
                 }
@@ -105,44 +81,6 @@ namespace JudgementZone.iOS
             {
                 return ProviderAuthentication(loginProvider);
             }
-        }
-
-        // Checks to see if there are current Azure credentials and a Facebook token
-        private string CheckForCurrentCredentials()
-        {
-            string savedToken = null;
-            try
-            {
-				IEnumerable<Account> accounts = AccountStore.Create().FindAccountsForService(ServerConstants.ACCOUNT_STORE_LABEL);
-            
-                if (accounts != null)
-                {
-                    foreach (var acct in accounts)
-                    {
-                        string tokenString;
-
-                        if (acct.Properties.TryGetValue("azure_token", out tokenString))
-                        {
-                            if (!IsAzureTokenExpired(tokenString))//THIS METHOD DOESN'T WORK WITH NON-AZURE TOKENS
-                            {
-                                S_GameConnector.Connector.client.CurrentUser = new MobileServiceUser(acct.Username);
-                                S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken = tokenString;
-                            }
-                        }
-
-                        if (acct.Properties.TryGetValue("facebook_token", out tokenString))
-                        {
-                            savedToken = tokenString;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                var msg = ex.Message;
-            }
-
-            return savedToken;
         }
 
         // Authenticate with a token provider
@@ -167,21 +105,13 @@ namespace JudgementZone.iOS
                     var accessToken = values["access_token"];
 
                     // Pull out the user name and id from Facebook
-                    FacebookUser fbUser;
-                    using (var httpClient = new System.Net.Http.HttpClient())
-                    {
-                        var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + accessToken));
-                        response.EnsureSuccessStatusCode();
-                        var content = response.Content.ReadAsStringAsync().Result;
-
-                        fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);// USE THIS TO SAVE THE NAME OF THE USER
-                    }
+                    FacebookUser fbUser = await GetUserData(loginProvider, accessToken);
 
                     // Save the provider credentials
                     SaveCredentials(
-                        "facebook_token",
-                        accessToken,
-                        fbUser.id);
+                        tokenName: "facebook_token",
+                        accessToken: accessToken,
+                        userName: fbUser.id);
 
                     didAuthenticate = await AzureAuthentication(loginProvider, accessToken);
 
@@ -190,33 +120,20 @@ namespace JudgementZone.iOS
                     {
                         // Save the Azure credentials
                         SaveCredentials(
-                            "azure_token",
-                            S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
-                            S_GameConnector.Connector.client.CurrentUser.UserId);
+                            tokenName: "azure",
+                            accessToken: S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken,
+                            userName: S_GameConnector.Connector.client.CurrentUser.UserId);
 
                         // Label login as successful
                         S_GameConnector.Connector.authenticated = true;
 
-                        // Display success toast notification
-                        //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                        //    this,
-                        //    string.Format("You are now signed-in as {0}.", fbUser.name),
-                        //    Android.Widget.ToastLength.Short);
-                        //toast.Show();
+                        DisplayLoginNotification(fbUser.name, didAuthenticate);
 
                         LoginPage.page.ConnectAndGoToMenu();
                     }
                     else
                     {
-                        if (!didAuthenticate)
-                        {
-                            //// Display success toast notification
-                            //Android.Widget.Toast toast = Android.Widget.Toast.MakeText(
-                            //    this,
-                            //    string.Format("Failed to login."),
-                            //    Android.Widget.ToastLength.Short);
-                            //toast.Show();
-                        }
+                        DisplayLoginNotification(string.Empty, didAuthenticate);
                     }
                 }
                 else
@@ -226,11 +143,8 @@ namespace JudgementZone.iOS
                 }
             };
 
-            //StartActivity(auth.GetUI(this));
-
+            // Display the login webview
             UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(auth.GetUI(), true, null);
-
-            //PresentViewController(auth.GetUI(), true, null);
 
             return didAuthenticate;
         }
@@ -255,6 +169,47 @@ namespace JudgementZone.iOS
                 var msg = e.Message;
                 return false;
             }
+        }
+
+
+        #region Credential storage methods
+
+        // Checks to see if there are current Azure credentials and a Facebook token
+        private string CheckForCurrentCredentials()
+        {
+            string providerToken = null;
+            try
+            {
+                var accounts = AccountStore.Create().FindAccountsForService(ServerConstants.ACCOUNT_STORE_LABEL);
+
+                if (accounts != null)
+                {
+                    foreach (var acct in accounts)
+                    {
+                        string tokenString;
+
+                        if (acct.Properties.TryGetValue("azure_token", out tokenString))
+                        {
+                            if (!IsAzureTokenExpired(tokenString))//THIS METHOD DOESN'T WORK WITH NON-AZURE TOKENS
+                            {
+                                S_GameConnector.Connector.client.CurrentUser = new MobileServiceUser(acct.Username);
+                                S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken = tokenString;
+                            }
+                        }
+
+                        if (acct.Properties.TryGetValue("facebook_token", out tokenString))
+                        {
+                            providerToken = tokenString;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+            }
+
+            return providerToken;
         }
 
         // Save the user name and token of the login
@@ -309,10 +264,57 @@ namespace JudgementZone.iOS
             return (expire < DateTime.UtcNow);
         }
 
+        #endregion
+
+
+        #region Helper method
+
+        // Use the provider api to pull out user data
+        private async Task<FacebookUser> GetUserData(int loginProvider, string providerToken)
+        {
+            using (var httpClient = new System.Net.Http.HttpClient())
+            {
+                var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + providerToken));
+                response.EnsureSuccessStatusCode();
+                var content = response.Content.ReadAsStringAsync().Result;
+
+                return JsonConvert.DeserializeObject<FacebookUser>(content);
+            }
+        }
+
+        // Displays either a success or failure notification to the user
+        private void DisplayLoginNotification(string name, bool success)
+        {
+            if (success)
+            {
+                // Display success alert notification
+                UIAlertView avAlert = new UIAlertView(
+                    title: "Logged in successfully",
+                    message: string.Format("You are now signed in as {0}.", name),
+                    del: (IUIAlertViewDelegate)null,
+                    cancelButtonTitle: "Cancel",
+                    otherButtons: "OK");
+                avAlert.Show();
+            }
+            else
+            {
+                // Display failure toast notification
+                UIAlertView avAlert = new UIAlertView(
+                    title: "Failed to login!",
+                    message: string.Format("Failed to automatically login."),
+                    del: (IUIAlertViewDelegate)null,
+                    cancelButtonTitle: "Cancel",
+                    otherButtons: "OK");
+                avAlert.Show();
+            }
+        }
+
         // Needed method for iOS sign-in
         public override bool OpenUrl(UIApplication app, NSUrl url, NSDictionary options)
         {
             return S_GameConnector.Connector.client.ResumeWithURL(url);
         }
+
+        #endregion
     }
 }
