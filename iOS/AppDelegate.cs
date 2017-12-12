@@ -26,7 +26,7 @@ namespace JudgementZone.iOS
             public string id { get; set; }
         }
 
-        public AccountStore AccountStore { get; private set; }
+        //public AccountStore AccountStore { get; private set; }
 
         // 1 = google, 2 = facebook
         private int loginProvider = 2;
@@ -110,28 +110,36 @@ namespace JudgementZone.iOS
         // Checks to see if there are current Azure credentials and a Facebook token
         private string CheckForCurrentCredentials()
         {
-            string savedToken = string.Empty;
-            var accounts = AccountStore.FindAccountsForService(ServerConstants.ACCOUNT_STORE_LABEL);
-            if (accounts != null)
+            string savedToken = null;
+            try
             {
-                foreach (var acct in accounts)
+				IEnumerable<Account> accounts = AccountStore.Create().FindAccountsForService(ServerConstants.ACCOUNT_STORE_LABEL);
+            
+                if (accounts != null)
                 {
-                    string tokenString;
-
-                    if (acct.Properties.TryGetValue("azure_token", out tokenString))
+                    foreach (var acct in accounts)
                     {
-                        if (!IsAzureTokenExpired(tokenString))//THIS METHOD DOESN'T WORK WITH NON-AZURE TOKENS
+                        string tokenString;
+
+                        if (acct.Properties.TryGetValue("azure_token", out tokenString))
                         {
-                            S_GameConnector.Connector.client.CurrentUser = new MobileServiceUser(acct.Username);
-                            S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken = tokenString;
+                            if (!IsAzureTokenExpired(tokenString))//THIS METHOD DOESN'T WORK WITH NON-AZURE TOKENS
+                            {
+                                S_GameConnector.Connector.client.CurrentUser = new MobileServiceUser(acct.Username);
+                                S_GameConnector.Connector.client.CurrentUser.MobileServiceAuthenticationToken = tokenString;
+                            }
+                        }
+
+                        if (acct.Properties.TryGetValue("facebook_token", out tokenString))
+                        {
+                            savedToken = tokenString;
                         }
                     }
-
-                    if (acct.Properties.TryGetValue("facebook_token", out tokenString))
-                    {
-                        savedToken = tokenString;
-                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
             }
 
             return savedToken;
@@ -151,6 +159,8 @@ namespace JudgementZone.iOS
 
             auth.Completed += async (sender, eventArgs) =>
             {
+                UIApplication.SharedApplication.KeyWindow.RootViewController.DismissViewController(true, null);
+
                 if (eventArgs.IsAuthenticated)
                 {
                     var values = eventArgs.Account.Properties;
@@ -255,7 +265,7 @@ namespace JudgementZone.iOS
                 // Save the token
                 var account = new Account(userName);
                 account.Properties.Add(tokenName, accessToken);
-                AccountStore.Save(account, ServerConstants.ACCOUNT_STORE_LABEL);
+                AccountStore.Create().Save(account, ServerConstants.ACCOUNT_STORE_LABEL);
 
                 return true;
             }

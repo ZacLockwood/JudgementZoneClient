@@ -71,9 +71,9 @@ namespace JudgementZone.UI
 
                         S_GameConnector.Connector.authenticated = result;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        var msg = e.Message;
+                        var msg = ex.Message;
                     }
                 }
             });
