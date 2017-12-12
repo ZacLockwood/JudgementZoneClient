@@ -232,7 +232,7 @@ namespace JudgementZone.iOS
         }
 
         // Checks to see if an Azure auth token has expired
-        bool IsAzureTokenExpired(string token)
+        private bool IsAzureTokenExpired(string token)
         {
             // Get just the JWT part of the token (without the signature).
             var jwt = token.Split(new Char[] { '.' })[1];
