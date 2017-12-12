@@ -60,12 +60,19 @@ namespace JudgementZone.UI
 
         private void AddPlayerToLobbyView(M_Player newPlayer)
         {
+            // If the player is ready to start, make their name bold
+            var fontStyle = FontAttributes.None;
+            if (newPlayer.IsReadyToStart)
+            {
+                fontStyle = FontAttributes.Bold;
+            }
+
             var playerLabel = new Label()
             {
                 VerticalOptions = LayoutOptions.Start,
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
                 FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)),
-                FontAttributes = FontAttributes.Bold,
+                FontAttributes = fontStyle,
                 HorizontalTextAlignment = TextAlignment.Center,
                 VerticalTextAlignment = TextAlignment.Center,
                 Text = newPlayer.PlayerName,
@@ -93,7 +100,7 @@ namespace JudgementZone.UI
                     {
                         _uiLock = false;
                         return;
-                    }
+                    };
 
                     var gameKey = gameState.GameKey;
 
@@ -119,7 +126,7 @@ namespace JudgementZone.UI
                         await DisplayAlert("Connection Error", "You have disconnected from the server.", "OK");
                     }
 
-                    await S_GameConnector.Connector.SendGameStartRequest(gameKey);
+                    await S_GameConnector.Connector.SendGameStartRequest(myPlayer, gameKey);
 
                     ReleaseRealmSubscriptions();
 

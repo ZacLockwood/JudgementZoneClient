@@ -3,6 +3,7 @@ using Xamarin.Forms;
 using JudgementZone.UI;
 using JudgementZone.Models;
 using System.Linq;
+using JudgementZone.Interfaces;
 
 namespace JudgementZone
 {
@@ -12,7 +13,7 @@ namespace JudgementZone
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainMenuPage())
+            MainPage = new NavigationPage(LoginPage.page)
             {
                 BarBackgroundColor = Color.Black,
                 BarTextColor = Color.White
@@ -21,7 +22,6 @@ namespace JudgementZone
 
         protected override void OnStart()
         {
-            // Handle when your app starts
             var gameStateRealm = Realm.GetInstance("GameState.Realm");
             if (gameStateRealm.All<M_Client_GameState>().Any())
             {
@@ -36,7 +36,7 @@ namespace JudgementZone
                     {
                         gameStateRealm.Write(() =>
                         {
-							gameStateRealm.RemoveAll();
+                            gameStateRealm.RemoveAll();
                         });
                     }
                 });
@@ -52,5 +52,16 @@ namespace JudgementZone
         {
             // Handle when your app resumes
         }
+
+        #region Helper Methods
+
+        public static IAuthenticate Authenticator { get; private set; }
+
+        public static void Init(IAuthenticate authenticator)
+        {
+            Authenticator = authenticator;
+        }
+
+        #endregion
     }
 }

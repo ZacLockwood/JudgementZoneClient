@@ -72,7 +72,7 @@ namespace JudgementZone.UI
         {
             if (newPageState == PageState)
                 return;
-            
+
             PageState = newPageState;
 
             // Lock UI
@@ -392,13 +392,13 @@ namespace JudgementZone.UI
 					{
 						ReleaseUISubscriptions();
 						ReleaseRealmSubscriptions();
-						
+
 						var gameStateRealm = Realm.GetInstance("GameState.Realm");
 						gameStateRealm.Write(() =>
 						{
 							gameStateRealm.RemoveAll();
 						});
-						
+
                         await Navigation.PopModalAsync();
 					}
                 }

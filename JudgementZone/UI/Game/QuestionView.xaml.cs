@@ -235,6 +235,7 @@ namespace JudgementZone.UI
                 if (focusedPlayer.PlayerId == myPlayer.PlayerId)
 				{
 					FocusedPlayerLabel.Text = "My Turn!";
+
 				}
 				else
 				{
