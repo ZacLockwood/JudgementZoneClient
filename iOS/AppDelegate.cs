@@ -289,8 +289,8 @@ namespace JudgementZone.iOS
             {
                 // Display success alert notification
                 UIAlertView avAlert = new UIAlertView(
-                    title: "Logged in successfully",
-                    message: string.Format("You are now signed in as {0}.", name),
+                    title: "Logged in Successfully",
+                    message: string.Format("You are now signed in as\n{0}.", name),
                     del: (IUIAlertViewDelegate)null,
                     cancelButtonTitle: "Cancel",
                     otherButtons: "OK");
@@ -300,7 +300,7 @@ namespace JudgementZone.iOS
             {
                 // Display failure toast notification
                 UIAlertView avAlert = new UIAlertView(
-                    title: "Failed to login!",
+                    title: "Failed to Login",
                     message: string.Format("Failed to automatically login."),
                     del: (IUIAlertViewDelegate)null,
                     cancelButtonTitle: "Cancel",

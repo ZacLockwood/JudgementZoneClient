@@ -109,7 +109,15 @@ namespace JudgementZone.Droid
                     var accessToken = values["access_token"];
 
                     // Pull out the user name and id from Facebook
-                    FacebookUser fbUser = GetUserData(loginProvider, accessToken).Result;
+                    FacebookUser fbUser;// = GetUserData(loginProvider, accessToken).Result;
+                    using (var httpClient = new System.Net.Http.HttpClient())
+                    {
+                        var response = await httpClient.GetAsync(new Uri("https://graph.facebook.com/me?access_token=" + accessToken));
+                        response.EnsureSuccessStatusCode();
+                        var content = response.Content.ReadAsStringAsync().Result;
+
+                        fbUser = JsonConvert.DeserializeObject<FacebookUser>(content);
+                    }
 
                     // Save the provider credentials
                     SaveCredentials(
