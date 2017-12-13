@@ -27,27 +27,20 @@ namespace JudgementZone.UI
 			public SKColor Color { private set; get; }
 		}
 
-		// 
 		ChartData[] myAnswersChartData =
 		{
-			new ChartData(45, SKColors.Red),
-			new ChartData(13, SKColors.Green),
-			new ChartData(27, SKColors.Blue),
-			new ChartData(19, SKColors.Magenta),
-			new ChartData(40, SKColors.Cyan),
-			new ChartData(22, SKColors.Brown),
-			new ChartData(29, SKColors.Gray)
+            new ChartData(45, SKColor.Parse("#FF0000")),
+            new ChartData(45, SKColor.Parse("#F6E202")),
+            new ChartData(45, SKColor.Parse("#00D23E")),
+            new ChartData(45, SKColor.Parse("#137AF9"))
 		};
 
 		ChartData[] theirAnswersChartData =
 		{
-			new ChartData(45, SKColors.Red),
-			new ChartData(13, SKColors.Green),
-			new ChartData(27, SKColors.Blue),
-			new ChartData(19, SKColors.Magenta),
-			new ChartData(40, SKColors.Cyan),
-			new ChartData(22, SKColors.Brown),
-			new ChartData(29, SKColors.Gray)
+			new ChartData(45, SKColor.Parse("#33FF0000")),
+			new ChartData(45, SKColor.Parse("#33F6E202")),
+			new ChartData(45, SKColor.Parse("#3300D23E")),
+			new ChartData(45, SKColor.Parse("#33137AF9"))
 		};
 
 		public ExplodedPieChartView()
@@ -95,7 +88,7 @@ namespace JudgementZone.UI
 
 					// Stroke settings
 					paint.Style = SKPaintStyle.Stroke;
-					paint.StrokeWidth = 20;
+					paint.StrokeWidth = 45;
 					paint.Color = item.Color;
 
 					canvas.Save();
@@ -109,6 +102,13 @@ namespace JudgementZone.UI
 			}
 
             startAngle = 180;
+
+			totalValues = 0;
+
+            foreach (ChartData item in theirAnswersChartData)
+			{
+				totalValues += item.Value;
+			}
 
 			foreach (ChartData item in theirAnswersChartData)
 			{
@@ -124,8 +124,8 @@ namespace JudgementZone.UI
 
 					// Stroke settings
 					paint.Style = SKPaintStyle.Stroke;
-					paint.StrokeWidth = 20;
-					paint.Color = item.Color;
+					paint.StrokeWidth = 45;
+                    paint.Color = item.Color;
 
 					canvas.Save();
 
