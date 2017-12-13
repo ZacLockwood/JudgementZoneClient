@@ -79,22 +79,16 @@ namespace JudgementZone.Services
             // Start connection
             try
             {
-                //if (App.Authenticator != null && !authenticated)
-                //{
-                //    var authTask = App.Authenticator.Authenticate();
-                //    await authTask;
-
-                //    authenticated = authTask.Result;
-                //}
-
                 if (authenticated == true)
                 {
                     try
                     {
                         hubConnection.Headers.Add("authtoken", ServerConstants.SIGNALR_GAME_HUB_TOKEN);
                         hubConnection.Headers.Add("X-ZUMO-AUTH", client.CurrentUser.MobileServiceAuthenticationToken);
-                        //hubConnection.Headers[""]
                         await hubConnection.Start();
+
+                        SetupDroppedConnectionEventHandler();
+
                         return true;
                     }
                     catch (Exception e)
@@ -131,6 +125,14 @@ namespace JudgementZone.Services
                 var msg = e.Message;
                 return false;
             }
+        }
+
+        private void SetupDroppedConnectionEventHandler()
+        {
+            hubConnection.Closed += async () =>
+            {
+                
+            };
         }
 
         #endregion
@@ -240,8 +242,6 @@ namespace JudgementZone.Services
 
                 Console.WriteLine("Continue...");
             });
-
-            //gameHubProxy.On<M_GameStats>("DisplayGameStats", (gameStats) => {});
         }
 
         #endregion
