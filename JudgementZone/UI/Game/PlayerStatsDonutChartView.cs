@@ -8,10 +8,11 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using JudgementZone.Models;
 
 namespace JudgementZone.UI
 {
-	public class ExplodedPieChartView : ContentView
+	public class PlayerStatsDonutChartView : ContentView
 	{
         // Helper class
 		class ChartData
@@ -29,7 +30,7 @@ namespace JudgementZone.UI
 
 		ChartData[] myAnswersChartData =
 		{
-            new ChartData(45, SKColor.Parse("#FF0000")),
+            new ChartData(0, SKColor.Parse("#FF0000")),
             new ChartData(45, SKColor.Parse("#F6E202")),
             new ChartData(45, SKColor.Parse("#00D23E")),
             new ChartData(45, SKColor.Parse("#137AF9"))
@@ -43,10 +44,24 @@ namespace JudgementZone.UI
 			new ChartData(45, SKColor.Parse("#33137AF9"))
 		};
 
-		public ExplodedPieChartView()
-		{
-			//Title = "Exploded Pie Chart";
+		public PlayerStatsDonutChartView(M_Client_PlayerGameStats donutStats)
+        {
+			myAnswersChartData = new ChartData[]
+			{
+				new ChartData(donutStats.PlayerSelectionsRed, SKColor.Parse("#FF0000")),
+				new ChartData(donutStats.PlayerSelectionsYellow, SKColor.Parse("#F6E202")),
+				new ChartData(donutStats.PlayerSelectionsGreen, SKColor.Parse("#00D23E")),
+				new ChartData(donutStats.PlayerSelectionsBlue, SKColor.Parse("#137AF9"))
+			};
 
+			theirAnswersChartData = new ChartData[]
+			{
+				new ChartData(donutStats.OtherSelectionsRed, SKColor.Parse("#33FF0000")),
+				new ChartData(donutStats.OtherSelectionsYellow, SKColor.Parse("#33F6E202")),
+				new ChartData(donutStats.OtherSelectionsGreen, SKColor.Parse("#3300D23E")),
+				new ChartData(donutStats.OtherSelectionsBlue, SKColor.Parse("#33137AF9"))
+			};
+            
 			SKCanvasView canvasView = new SKCanvasView();
 			canvasView.PaintSurface += OnCanvasViewPaintSurface;
 			Content = canvasView;
@@ -67,8 +82,8 @@ namespace JudgementZone.UI
 				totalValues += item.Value;
 			}
 
-			SKPoint center = new SKPoint(info.Width / 2, info.Height / 2);
-			float radius = Math.Min(info.Width / 2, info.Height / 2);
+			SKPoint center = new SKPoint(info.Width / 2.0f, info.Height / 2.0f);
+			float radius = Math.Min(info.Width / 2.3f, info.Height / 2.3f);
 			SKRect rect = new SKRect(center.X - radius, center.Y - radius,
 									 center.X + radius, center.Y + radius);
 
@@ -88,7 +103,7 @@ namespace JudgementZone.UI
 
 					// Stroke settings
 					paint.Style = SKPaintStyle.Stroke;
-					paint.StrokeWidth = 45;
+					paint.StrokeWidth = 35;
 					paint.Color = item.Color;
 
 					canvas.Save();
@@ -124,7 +139,7 @@ namespace JudgementZone.UI
 
 					// Stroke settings
 					paint.Style = SKPaintStyle.Stroke;
-					paint.StrokeWidth = 45;
+					paint.StrokeWidth = 35;
                     paint.Color = item.Color;
 
 					canvas.Save();

@@ -127,6 +127,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\Game\RoundScreen.xaml.cs">
       <DependentUpon>RoundScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\Game\PlayerStatsDonutChartView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />

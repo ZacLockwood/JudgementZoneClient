@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JudgementZone.Interfaces;
 using JudgementZone.Models;
+using Realms;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
@@ -112,6 +113,36 @@ namespace JudgementZone.UI
 
         public void UpdateView(List<M_Client_PlayerGameStats> playerGameStats, List<M_Player> gamePlayers)
         {
+            var myPlayer = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().FirstOrDefault();
+            var myPlayerStats = playerGameStats.First(p => p.PlayerId == myPlayer.PlayerId);
+
+            var absoluteLayout = new AbsoluteLayout()
+            {
+                VerticalOptions = LayoutOptions.FillAndExpand,
+				WidthRequest = this.Width / 3,
+				HeightRequest = this.Width / 3
+            };
+
+            var donutStatsView = new PlayerStatsDonutChartView(myPlayerStats);
+            AbsoluteLayout.SetLayoutFlags(donutStatsView, AbsoluteLayoutFlags.All);
+            AbsoluteLayout.SetLayoutBounds(donutStatsView, new Rectangle(0.5, 0.5, 1.0, 1.0));
+
+            var playerLabel = new Label()
+            {
+                Text = myPlayer.PlayerName,
+                FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label)),
+                FontAttributes = FontAttributes.Bold,
+                LineBreakMode = LineBreakMode.WordWrap,
+                VerticalTextAlignment = TextAlignment.Center,
+                HorizontalTextAlignment = TextAlignment.Center,
+                TextColor = Color.White
+            };
+			AbsoluteLayout.SetLayoutFlags(playerLabel, AbsoluteLayoutFlags.All);
+			AbsoluteLayout.SetLayoutBounds(playerLabel, new Rectangle(0.5, 0.5, 0.5, 0.5));
+
+            absoluteLayout.Children.Add(donutStatsView);
+			absoluteLayout.Children.Add(playerLabel);
+
             foreach (var pgs in playerGameStats)
             {
                 var player = gamePlayers.First(p => p.PlayerId == pgs.PlayerId);
@@ -121,6 +152,8 @@ namespace JudgementZone.UI
 
                 MainStackLayout.Children.Insert(1, playerStatsView);
             }
+
+            MainStackLayout.Children.Insert(0, absoluteLayout);
         }
 
         #endregion

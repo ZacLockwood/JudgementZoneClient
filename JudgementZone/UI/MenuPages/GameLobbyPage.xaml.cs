@@ -62,9 +62,11 @@ namespace JudgementZone.UI
         {
             // If the player is ready to start, make their name bold
             var fontStyle = FontAttributes.None;
+            var fontColor = Color.White;
             if (newPlayer.IsReadyToStart)
             {
                 fontStyle = FontAttributes.Bold;
+                fontColor = Color.LimeGreen;
             }
 
             var playerLabel = new Label()
@@ -76,7 +78,7 @@ namespace JudgementZone.UI
                 HorizontalTextAlignment = TextAlignment.Center,
                 VerticalTextAlignment = TextAlignment.Center,
                 Text = newPlayer.PlayerName,
-                TextColor = Color.White,
+                TextColor = fontColor,
             };
 
             PlayerStackLayout.Children.Add(playerLabel);

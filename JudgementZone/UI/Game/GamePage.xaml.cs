@@ -247,7 +247,7 @@ namespace JudgementZone.UI
                 var myPlayer = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().FirstOrDefault();
                 var focusedPlayer = gameState.PlayerList.First(p => p.PlayerId == gameState.FocusedPlayerId);
 
-                if (focusedPlayer.PlayerId == myPlayer.PlayerId && GameTurnIndicatorBackground.Opacity < 1.0)
+                if (focusedPlayer.PlayerId == myPlayer.PlayerId && GameTurnIndicatorBackground.Opacity < 1.0 && gameState.ClientViewCode != 4)
                 {
                     Device.BeginInvokeOnMainThread(() =>
                     {
@@ -255,7 +255,7 @@ namespace JudgementZone.UI
                         GTIB_Present(animated);
                     });
                 }
-                else if (focusedPlayer.PlayerId != myPlayer.PlayerId && GameTurnIndicatorBackground.Opacity > 0.0)
+                else if ((focusedPlayer.PlayerId != myPlayer.PlayerId || gameState.ClientViewCode == 4) && GameTurnIndicatorBackground.Opacity > 0.0)
                 {
                     Device.BeginInvokeOnMainThread(() =>
                     {
