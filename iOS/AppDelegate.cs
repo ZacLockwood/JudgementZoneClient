@@ -72,7 +72,7 @@ namespace JudgementZone.iOS
                 }
                 else
                 {
-                    DisplayLoginNotification(string.Empty, success);
+                    //DisplayLoginNotification(string.Empty, success);
 
                     return ProviderAuthentication(loginProvider);
                 }
