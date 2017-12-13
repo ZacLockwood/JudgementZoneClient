@@ -277,7 +277,7 @@ namespace JudgementZone.UI
                             // if new round, await new round animation
                             if (gameState.IsNewRound)
                             {
-                                Navigation.PushAsync(new RoundScreen(gameState.CurrentRoundNum));
+                                //Navigation.PushAsync(new RoundScreen(gameState.CurrentRoundNum));
                             }
                             // then continue...
 
