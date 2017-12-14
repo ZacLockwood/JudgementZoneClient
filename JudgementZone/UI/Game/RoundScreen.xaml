@@ -4,14 +4,15 @@
              xmlns:local="clr-namespace:JudgementZone.UI"
              x:Class="JudgementZone.UI.RoundScreen"
              BackgroundColor="{StaticResource Dark_Background}">
-	<ContentView.Content>
+    <ContentView.Content>
         <StackLayout VerticalOptions="StartAndExpand" HorizontalOptions="Center"
-                     Spacing="15" Padding="20,175" >
+                     Spacing="15" Padding="20,175" > 
             <Label x:Name="RoundNumLabel"
-                   TextColor="{StaticResource JZ_Magenta}"
-                   FontSize= "75"
+                   Text="Round 1"
+                   TextColor="{StaticResource JZ_Magenta}" 
+                   FontSize= "75" 
                    FontAttributes="Bold"
                    FontFamily="Futura-CondensedExtraBold"/>
         </StackLayout>
-	</ContentView.Content>
+    </ContentView.Content>
 </ContentView>
