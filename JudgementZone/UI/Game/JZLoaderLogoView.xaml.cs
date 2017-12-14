@@ -26,7 +26,7 @@ namespace JudgementZone.UI
                 {
 					return;
                 }
-                
+
                 _lastColor = _currentColor;
 
                 if (value == E_LogoColor.Random)
@@ -177,7 +177,7 @@ namespace JudgementZone.UI
 				await loadTask;
 			}
         }
-		
+
         public async Task AnimateColorSwapAsync(bool pickRandomColor = true, double pulseScale = 0.98, uint duration = 400, Easing easing = null)
 		{
 			if (easing == null)
@@ -219,11 +219,11 @@ namespace JudgementZone.UI
 		{
 			if (easing == null)
 				easing = Easing.SinInOut;
-			
+
 			// Animation Prep
 			ResetAnimationPropertiesToDefaults();
 			uint eachAnimDuration = (uint)Math.Floor(duration * 0.5);
-			
+
 			if (!crossFade)
 			{
 				// Animation Part 1
@@ -237,10 +237,10 @@ namespace JudgementZone.UI
                 {
                     await fadeOutTask;
                 }
-				
+
 				// Switch Colors
 				CurrentColor = NextLogoColor(pickRandomColor);
-				
+
 				// Animation Part 2
 				var fadeInTask = ColoredLogo.FadeTo(1.0, eachAnimDuration, easing);
                 if (Math.Abs(pulseScale - 1.0) > 0.005)
@@ -269,11 +269,11 @@ namespace JudgementZone.UI
 					await Task.Delay((int)Math.Floor(eachAnimDuration * 0.85));
 					var crossFadeTask1 = ColoredLogo.FadeTo(0.0, (uint)Math.Floor(eachAnimDuration * 1.05), easing);
 					var crossFadeTask2 = ColoredLogoStandIn.FadeTo(1.0, (uint)Math.Floor(eachAnimDuration * 1.15), easing);
-					
+
 					// Create Animation Task for Logo Pulse Part 2
 					await pulseTask1;
 					var pulseTask2 = LogoAbsoluteLayout.ScaleTo(1.0, eachAnimDuration, easing);
-					
+
 					// Await All Anim Tasks Completion
 					await crossFadeTask1;
 					CurrentColor = nextColor;
@@ -342,7 +342,7 @@ namespace JudgementZone.UI
 				// Get random number generator and output rndColor
 				var rnd = new Random();
 				var rndColor = CurrentColor;
-				
+
 				// Rolling logic ALWAYS changes rndColor to appropriate value
 				for (var roll = 1; roll <= 2; roll++)
 				{
@@ -362,7 +362,7 @@ namespace JudgementZone.UI
                         roll = 2;
 					}
 				}
-				
+
                 return rndColor;
             }
             else

@@ -160,7 +160,7 @@ namespace JudgementZone.UI
             LoaderLabel.Opacity = 0.0;
 			LoaderLabel.Text = loadMessage;
             LoaderLabel.TranslationY = LoaderLabel.Height * 1.25;
-			
+
 			// Animation
             var translateTask = LoaderLabel.TranslateTo(0, 0, duration, Easing.CubicOut);
             await Task.Delay((int)Math.Floor(duration * 0.1));
