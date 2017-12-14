@@ -67,6 +67,9 @@ namespace JudgementZone.iOS
 
                     DisplayLoginNotification(fbUser.name, success);
 
+                    // Save out in shared code the user's first name
+                    S_GameConnector.Connector.fbUsername = GetFirstName(fbUser.name);
+
                     LoginPage.page.ConnectAndGoToMenu();
                     return true;
                 }
@@ -307,6 +310,26 @@ namespace JudgementZone.iOS
                     otherButtons: "OK");
                 avAlert.Show();
             }
+        }
+
+        // Pulls out the first name from the full name
+        private string GetFirstName(string name)
+        {
+            string firstName = string.Empty;
+
+            foreach (char c in name)
+            {
+                if (!c.Equals(' '))
+                {
+                    firstName += c;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return firstName;
         }
 
         // Needed method for iOS sign-in

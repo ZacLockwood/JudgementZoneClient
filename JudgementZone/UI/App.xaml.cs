@@ -15,7 +15,8 @@ namespace JudgementZone
 
             MainPage = new NavigationPage(LoginPage.page)
             {
-                BarBackgroundColor = Color.Black,
+                // This color is from App.xaml: "Dark_Background"
+                BarBackgroundColor = Color.FromHex("1C191D"),
                 BarTextColor = Color.White
             };
         }

@@ -62,7 +62,7 @@ namespace ScnViewGestures.Plugin.Forms.iOS.Renderers
             //    OnTouchesBegan = ((x, y) => viewGesture.OnTouchBegan(x, y)),
             //    OnTouchesEnded = (() => viewGesture.OnTouchEnded()),
             //};
-            
+
             //#region SwipeGestureRecognizer
             //var swipeLeftGestureRecognizer = new SwipeGestureRecognizer(() => viewGesture.OnSwipeLeft())
             //{
@@ -130,10 +130,10 @@ namespace ScnViewGestures.Plugin.Forms.iOS.Renderers
 
                 //if (swipeRightGestureRecognizer != null)
                 //    this.RemoveGestureRecognizer(swipeRightGestureRecognizer);
-                
+
                 //if (swipeUpGestureRecognizer != null)
                 //    this.RemoveGestureRecognizer(swipeUpGestureRecognizer);
-                
+
                 //if (swipeDownGestureRecognizer != null)
                     //this.RemoveGestureRecognizer(swipeDownGestureRecognizer);
 
@@ -159,7 +159,7 @@ namespace ScnViewGestures.Plugin.Forms.iOS.Renderers
         //    {
         //        base.TouchesBegan(touches, evt);
         //        UITouch touch = touches.AnyObject as UITouch;
-                
+
         //        double positionX = -1;
         //        double positionY = -1;
 
@@ -346,7 +346,7 @@ namespace ScnViewGestures.Plugin.Forms.iOS.Renderers
                 base.TouchesMoved(touches, evt);
                 UITouch touch = touches.AnyObject as UITouch;
 
-                if (OnDrag != null && touch != null) 
+                if (OnDrag != null && touch != null)
                 {
                     OnDrag(touch.LocationInView(View).X, touch.LocationInView(View).Y);
                 }

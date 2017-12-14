@@ -13,7 +13,8 @@
                     VerticalOptions="Fill" HorizontalOptions="Fill"
                     BackgroundColor="{StaticResource JZ_White}"
                     Placeholder="Game Key"
-                    Margin="0,0,0,12"/>
+                    Margin="0,0,0,12"
+                    Keyboard="Numeric"/>
             <Label Text="Enter your desired username:"
                     TextColor="{StaticResource JZ_White}"/>
             <Entry x:Name="UsernameEntryField"

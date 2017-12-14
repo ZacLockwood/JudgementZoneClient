@@ -18,6 +18,9 @@ namespace JudgementZone.Services
         // Track whether the user has authenticated.
         public bool authenticated = false;
 
+        // Username from Facebook
+        public string fbUsername;
+
         //Needed for authentication: Defines a user and client
         public MobileServiceClient client = new MobileServiceClient(ServerConstants.SERVER_FULL_URL);
 

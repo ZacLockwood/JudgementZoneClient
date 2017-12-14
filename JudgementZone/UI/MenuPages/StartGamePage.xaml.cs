@@ -18,6 +18,9 @@ namespace JudgementZone.UI
         {
             InitializeComponent();
 
+            // Default to the name from Facebook
+            UsernameEntryField.Text = S_GameConnector.Connector.fbUsername;
+
             var myPlayerDataRealm = Realm.GetInstance("MyPlayerData.Realm");
 
             var myPlayer = myPlayerDataRealm.All<M_Player>().FirstOrDefault();

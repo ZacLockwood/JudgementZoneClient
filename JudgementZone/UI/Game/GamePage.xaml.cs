@@ -370,7 +370,7 @@ namespace JudgementZone.UI
 				var gameState = gameStateRealm.All<M_Client_GameState>().FirstOrDefault();
 				if (gameState != null)
 				{
-					await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for Judgement...", (E_LogoColor)answerId);
+					await GP_AnimateTransitionToPageState(E_GamePageState.LoaderPresented, "Waiting for judgement...", (E_LogoColor)answerId);
 					await S_GameConnector.Connector.SendAnswerSubmission(answerId, gameState.GameKey);
 				}
 				else
