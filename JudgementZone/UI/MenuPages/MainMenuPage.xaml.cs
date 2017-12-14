@@ -174,7 +174,7 @@ namespace JudgementZone.UI
                 if (!_uiLock)
                 {
                     _uiLock = true;
-                    await DisplayAlert("About Not Implemented", "Try again in a later build.", "OK");
+                    await Navigation.PushAsync(new AboutPage());
                     _uiLock = false;
                 }
             });
