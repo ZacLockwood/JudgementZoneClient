@@ -34,7 +34,7 @@
                     Clicked="SettingsButtonClicked"/>
             <Button x:Name="AboutButton"
                     VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
-                    BackgroundColor="{StaticResource JZ_Gray}"
+                    BackgroundColor="LightSkyBlue"
                     Text="About"
                     TextColor="Black"
                     Clicked="AboutButtonClicked"/>
