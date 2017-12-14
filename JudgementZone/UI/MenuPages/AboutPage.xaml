@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:JudgementZone.UI"
+             x:Class="JudgementZone.UI.AboutPage"
+             Title="About"
+             BackgroundColor="{StaticResource Dark_Background}">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Spacing="20" Padding="20">
+                <Label x:Name="GameTitle"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Red}"
+                    Text="JUDGEMENT ZONE"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="Large"/>
+                <Label x:Name="GameDescription"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    Text="An Icebreaker Game by Mitten Ninja Games"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontSize="Medium"/>
+                <Label x:Name="AuthorsTitle"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Yellow}"
+                    Text="A GAME BY"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="Large"/>
+                <Label x:Name="Authors"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    Text="Zac Lockwood&#10;Parker Millican&#10;Christian DaPonte"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontSize="Medium"/>
+                <Label x:Name="DevelopmentTeamTitle"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Green}"
+                    Text="DEVELOPMENT TEAM"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="Large"/>
+                <Label x:Name="DevelopmentTeam"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    Text="Zac Lockwood&#10;Jack Kawell&#10;Royus Amos&#10;Leigh Hampton Gorham"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontSize="Medium"/>
+                <Label x:Name="ArtTitle"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="{StaticResource JZ_Blue}"
+                    Text="ART TEAM"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="Large"/>
+                <Label x:Name="ArtTeam"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    Text="Parker Millican&#10;Zac Lockwood"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontSize="Medium"/>
+                <Label x:Name="AdminTitle"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    BackgroundColor="Purple"
+                    Text="ADMINISTRATOR"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="Large"/>
+                <Label x:Name="AdminTeam"
+                    VerticalOptions="StartAndExpand" HorizontalOptions="Fill"
+                    Text="Gregory Kawell"
+                    HorizontalTextAlignment="Center"
+                    TextColor="White"
+                    FontSize="Medium"/>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

@@ -61,7 +61,7 @@ namespace JudgementZone.UI
 				new ChartData(donutStats.OtherSelectionsGreen, SKColor.Parse("#3300D23E")),
 				new ChartData(donutStats.OtherSelectionsBlue, SKColor.Parse("#33137AF9"))
 			};
-            
+
 			SKCanvasView canvasView = new SKCanvasView();
 			canvasView.PaintSurface += OnCanvasViewPaintSurface;
 			Content = canvasView;

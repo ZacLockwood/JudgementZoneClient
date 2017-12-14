@@ -64,6 +64,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)UI\MenuPages\LoginPage.xaml.cs">
       <DependentUpon>LoginPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -137,6 +141,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\MenuPages\LoginPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UI\MenuPages\AboutPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
