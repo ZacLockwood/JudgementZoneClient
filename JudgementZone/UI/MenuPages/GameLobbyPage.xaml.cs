@@ -134,7 +134,7 @@ namespace JudgementZone.UI
 
 					await Navigation.PushModalAsync(new GamePage());
 
-                    await Navigation.PopAsync();
+                    await Navigation.PopToRootAsync();
 
                     _uiLock = false;
                 }

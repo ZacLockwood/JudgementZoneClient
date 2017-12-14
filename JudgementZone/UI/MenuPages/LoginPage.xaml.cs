@@ -28,6 +28,8 @@ namespace JudgementZone.UI
             }
         }
 
+        bool HasAuthenticated;
+
         #region Constructor
 
         public LoginPage()
@@ -49,6 +51,15 @@ namespace JudgementZone.UI
                     await MenuLogo.AnimateColorFadeAsync(crossFade: true, pulseScale: 0.985, duration: 300);
                     MenuLogo.IsAnimating = false;
                 }
+
+                if (HasAuthenticated)
+                {
+                    FacebookLogin.Text = "Play Judgement Zone!";
+                }
+                else
+                {
+                    FacebookLogin.Text = "Facebook Login";
+                }
             });
         }
 
@@ -60,7 +71,11 @@ namespace JudgementZone.UI
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
-                if (App.Authenticator != null && !S_GameConnector.Connector.authenticated)
+                if (HasAuthenticated)
+                {
+                    ConnectAndGoToMenu();
+                }
+                else if (App.Authenticator != null && !S_GameConnector.Connector.authenticated)
                 {
                     try
                     {
@@ -93,6 +108,10 @@ namespace JudgementZone.UI
                 }
 
                 await Navigation.PushAsync(new MainMenuPage());
+
+				FacebookLogin.Text = "Play Judgement Zone!";
+
+                HasAuthenticated = true;
             });
         }
 
