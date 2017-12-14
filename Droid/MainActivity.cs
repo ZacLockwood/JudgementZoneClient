@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace JudgementZone.Droid
 {
-    [Activity(Label = "JudgementZone.Droid", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "Judgement Zone", Icon = "@drawable/icon", Theme = "@style/MyTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IAuthenticate
     {
         struct FacebookUser
@@ -68,6 +68,9 @@ namespace JudgementZone.Droid
                     FacebookUser fbUser = await GetUserData(loginProvider, providerToken);
 
                     DisplayLoginNotification(fbUser.name, success);
+
+                    // Save out in shared code the user's first name
+                    S_GameConnector.Connector.fbUsername = GetFirstName(fbUser.name);
 
                     LoginPage.page.ConnectAndGoToMenu();
                     return true;
@@ -312,6 +315,26 @@ namespace JudgementZone.Droid
                         Android.Widget.ToastLength.Short);
                 toast.Show();
             }
+        }
+
+        // Pulls out the first name from the full name
+        private string GetFirstName(string name)
+        {
+            string firstName = string.Empty;
+
+            foreach (char c in name)
+            {
+                if (!c.Equals(' '))
+                {
+                    firstName += c;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return firstName;
         }
 
         #endregion

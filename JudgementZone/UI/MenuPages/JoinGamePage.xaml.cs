@@ -9,7 +9,7 @@ namespace JudgementZone.UI
 {
     public partial class JoinGamePage : ContentPage
     {
-        
+
         private IDisposable RealmGameStateListenerToken;
 
         #region Constructor
@@ -17,6 +17,9 @@ namespace JudgementZone.UI
         public JoinGamePage()
         {
             InitializeComponent();
+
+            // Default to the name from Facebook
+            UsernameEntryField.Text = S_GameConnector.Connector.fbUsername;
 
             var myPlayer = Realm.GetInstance("MyPlayerData.Realm").All<M_Player>().FirstOrDefault();
             if (myPlayer != null && !String.IsNullOrWhiteSpace(myPlayer.PlayerName))
