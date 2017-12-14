@@ -10,7 +10,6 @@ using JudgementZone.Interfaces;
 
 namespace JudgementZone.UI
 {
-
     public enum E_GamePageState
     {
         LoaderPresented = 1,
@@ -21,6 +20,7 @@ namespace JudgementZone.UI
 
     public partial class GamePage : ContentPage
     {
+        public int LocalRoundNum { get; private set; } = 0;
 
         public E_GamePageState PageState { get; private set; } = E_GamePageState.LoaderPresented;
 
@@ -273,8 +273,17 @@ namespace JudgementZone.UI
                         // DISPLAY QUESTION
                         Device.BeginInvokeOnMainThread(async () =>
                         {
-                            // if new round, await new round animation
-                            // then continue...
+                            // Show Round Screen [If New Round]
+                            bool isTransitioningToNewRound = false;
+                            if (gameState.IsNewRound && gameState.CurrentRoundNum != LocalRoundNum)
+                            {
+                                isTransitioningToNewRound = true;
+                                LocalRoundNum = gameState.CurrentRoundNum;
+								GameRoundScreenView.UpdateView(gameState.CurrentRoundNum);
+
+                                RootAbsoluteLayout.RaiseChild(RoundScreenOverlayAbsoluteLayout);
+								await GameRoundScreenView.FadeTo(1.0, 500, Easing.CubicInOut);
+                            }
 
                             // Update Question View
                             var focusedQuestion = Realm.GetInstance("QuestionDeck.Realm").Find<M_QuestionCard>(gameState.CurrentQuestionId);
@@ -286,6 +295,14 @@ namespace JudgementZone.UI
 
                             // Present Question View
                             await GP_AnimateTransitionToPageState(E_GamePageState.QuestionPresented);
+
+							// Hide Round Screen After Delay [If New Round]
+                            if (gameState.IsNewRound && isTransitioningToNewRound)
+							{
+                                await Task.Delay(2000);
+								await GameRoundScreenView.FadeTo(0.0, 500, Easing.CubicInOut);
+                                RootAbsoluteLayout.RaiseChild(MainAbsoluteLayout);
+							}
 
                             // Enable Answer Submission
                             if (gameState.CanSubmitAnswer)

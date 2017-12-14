@@ -1,26 +1,37 @@
-﻿
-using JudgementZone.Models;
+﻿using JudgementZone.Models;
 using Xamarin.Forms;
 
 namespace JudgementZone.UI
 {
-    public partial class RoundScreen : ContentView
-    {
-        public RoundScreen()
-        {
-            InitializeComponent();
-        }
+	public partial class RoundScreen : ContentView
+	{
+		int roundNum;
 
-        #region Public View Management
+		public RoundScreen()
+		{
+			InitializeComponent();
+		}
 
-        public void UpdateView(int roundNum)
-        {
+		public RoundScreen(int rn)
+		{
+			roundNum = rn;
+			UpdateView();
+			InitializeComponent();
+		}
 
-            RoundNumLabel.Text = $"Round {roundNum}";
+		#region Public View Management
 
-        }
+		public void UpdateView(int? rn = null)
+		{
+            if (rn.HasValue && rn.Value >= 0)
+            {
+                roundNum = rn.Value;
+            }
 
-        #endregion
+			RoundNumLabel.Text = $"Round {roundNum}";
+		}
 
-     }
+		#endregion
+
+	}
 }
